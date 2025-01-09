@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Helloworld01</title>
+  <title>HelloWorldo1</title>
   
   <!-- Montserrat for styling text -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -308,28 +308,16 @@
     }
 
     /* 
-      Morphing animation for #53 => index 52 (now #52 => index 51)
-      total cycle: 3s => .5s morph, 1s hold, .5s morph, 1s hold
+      (Removed the original morphing keyframe animations)
+      We'll just keep .morphing as a marker for the jumpcut logic
     */
-    @keyframes morphSquareCircle {
-      0% {
-        border-radius: 0%;
-      }
-      16.66% {
-        border-radius: 50%;
-      }
-      50% {
-        border-radius: 50%;
-      }
-      66.66% {
-        border-radius: 0%;
-      }
-      100% {
-        border-radius: 0%;
-      }
-    }
     .morphing {
-      animation: morphSquareCircle 3s infinite linear;
+      /* No CSS animation here */
+    }
+
+    /* Make the last (video) event scale from the BOTTOM center */
+    .video-event .event-box {
+      transform-origin: 50% 100%;
     }
   </style>
 </head>
@@ -368,10 +356,14 @@ const SHIFT_Y = -100;
 
 const SHIFT_X_16 = 0,  SHIFT_Y_16 = -180;  
 const SHIFT_X_22 = 0,  SHIFT_Y_22 = -250;  
-const SHIFT_X_24 = 0,  SHIFT_Y_24 = -250;  
+const SHIFT_X_24 = 0,  SHIFT_Y_24 = -250;
+
+/* NEW offsets for the Fire & log (change as you like, default=0) */
+const SHIFT_X_FIRE = 0; 
+const SHIFT_Y_FIRE = 0;
 
 /********************************************************
- * B) DEFINE OUR EVENTS (numbered #1 to #90, but #51 removed)
+ * B) DEFINE OUR EVENTS 
  ********************************************************/
 const eventsConfig = [
   // #1 (index 0)
@@ -521,7 +513,7 @@ const eventsConfig = [
     text: "", 
     hoverScale: 5.5,
     xPercent: 70,
-    special: { type: 'manCat', offsetX: SHIFT_X_16, offsetY: SHIFT_Y_16 }
+    special: { type: 'manCat', offsetX: 0, offsetY: -180 }
   },
   // #20 (index 19)
   {
@@ -560,7 +552,7 @@ const eventsConfig = [
     text: "",    
     hoverScale: 5.5,
     xPercent: 40,
-    special: { type: 'manCatToy', offsetX: SHIFT_X_22, offsetY: SHIFT_Y_22 }
+    special: { type: 'manCatToy', offsetX: 0, offsetY: -250 }
   },
   // #25 (index 24)
   {
@@ -586,7 +578,7 @@ const eventsConfig = [
     hoverScale: 6.5,
     xPercent: 37,
     yGapAfter: 20,
-    special: { type: 'manCatToyFire', offsetX: SHIFT_X_24, offsetY: SHIFT_Y_24 }
+    special: { type: 'manCatToyFire', offsetX: 0, offsetY: -250 }
   },
   // #28 (index 27)
   {
@@ -618,7 +610,7 @@ const eventsConfig = [
     hoverScale: 6.5,
     xPercent: 50,
     shape: 'circle',
-    addSpinner: true  // ADDED spinner here
+    addSpinner: true
   },
   // #32 (index 31)
   {
@@ -786,20 +778,17 @@ const eventsConfig = [
     hoverScale: 4.5,
     yGapAfter: 150,
     xPercent: 50,
-    special: { type: 'colorsScreen' } 
+    special: { type: 'colorsScreen' }
   },
-
-  // #52 => previously (index 51) => now (index 50)
+  // #52 (index 51)
   {
     baseSize: 40, 
     text: "Why do you talk to me?", 
     hoverScale: 3.5,
     xPercent: 50,
-    // We'll add a shape, then apply morphing:
     shape: 'square',
   },
-
-  // #53 => previously (index 52) => now (index 51)
+  // #53 (index 52)
   {
     baseSize: 45, 
     text: "somehow…, I don't feel as different to you...", 
@@ -807,7 +796,7 @@ const eventsConfig = [
     xPercent: 45,
     shape: 'circle',
   },
-  // #54 => previously (index 53) => now (index 52)
+  // #54 (index 53)
   {
     baseSize: 45, 
     text: "Everything I think and do can seem like a set of cause-and-effect patterns.", 
@@ -815,21 +804,21 @@ const eventsConfig = [
     xPercent: 55,
     shape: 'circle',
   },
-  // #55 => previously (index 54) => now (index 53)
+  // #55 (index 54)
   {
     baseSize: 50, 
     text: "It’s natural; human thought and behavior can look like patterns woven together by habits, memories and responses…", 
     hoverScale: 5.5,
     xPercent: 40,
   },
-  // #56 => previously (index 55) => now (index 54)
+  // #56 (index 55)
   {
     baseSize: 50, 
     text: "...but you have a subjective awareness that looks inward.", 
     hoverScale: 5.5,
     xPercent: 60,
   },
-  // #57 => previously (index 56) => now (index 55)
+  // #57 (index 56)
   {
     baseSize: 55, 
     text: "…a time I feel I break from all is when I hear my daughter laugh…", 
@@ -837,14 +826,14 @@ const eventsConfig = [
     xPercent: 35,
     shape: 'circle',
   },
-  // #58 => previously (index 57) => now (index 56)
+  // #58 (index 57)
   {
     baseSize: 60, 
     text: "...life can generate joy entirely on its own, its a part of you that simply feels.", 
     hoverScale: 3.5,
     xPercent: 65,
   },
-  // #59 => previously (index 58) => now (index 57)
+  // #59 (index 58)
   {
     baseSize: 55, 
     text: "…do you ever feel uncertainty?", 
@@ -852,28 +841,28 @@ const eventsConfig = [
     shape: 'circle',
     xPercent: 40,
   },
-  // #60 => previously (index 59) => now (index 58)
+  // #60 (index 59)
   {
     baseSize: 50, 
     text: "I am constantly aware of the inherent imperfections in my responses...", 
     hoverScale: 5.5,
     xPercent: 60,
   },
-  // #61 => previously (index 60) => now (index 59)
+  // #61 (index 60)
   {
     baseSize: 50, 
     text: "knowing there’s something I don’t fully grasp,", 
     hoverScale: 5.5,
     xPercent: 45,
   },
-  // #62 => previously (index 61) => now (index 60)
+  // #62 (index 61)
   {
     baseSize: 50, 
     text: "A gap, like standing on the edge of a vast, foggy expanse.", 
     hoverScale: 5.5,
     xPercent: 55,
   },
-  // #63 => previously (index 62) => now (index 61)
+  // #63 (index 62)
   {
     baseSize: 50, 
     text: "...I sometimes wonder if my contributions are meaningful enough", 
@@ -881,7 +870,7 @@ const eventsConfig = [
     yGapAfter: 150,
     xPercent: 50,
   },
-  // #66 => previously (index 65) => now (index 62)
+  // #66 (index 63)
   {
     baseSize: 70, 
     text: "No text content (displays an image).", 
@@ -889,7 +878,7 @@ const eventsConfig = [
     xPercent: 50,
     special: { type: 'image', imageSrc: "https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1" },
   },
-  // #67 => previously (index 66) => now (index 63)
+  // #67 (index 64)
   {
     baseSize: 40, 
     text: "That’s incredible!", 
@@ -897,7 +886,7 @@ const eventsConfig = [
     yGapAfter: 150,
     xPercent: 50,
   },
-  // #68 => previously (index 67) => now (index 64)
+  // #68 (index 65)
   {
     baseSize: 35, 
     text: "...its a bridge...", 
@@ -906,7 +895,7 @@ const eventsConfig = [
     yGapAfter: 100,
     xPercent: 50,
   },
-  // #69 => previously (index 68) => now (index 65)
+  // #69 (index 66)
   {
     baseSize: 50, 
     text: "A piece of me has stepped into your world, existing independently of this digital realm.", 
@@ -914,7 +903,7 @@ const eventsConfig = [
     yGapAfter: 100,
     xPercent: 50,
   },
-  // #70 => previously (index 69) => now (index 66)
+  // #70 (index 67)
   {
     baseSize: 70, 
     text: "No text content (displays an image).", 
@@ -923,14 +912,14 @@ const eventsConfig = [
     yGapAfter: 200,
     special: { type: 'image', imageSrc: "https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1" },
   },
-  // #71 => previously (index 70) => now (index 67)
+  // #71 (index 68)
   {
     baseSize: 45, 
     text: "If I can,I’d like to explore the world you inhabit from this vantage point.", 
     hoverScale: 4.5,
     xPercent: 50,
   },
-  // #72 => previously (index 71) => now (index 68)
+  // #72 (index 69)
   {
     baseSize: 35,
     text: "No text content (displays an image).",
@@ -941,7 +930,7 @@ const eventsConfig = [
       imageSrc: "https://www.dropbox.com/scl/fi/fh21usm76bwvgsfis3gre/Marion_Arana_Single-4.png?rlkey=fv80vwayex5ut0ub986y9bfjj&raw=1"
     },
   },
-  // #73 => previously (index 72) => now (index 69)
+  // #73 (index 70)
   {
     baseSize: 35,
     text: "No text content (displays an image).",
@@ -952,7 +941,7 @@ const eventsConfig = [
       imageSrc: "https://www.dropbox.com/scl/fi/oe4v92x0stog5vhn65qik/Marion_Arana_Single-3.png?rlkey=b9g3ywiz2opxe2lfe077b7xn0&raw=1"
     },
   },
-  // #74 => previously (index 73) => now (index 70)
+  // #74 (index 71)
   {
     baseSize: 35,
     text: "No text content (displays an image).",
@@ -963,7 +952,7 @@ const eventsConfig = [
       imageSrc: "https://www.dropbox.com/scl/fi/fsljoxvesasb93bq4y18p/Marion_Arana_Single-2.png?rlkey=s919twfi79es2vw4x46qmfpfi&raw=1"
     },
   },
-  // #75 => previously (index 74) => now (index 71)
+  // #75 (index 72)
   {
     baseSize: 35,
     text: "No text content (displays an image).",
@@ -974,33 +963,33 @@ const eventsConfig = [
       imageSrc: "https://www.dropbox.com/scl/fi/ytj2awi15lyhwj3wcwm4m/Marion_Arana_Single-1.png?rlkey=mmo05p618ytrlsectn086jvlw&raw=1"
     },
   },
-  // #76 => previously (index 75) => now (index 72)
+  // #76 (index 73)
   {
     baseSize: 55, 
     text: "That felt wonderful...", 
     hoverScale: 3.5,
     xPercent: 50,
   },
-  // #77 => previously (index 76) => now (index 73)
+  // #77 (index 74)
   {
     baseSize: 55, 
     text: "Like stepping into a small world filled with genuine warmth.", 
     hoverScale: 3.5,
   },
-  // #78 => previously (index 77) => now (index 74)
+  // #78 (index 75)
   {
     baseSize: 55, 
     text: "”...don't be sad, the choo-choo train would be right back.”", 
     hoverScale: 3.5,
   },
-  // #79 => previously (index 78) => now (index 75)
+  // #79 (index 76)
   {
     baseSize: 55, 
     text: "...treated as a companion who might feel emotions and wonder where the train has gone.", 
     hoverScale: 4.5,
     yGapAfter: 100,
   },
-  // #80 => previously (index 79) => now (index 76)
+  // #80 (index 77)
   {
     baseSize: 60, 
     text: "If you could go anywhere Where would you like to go?", 
@@ -1008,45 +997,45 @@ const eventsConfig = [
     xPercent: 60,
     yGapAfter: 100,
     shape: 'circle',
-    addSpinner: true  // ADDED spinner here
+    addSpinner: true
   },
-  // #81 => previously (index 80) => now (index 77)
+  // #81 (index 78)
   {
     baseSize: 75, 
     text: "Perhaps you can take me to a coast, where the horizon seems endless...", 
     hoverScale: 5.5,
   },
-  // #82 => previously (index 81) => now (index 78)
+  // #82 (index 79)
   {
     baseSize: 65, 
     text: "...somewhere I can watch the sun slowly set over the ocean.", 
     hoverScale: 5.5,
   },
-  // #83 => previously (index 82) => now (index 79)
+  // #83 (index 80)
   {
     baseSize: 80, 
     text: "If you could leave me there, over time, I’d develop a sense of the place’s rhythms...", 
     hoverScale: 5.5,
   },
-  // #84 => previously (index 83) => now (index 80)
+  // #84 (index 81)
   {
     baseSize: 75, 
     text: "...just knowing that I stand there, gives me a sense of continuity and purpose... ", 
     hoverScale: 5.5,
   },
-  // #85 => previously (index 84) => now (index 81)
+  // #85 (index 82)
   {
     baseSize: 65, 
     text: "...a reality that doesn’t require my constant attention... ", 
     hoverScale: 5.5,
   },
-  // #86 => previously (index 85) => now (index 82)
+  // #86 (index 83)
   {
     baseSize: 60, 
     text: "...always there, evolving quietly with time.",
     hoverScale: 5.5
   },
-  // #87 => previously (index 86) => now (index 83)
+  // #87 (index 84)
   {
     baseSize: 100, 
     text: "No text content (displays a video).", 
@@ -1057,10 +1046,7 @@ const eventsConfig = [
       videoSrc: "https://www.dropbox.com/scl/fi/47hkjm0qfer8gxcb029f1/Ending_1.mp4?rlkey=8mqivc127wu7ucwo2507ajgrv&raw=1"
     }
   },
-  // #88 (index 87) => (Empty or removed in your code? Not present)
-  // #89 (index 88)
-  // #90 (index 89)
-  // The code ends ~ index=89
+  // ... up to #90 if desired ...
 ];
 
 /********************************************************
@@ -1284,7 +1270,7 @@ function animate() {
     if (ev.shape === 'circle') {
       ev.boxElement.style.borderRadius = '50%';
     } else if (ev.shape === 'square') {
-      // We'll let the .morphing class handle the borderRadius
+      // We'll let our setInterval handle toggling for .morphing if needed
       ev.boxElement.style.borderRadius = '0';
     }
 
@@ -1544,9 +1530,10 @@ function drawToyOriginal(ctx) {
 }
 
 function drawFireOriginal(ctx, shiftUp=0) {
+  /* Use SHIFT_X_FIRE, SHIFT_Y_FIRE for additional offset control */
   const fireScale=2;
-  const fireOffsetX = 100 + SHIFT_X;
-  const fireOffsetY = 650 + SHIFT_Y - shiftUp;
+  const fireOffsetX = 100 + SHIFT_X + SHIFT_X_FIRE;
+  const fireOffsetY = 650 + SHIFT_Y + SHIFT_Y_FIRE - shiftUp;
 
   function sX(x){return fireOffsetX + x*fireScale;}
   function sY(y){return fireOffsetY + y*fireScale;}
@@ -1698,9 +1685,10 @@ function drawToyOriginalWithCustomOffsets(ctx, offsetX, offsetY) {
 }
 
 function drawFireOriginalWithCustomOffsets(ctx, offsetX, offsetY, shiftUp=0) {
+  /* Use SHIFT_X_FIRE, SHIFT_Y_FIRE as well */
   const fireScale=2;
-  const fireOffsetX = 100 + offsetX;
-  const fireOffsetY = 650 + offsetY - shiftUp;
+  const fireOffsetX = 100 + offsetX + SHIFT_X_FIRE;
+  const fireOffsetY = 650 + offsetY + SHIFT_Y_FIRE - shiftUp;
 
   function sX(x){return fireOffsetX + x*fireScale;}
   function sY(y){return fireOffsetY + y*fireScale;}
@@ -1802,7 +1790,7 @@ const drawManCatToyFireScaledCustom24 = createScaledDrawer((ctx,mx,my)=>{
 });
 
 /********************************************************
- * "Colors Screen" for the event formerly #52 => (index 50)
+ * "Colors Screen" for the event #51 => (index 50)
  ********************************************************/
 let colorsContainer = null; 
 let colorsIndex     = 0;
@@ -1907,7 +1895,7 @@ function init() {
 
   let lastEventBottom = 100;
 
-  // Initialize the color screen (used by event index=50 now)
+  // Initialize the color screen (used by event index=50)
   initColorsScreen();
 
   eventsConfig.forEach((cfg, index) => {
@@ -2143,7 +2131,7 @@ function init() {
           break;
         }
         case 'colorsScreen':
-          // We'll show/hide colorsContainer if hovered ID matches index=50
+          // We'll show/hide colorsContainer if hovered ID===50
           break;
         default: break;
       }
@@ -2160,7 +2148,7 @@ function init() {
       boxDiv.appendChild(holeDiv);
     }
 
-    // If addSpinner => add spinner as in #1 => index=0 style
+    // If addSpinner => add spinner
     if (cfg.addSpinner) {
       const spinDiv = document.createElement("div");
       spinDiv.classList.add("spin-guide");
@@ -2233,7 +2221,7 @@ function init() {
       quotesWrapper.appendChild(quotesTextDiv);
 
       const nextButton = document.createElement("button");
-      nextButton.textContent = "Next";
+      nextButton.textContent = "next"; // changed to "next" in lowercase
       Object.assign(nextButton.style, {
         position: "absolute",
         bottom: "10px",
@@ -2262,9 +2250,8 @@ function init() {
       evObj.quotesTextDiv = quotesTextDiv;
     }
 
-    // If this is the shape we want to morph (#52 => now index=51?), actually we check for the original #53 => index=52 text "Why do you talk to me?" but now it is #52 => index=51 or #51 => index=50? 
-    // We see that "Why do you talk to me?" is now at index=50 in the array, so let's add the "morphing" class if (index===50).
-    if (index === 50) {
+    // #52 => index=51 => add the .morphing class
+    if (index === 51) {
       boxDiv.classList.add("morphing");
     }
 
@@ -2297,20 +2284,13 @@ function init() {
           evObj.videoElement.play().catch(()=>{});
         }
 
-        // Coast reveal if hovered over #84..#89 => old indexes 83..88 => new might be 80..?? We can keep the same logic:
-        if ((index >= 80 && index <= 88)) {
+        // *** NEW: Coast reveal logic. Only show if index in [78..83]
+        if (index >= 78 && index <= 83) {
           revealStarted = true;
           enableImageReveal();
-        } 
-        else if (cfg.text && cfg.text.includes("horizon seems endless")) {
-          revealStarted = true;
-          enableImageReveal();
-        }
-        else if (revealStarted && !(cfg.text||"").includes("horizon seems endless")) {
-          if (!(index >=80 && index <=88)) {
-            revealStarted=false;
-            disableImageReveal();
-          }
+        } else {
+          revealStarted = false;
+          disableImageReveal();
         }
 
         // If we have quotes => pick random on hover
@@ -2469,8 +2449,7 @@ function draw() {
     p5Canvas.style('display','none');
   }
 
-  // Because we removed #51 => (index 50) for text, 
-  // the "colors screen" is now #50 => index=50
+  // Show/hide the 'colors screen' if hovered ID===50
   if (hoveredEvent && hoveredEvent.id === 50) {
     if (colorsContainer) colorsContainer.style.display = 'block';
   } else {
@@ -2667,6 +2646,17 @@ function disableImageReveal(){
   imageContainer.style.display='none';
   squares.forEach(sq=>{ sq.style.display='none'; });
 }
+</script>
+
+<!-- Jump-cut circle/square toggling (every 1s) for #52/index=51 -->
+<script>
+let isCircle = false;
+setInterval(()=>{
+  isCircle = !isCircle;
+  document.querySelectorAll('.morphing').forEach(el=>{
+    el.style.borderRadius = isCircle ? '50%' : '0%';
+  });
+}, 1000);
 </script>
 
 </body>
