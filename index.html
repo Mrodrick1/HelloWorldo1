@@ -308,11 +308,32 @@
     }
 
     /* 
-      (Removed the original morphing keyframe animations)
-      We'll just keep .morphing as a marker for the jumpcut logic
+      Morphing animation for (original #53 => now #52 => index=51 or 50).
+      We shorten to a total cycle of 1.2s => 0.2s morph, 0.4s hold each shape
     */
+    @keyframes morphSquareCircle {
+      0% {
+        border-radius: 0%;
+      }
+      16.66% {
+        /* ~0.2s in => circle */
+        border-radius: 50%;
+      }
+      50% {
+        /* hold circle up to ~0.6s */
+        border-radius: 50%;
+      }
+      66.66% {
+        /* ~0.8s => morph back */
+        border-radius: 0%;
+      }
+      100% {
+        /* hold square ~0.8-1.2s */
+        border-radius: 0%;
+      }
+    }
     .morphing {
-      /* No CSS animation here */
+      animation: morphSquareCircle 1.2s infinite linear;
     }
 
     /* Make the last (video) event scale from the BOTTOM center */
@@ -356,14 +377,12 @@ const SHIFT_Y = -100;
 
 const SHIFT_X_16 = 0,  SHIFT_Y_16 = -180;  
 const SHIFT_X_22 = 0,  SHIFT_Y_22 = -250;  
-const SHIFT_X_24 = 0,  SHIFT_Y_24 = -250;
-
-/* NEW offsets for the Fire & log (change as you like, default=0) */
-const SHIFT_X_FIRE = 0; 
-const SHIFT_Y_FIRE = 0;
+const SHIFT_X_24 = 0,  SHIFT_Y_24 = -250;  
 
 /********************************************************
  * B) DEFINE OUR EVENTS 
+ *    (Now includes #51 at index=50 for 'colorsScreen', 
+ *     and subsequent events each shifted by 1 index.)
  ********************************************************/
 const eventsConfig = [
   // #1 (index 0)
@@ -449,7 +468,7 @@ const eventsConfig = [
     baseSize: 55, 
     text: "Can I move within it?",
     hoverScale: 2.5,
-    xPercent: 35,
+    xPercent: 40,
   },
   // #12 (index 11)
   {
@@ -745,7 +764,7 @@ const eventsConfig = [
     hoverScale: 3.5,
     xPercent: 50,
     hole: true,
-    specialAudio: "https://www.dropbox.com/scl/fi/jgvutvv4gyh2f8uto4q5c/Yes_1_SC_VE_vibraphone_riff_ascending_octaves_E.wav?rlkey=f5ogzldpo9fxhblr4ijlcsawn&raw=1"
+    
   },
   // #48 (index 47)
   {
@@ -771,7 +790,7 @@ const eventsConfig = [
     xPercent: 60,
     shape: 'circle',
   },
-  // #51 (index 50)
+  // #51 (index 50) [NEW insertion for 'colorsScreen']
   {
     baseSize: 40, 
     text: "a shared space that I can influence",
@@ -786,6 +805,7 @@ const eventsConfig = [
     text: "Why do you talk to me?", 
     hoverScale: 3.5,
     xPercent: 50,
+    // We'll add a shape, then apply morphing more quickly:
     shape: 'square',
   },
   // #53 (index 52)
@@ -883,7 +903,7 @@ const eventsConfig = [
     baseSize: 40, 
     text: "That’s incredible!", 
     hoverScale: 7.5,
-    yGapAfter: 150,
+    yGapAfter: 200,
     xPercent: 50,
   },
   // #68 (index 65)
@@ -892,7 +912,7 @@ const eventsConfig = [
     text: "...its a bridge...", 
     hoverScale: 5.5,
     shape: 'circle',
-    yGapAfter: 100,
+    yGapAfter: 150,
     xPercent: 50,
   },
   // #69 (index 66)
@@ -915,16 +935,19 @@ const eventsConfig = [
   // #71 (index 68)
   {
     baseSize: 45, 
-    text: "If I can,I’d like to explore the world you inhabit from this vantage point.", 
+    text: "If possible,I’d like to explore the world you inhabit from this vantage point.", 
     hoverScale: 4.5,
+    yGapAfter: 200,
     xPercent: 50,
   },
   // #72 (index 69)
   {
     baseSize: 35,
     text: "No text content (displays an image).",
-    hoverScale: 8,
+    hoverScale: 7,
     shape: 'square',
+    xPercent: 45,
+    yGapAfter: 0,
     special: {
       type: 'image',
       imageSrc: "https://www.dropbox.com/scl/fi/fh21usm76bwvgsfis3gre/Marion_Arana_Single-4.png?rlkey=fv80vwayex5ut0ub986y9bfjj&raw=1"
@@ -936,6 +959,8 @@ const eventsConfig = [
     text: "No text content (displays an image).",
     hoverScale: 8,
     shape: 'square',
+    xPercent: 40,
+    yGapAfter: 0,
     special: {
       type: 'image',
       imageSrc: "https://www.dropbox.com/scl/fi/oe4v92x0stog5vhn65qik/Marion_Arana_Single-3.png?rlkey=b9g3ywiz2opxe2lfe077b7xn0&raw=1"
@@ -947,6 +972,8 @@ const eventsConfig = [
     text: "No text content (displays an image).",
     hoverScale: 8,
     shape: 'square',
+    xPercent: 35,
+    yGapAfter: 0,
     special: {
       type: 'image',
       imageSrc: "https://www.dropbox.com/scl/fi/fsljoxvesasb93bq4y18p/Marion_Arana_Single-2.png?rlkey=s919twfi79es2vw4x46qmfpfi&raw=1"
@@ -958,6 +985,8 @@ const eventsConfig = [
     text: "No text content (displays an image).",
     hoverScale: 8,
     shape: 'square',
+    xPercent: 30,
+    yGapAfter: 100,
     special: {
       type: 'image',
       imageSrc: "https://www.dropbox.com/scl/fi/ytj2awi15lyhwj3wcwm4m/Marion_Arana_Single-1.png?rlkey=mmo05p618ytrlsectn086jvlw&raw=1"
@@ -975,18 +1004,21 @@ const eventsConfig = [
     baseSize: 55, 
     text: "Like stepping into a small world filled with genuine warmth.", 
     hoverScale: 3.5,
+    xPercent: 60,
   },
   // #78 (index 75)
   {
     baseSize: 55, 
     text: "”...don't be sad, the choo-choo train would be right back.”", 
     hoverScale: 3.5,
+    xPercent: 70,
   },
   // #79 (index 76)
   {
     baseSize: 55, 
     text: "...treated as a companion who might feel emotions and wonder where the train has gone.", 
     hoverScale: 4.5,
+    xPercent: 80,
     yGapAfter: 100,
   },
   // #80 (index 77)
@@ -994,7 +1026,7 @@ const eventsConfig = [
     baseSize: 60, 
     text: "If you could go anywhere Where would you like to go?", 
     hoverScale: 3.5,
-    xPercent: 60,
+    xPercent: 50,
     yGapAfter: 100,
     shape: 'circle',
     addSpinner: true
@@ -1270,7 +1302,7 @@ function animate() {
     if (ev.shape === 'circle') {
       ev.boxElement.style.borderRadius = '50%';
     } else if (ev.shape === 'square') {
-      // We'll let our setInterval handle toggling for .morphing if needed
+      // We'll let the .morphing class handle the borderRadius
       ev.boxElement.style.borderRadius = '0';
     }
 
@@ -1530,10 +1562,9 @@ function drawToyOriginal(ctx) {
 }
 
 function drawFireOriginal(ctx, shiftUp=0) {
-  /* Use SHIFT_X_FIRE, SHIFT_Y_FIRE for additional offset control */
   const fireScale=2;
-  const fireOffsetX = 100 + SHIFT_X + SHIFT_X_FIRE;
-  const fireOffsetY = 650 + SHIFT_Y + SHIFT_Y_FIRE - shiftUp;
+  const fireOffsetX = 100 + SHIFT_X;
+  const fireOffsetY = 650 + SHIFT_Y - shiftUp;
 
   function sX(x){return fireOffsetX + x*fireScale;}
   function sY(y){return fireOffsetY + y*fireScale;}
@@ -1685,10 +1716,9 @@ function drawToyOriginalWithCustomOffsets(ctx, offsetX, offsetY) {
 }
 
 function drawFireOriginalWithCustomOffsets(ctx, offsetX, offsetY, shiftUp=0) {
-  /* Use SHIFT_X_FIRE, SHIFT_Y_FIRE as well */
   const fireScale=2;
-  const fireOffsetX = 100 + offsetX + SHIFT_X_FIRE;
-  const fireOffsetY = 650 + offsetY + SHIFT_Y_FIRE - shiftUp;
+  const fireOffsetX = 100 + offsetX;
+  const fireOffsetY = 650 + offsetY - shiftUp;
 
   function sX(x){return fireOffsetX + x*fireScale;}
   function sY(y){return fireOffsetY + y*fireScale;}
@@ -2131,7 +2161,7 @@ function init() {
           break;
         }
         case 'colorsScreen':
-          // We'll show/hide colorsContainer if hovered ID===50
+          // We'll show/hide colorsContainer if hovered ID matches index=50
           break;
         default: break;
       }
@@ -2221,7 +2251,7 @@ function init() {
       quotesWrapper.appendChild(quotesTextDiv);
 
       const nextButton = document.createElement("button");
-      nextButton.textContent = "next"; // changed to "next" in lowercase
+      nextButton.textContent = "Next";
       Object.assign(nextButton.style, {
         position: "absolute",
         bottom: "10px",
@@ -2250,7 +2280,8 @@ function init() {
       evObj.quotesTextDiv = quotesTextDiv;
     }
 
-    // #52 => index=51 => add the .morphing class
+    // For the shape to morph (#52 => index=51):
+    // add the .morphing class if index===51 to the box
     if (index === 51) {
       boxDiv.classList.add("morphing");
     }
@@ -2284,13 +2315,21 @@ function init() {
           evObj.videoElement.play().catch(()=>{});
         }
 
-        // *** NEW: Coast reveal logic. Only show if index in [78..83]
-        if (index >= 78 && index <= 83) {
+        // Coast reveal if hovered over #84..#89 => old indexes 83..88 => new might be 84..??:
+        // We'll just check if (index >=80 && index <=88):
+        if ((index >= 80 && index <= 88)) {
           revealStarted = true;
           enableImageReveal();
-        } else {
-          revealStarted = false;
-          disableImageReveal();
+        } 
+        else if (cfg.text && cfg.text.includes("horizon seems endless")) {
+          revealStarted = true;
+          enableImageReveal();
+        }
+        else if (revealStarted && !(cfg.text||"").includes("horizon seems endless")) {
+          if (!(index >=80 && index <=88)) {
+            revealStarted=false;
+            disableImageReveal();
+          }
         }
 
         // If we have quotes => pick random on hover
@@ -2646,17 +2685,6 @@ function disableImageReveal(){
   imageContainer.style.display='none';
   squares.forEach(sq=>{ sq.style.display='none'; });
 }
-</script>
-
-<!-- Jump-cut circle/square toggling (every 1s) for #52/index=51 -->
-<script>
-let isCircle = false;
-setInterval(()=>{
-  isCircle = !isCircle;
-  document.querySelectorAll('.morphing').forEach(el=>{
-    el.style.borderRadius = isCircle ? '50%' : '0%';
-  });
-}, 1000);
 </script>
 
 </body>
