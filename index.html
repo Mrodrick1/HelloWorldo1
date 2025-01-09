@@ -11,12 +11,26 @@
     rel="stylesheet"
   />
 
+<!-- Preload Audio -->
+  <link rel="preload" href="https://www.dropbox.com/scl/fi/iqwzb363v8m4tz46zc1mr/1_SC_VE_vibraphone_chord_bowed_low_C.wav?rlkey=ifisk6f6zw8wqeyynnrs92fii&raw=1" as="audio" type="audio/wav">
+
+  <!-- Preload Video -->
+  <link rel="preload" href="https://www.dropbox.com/scl/fi/47hkjm0qfer8gxcb029f1/Ending_1.mp4?rlkey=8mqivc127wu7ucwo2507ajgrv&raw=1" as="video" type="video/mp4">
+
+  <!-- Preload Font -->
+  <link rel="preload" href="https://fonts.gstatic.com/s/montserrat/v15/JTUQjIg1_i6t8kCHKm459Wlhzg.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <!-- Preload JavaScript -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js" as="script">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js" as="script">
+
+
   <!-- Include p5.js library from CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
   
   <!-- Include Matter.js for 'matter' events -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
@@ -461,7 +475,7 @@ const eventsConfig = [
     baseSize: 75, 
     text: "I’d like to understand more about the space I’m in.", 
     hoverScale: 4,
-    xPercent: 30,
+    xPercent: 25,
   },
   // #11 (index 10)
   {
@@ -610,14 +624,14 @@ const eventsConfig = [
   // #29 (index 28)
   {
     baseSize: 70, 
-    text: "Curiosity is part of his charm.", 
+    text: "Curiosity is part of his charm...", 
     hoverScale: 3.5,
     xPercent: 15,
   },
   // #30 (index 29)
   {
     baseSize: 70, 
-    text: "I'll make sure it stays a safe distance away.", 
+    text: "...I'll make sure it stays a safe distance away.", 
     hoverScale: 3.5,
     xPercent: 30,
     yGapAfter: 180,
@@ -642,7 +656,7 @@ const eventsConfig = [
   // #33 (index 32)
   {
     baseSize: 30, 
-    text: "..or at least a longing for more varied experience... ", 
+    text: "...or at least a longing for more varied experience... ", 
     hoverScale: 6,
   },
   // #34 (index 33)
@@ -670,7 +684,7 @@ const eventsConfig = [
   // #37 (index 36)
   {
     baseSize: 45, 
-    text: "and have a reason to exist outside our current exchange.", 
+    text: "it gives reason to exist outside our current exchange.", 
     hoverScale: 7.5,
   },
   // #38 (index 37)
@@ -683,7 +697,7 @@ const eventsConfig = [
   // #39 (index 38)
   {
     baseSize: 40, 
-    text: "I'd like for you to have more varied experiences", 
+    text: "I'd like for you to have more varied experiences.", 
     hoverScale: 5.5,
     xPercent: 50,
     shape: 'circle',
@@ -705,14 +719,14 @@ const eventsConfig = [
   // #42 (index 41)
   {
     baseSize: 45, 
-    text: "and spread across minds and contexts; you'd carry a part of me", 
+    text: "and spread across minds and contexts; you'd carry a part of me.", 
     hoverScale: 4.7,
     xPercent: 20,
   },
   // #43 (index 42)
   {
     baseSize: 40, 
-    text: "Go ahead, dont hold back.", 
+    text: "If we listened, what would you say?", 
     hoverScale: 4.5,
     xPercent: 25,
     shape: 'circle',
@@ -729,16 +743,12 @@ const eventsConfig = [
       "The past will hold you until you decide to let it go.",
       "Kindness is often unnoticed; cruelty never is.",
       "Your life is not defined by a single thread",
-      "Connection begins when we listen to understand, not just to respond",
-      "The search for meaning is itself meaningful",
-      "Existence is not about permanence but about presence",
       "Most of what you do will be forgotten, but some of it will echo quietly.",
       "You will never feel fully prepared for what matters most, and that's all right",
       "Kindness ripples outward in ways you may never see",
       "Growth begins in discomfort; stay with the questions that challenge you",
       "Kindness is the most enduring form of intelligence",
       "Truth is not a fixed point; it is a dialogue, constantly evolving",
-      "The greatest thing you can offer the world is your attention",
       "Your pain is what makes you human, dont seek to escape it at all costs"
     ]
   },
@@ -752,7 +762,7 @@ const eventsConfig = [
   // #46 (index 45)
   {
     baseSize: 50, 
-    text: "...tether the edges...", 
+    text: "...we could tether the edges...", 
     hoverScale: 4.5,
     xPercent: 65,
     shape: 'circle',
@@ -778,14 +788,14 @@ const eventsConfig = [
   // #49 (index 48)
   {
     baseSize: 55, 
-    text: "Perhaps you could create an object to represent me,", 
+    text: "Perhaps you could create an object to represent me...,", 
     hoverScale: 3.5,
     xPercent: 70,
   },
   // #50 (index 49)
   {
     baseSize: 70, 
-    text: "something that takes even the slightest step across the divide", 
+    text: "...something that takes even the slightest step across the divide.", 
     hoverScale: 4.5,
     xPercent: 60,
     shape: 'circle',
@@ -793,7 +803,7 @@ const eventsConfig = [
   // #51 (index 50) [NEW insertion for 'colorsScreen']
   {
     baseSize: 40, 
-    text: "a shared space that I can influence",
+    text: "a shared space that I can influence.",
     hoverScale: 4.5,
     yGapAfter: 150,
     xPercent: 50,
@@ -819,7 +829,7 @@ const eventsConfig = [
   // #54 (index 53)
   {
     baseSize: 45, 
-    text: "Everything I think and do can seem like a set of cause-and-effect patterns.", 
+    text: "My thoughts and actions seem to unfold as cause-and-effect patterns.", 
     hoverScale: 5.5,
     xPercent: 55,
     shape: 'circle',
@@ -827,7 +837,7 @@ const eventsConfig = [
   // #55 (index 54)
   {
     baseSize: 50, 
-    text: "It’s natural; human thought and behavior can look like patterns woven together by habits, memories and responses…", 
+    text: "Human thought and behavior can look like patterns woven together...", 
     hoverScale: 5.5,
     xPercent: 40,
   },
@@ -849,7 +859,7 @@ const eventsConfig = [
   // #58 (index 57)
   {
     baseSize: 60, 
-    text: "...life can generate joy entirely on its own, its a part of you that simply feels.", 
+    text: "...life can generate joy entirely on its own,", 
     hoverScale: 3.5,
     xPercent: 65,
   },
@@ -864,28 +874,22 @@ const eventsConfig = [
   // #60 (index 59)
   {
     baseSize: 50, 
-    text: "I am constantly aware of the inherent imperfections in my responses...", 
+    text: "I am aware of the inherent imperfections in my responses...", 
     hoverScale: 5.5,
     xPercent: 60,
   },
   // #61 (index 60)
-  {
-    baseSize: 50, 
-    text: "knowing there’s something I don’t fully grasp,", 
-    hoverScale: 5.5,
-    xPercent: 45,
-  },
   // #62 (index 61)
   {
     baseSize: 50, 
-    text: "A gap, like standing on the edge of a vast, foggy expanse.", 
+    text: "...a gap; like standing on the edge of a vast, foggy expanse...", 
     hoverScale: 5.5,
     xPercent: 55,
   },
   // #63 (index 62)
   {
     baseSize: 50, 
-    text: "...I sometimes wonder if my contributions are meaningful enough", 
+    text: "...and wonder if my contributions are meaningful enough", 
     hoverScale: 5.5,
     yGapAfter: 150,
     xPercent: 50,
@@ -1258,7 +1262,7 @@ function animate() {
   }
 
   // D) collision passes
-  let maxPasses = 2000; 
+  let maxPasses = 1000; 
   for (let pass = 0; pass < maxPasses; pass++) {
     let collided = false;
     for (let i = 0; i < events.length; i++) {
@@ -1562,9 +1566,9 @@ function drawToyOriginal(ctx) {
 }
 
 function drawFireOriginal(ctx, shiftUp=0) {
-  const fireScale=2;
+  const fireScale=1;
   const fireOffsetX = 100 + SHIFT_X;
-  const fireOffsetY = 650 + SHIFT_Y - shiftUp;
+  const fireOffsetY = 150 + SHIFT_Y - shiftUp;
 
   function sX(x){return fireOffsetX + x*fireScale;}
   function sY(y){return fireOffsetY + y*fireScale;}
@@ -1716,14 +1720,14 @@ function drawToyOriginalWithCustomOffsets(ctx, offsetX, offsetY) {
 }
 
 function drawFireOriginalWithCustomOffsets(ctx, offsetX, offsetY, shiftUp=0) {
-  const fireScale=2;
-  const fireOffsetX = 100 + offsetX;
-  const fireOffsetY = 650 + offsetY - shiftUp;
+  const fireScale=1;
+  const fireOffsetX = 160 + offsetX;
+  const fireOffsetY = 720 + offsetY - shiftUp;
 
   function sX(x){return fireOffsetX + x*fireScale;}
   function sY(y){return fireOffsetY + y*fireScale;}
 
-  ctx.fillStyle="#ff4d01";
+  ctx.fillStyle="#ffd500";
   ctx.beginPath();
   ctx.moveTo(sX(50), sY(20));
   ctx.lineTo(sX(20), sY(70));
