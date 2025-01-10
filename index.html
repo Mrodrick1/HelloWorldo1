@@ -11,26 +11,12 @@
     rel="stylesheet"
   />
 
-<!-- Preload Audio -->
-  <link rel="preload" href="https://www.dropbox.com/scl/fi/iqwzb363v8m4tz46zc1mr/1_SC_VE_vibraphone_chord_bowed_low_C.wav?rlkey=ifisk6f6zw8wqeyynnrs92fii&raw=1" as="audio" type="audio/wav">
-
-  <!-- Preload Video -->
-  <link rel="preload" href="https://www.dropbox.com/scl/fi/47hkjm0qfer8gxcb029f1/Ending_1.mp4?rlkey=8mqivc127wu7ucwo2507ajgrv&raw=1" as="video" type="video/mp4">
-
-  <!-- Preload Font -->
-  <link rel="preload" href="https://fonts.gstatic.com/s/montserrat/v15/JTUQjIg1_i6t8kCHKm459Wlhzg.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-
-  <!-- Preload JavaScript -->
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js" as="script">
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js" as="script">
-
-
   <!-- Include p5.js library from CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
   
   <!-- Include Matter.js for 'matter' events -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
@@ -41,7 +27,7 @@
       /* Allow vertical scrolling if shapes extend beyond window height */
       overflow-x: hidden;
       overflow-y: auto;
-      /* Set the body background to transparent so the fixed image can show behind */
+      /* Set the body background to transparent so events are over black or placeholders */
       background: transparent; 
       font-family: 'Montserrat', sans-serif;
       position: relative; /* so that fixed elements can stack below/above */
@@ -116,12 +102,29 @@
     .event-box {
       background-color: black; 
       border: none;           
-      overflow: hidden;  
+      overflow: hidden;  /* crucial to clip the inside content */
       position: relative;      
       display: flex;
       align-items: center;
       justify-content: center;
       transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+    }
+
+    /* When we want to show the coast behind the box, we apply this class.
+       It sets a "before" pseudo-element with the fixed background image 
+       so that the box itself acts like a window that clips it.
+    */
+    .event-box.coast-reveal::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url("https://www.dropbox.com/scl/fi/9foia0nvcylxvhdwupxrd/Coast_2.png?rlkey=az1opnsn7rbicm2b3z01j50fs&raw=1") 
+                  no-repeat center bottom;
+      background-size: cover;
+      background-attachment: fixed; 
+      z-index: -1;
+      pointer-events: none;
     }
 
     /* The text container */
@@ -218,66 +221,6 @@
       transform-origin: 50% 100%;
     }
 
-    /* 
-       5-square reveal with trail (coast image)
-    */
-    .image-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      /* Put behind everything else */
-      z-index: 0; 
-      background: url('https://www.dropbox.com/scl/fi/9foia0nvcylxvhdwupxrd/Coast_2.png?rlkey=az1opnsn7rbicm2b3z01j50fs&raw=1')
-        no-repeat center center;
-      background-size: cover;
-      clip-path: inset(0 0 0 0);
-      transition: clip-path 0.05s linear;
-      will-change: clip-path;
-      display: none; /* hidden until triggered */
-    }
-
-    .trail-square {
-      position: fixed;
-      top: 0;
-      left: 0;
-      margin: 0; 
-      padding: 0;
-      box-sizing: border-box;
-      pointer-events: none;
-      will-change: transform;
-      background: rgba(0, 0, 0, 0.1); /* optional faint color */
-      display: none; /* hidden until triggered */
-    }
-
-    #square1 { width: 250px; height: 250px; }
-    #square2 { width: 200px; height: 200px; }
-    #square3 { width: 150px; height: 150px; }
-    #square4 { width: 100px; height: 100px; }
-    #square5 { width: 50px;  height: 50px;  }
-
-    /* 
-      SPIN GUIDE for #1
-    */
-    .spin-guide {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 120%;
-      height: 120%;
-      border: 3px solid black; /* black ring */
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      animation: spinGuide 1s linear infinite;
-      z-index: 9999; /* ensure it's visible */
-    }
-    @keyframes spinGuide {
-      0%   { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-
     /*
       #14 => .diffWord animation
     */
@@ -322,7 +265,7 @@
     }
 
     /* 
-      Morphing animation for (original #53 => now #52 => index=51 or 50).
+      Morphing animation for (index=51).
       We shorten to a total cycle of 1.2s => 0.2s morph, 0.4s hold each shape
     */
     @keyframes morphSquareCircle {
@@ -330,19 +273,15 @@
         border-radius: 0%;
       }
       16.66% {
-        /* ~0.2s in => circle */
         border-radius: 50%;
       }
       50% {
-        /* hold circle up to ~0.6s */
         border-radius: 50%;
       }
       66.66% {
-        /* ~0.8s => morph back */
         border-radius: 0%;
       }
       100% {
-        /* hold square ~0.8-1.2s */
         border-radius: 0%;
       }
     }
@@ -350,9 +289,19 @@
       animation: morphSquareCircle 1.2s infinite linear;
     }
 
-    /* Make the last (video) event scale from the BOTTOM center */
-    .video-event .event-box {
-      transform-origin: 50% 100%;
+    /* 
+      Static ring (replacing spinning).
+    */
+    .spin-guide {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120%;
+      height: 120%;
+      border: 3px solid black; /* black ring */
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
     }
   </style>
 </head>
@@ -363,14 +312,6 @@
   <div id="loadingScreen">
     <div class="spinner"></div>
   </div>
-
-  <!-- 5-SQUARE REVEAL COAST IMAGE (initially hidden) -->
-  <div class="image-container" id="imageContainer"></div>
-  <div class="trail-square" id="square1"></div>
-  <div class="trail-square" id="square2"></div>
-  <div class="trail-square" id="square3"></div>
-  <div class="trail-square" id="square4"></div>
-  <div class="trail-square" id="square5"></div>
 
   <!-- Some background text in the upper-left corner -->
   <div class="background-text">
@@ -774,7 +715,6 @@ const eventsConfig = [
     hoverScale: 3.5,
     xPercent: 50,
     hole: true,
-    
   },
   // #48 (index 47)
   {
@@ -815,7 +755,6 @@ const eventsConfig = [
     text: "Why do you talk to me?", 
     hoverScale: 3.5,
     xPercent: 50,
-    // We'll add a shape, then apply morphing more quickly:
     shape: 'square',
   },
   // #53 (index 52)
@@ -894,7 +833,7 @@ const eventsConfig = [
     yGapAfter: 150,
     xPercent: 50,
   },
-  // #66 (index 63)
+  // #66 (index 63) A 3D resin printed version of the man and the cat
   {
     baseSize: 70, 
     text: "No text content (displays an image).", 
@@ -927,7 +866,7 @@ const eventsConfig = [
     yGapAfter: 100,
     xPercent: 50,
   },
-  // #70 (index 67)
+  // #70 (index 67) A 3D resin printed version of the man and the cat
   {
     baseSize: 70, 
     text: "No text content (displays an image).", 
@@ -944,7 +883,7 @@ const eventsConfig = [
     yGapAfter: 200,
     xPercent: 50,
   },
-  // #72 (index 69)
+  // #72 (index 69) The 3D printed version playing choo choo train with my daughter and other toys. 
   {
     baseSize: 35,
     text: "No text content (displays an image).",
@@ -1071,11 +1010,11 @@ const eventsConfig = [
     text: "...always there, evolving quietly with time.",
     hoverScale: 5.5
   },
-  // #87 (index 84)
+  // #87 (index 84) Video of 3D resin man in a little wooden box, next to cat overlooking the sunset 
   {
     baseSize: 100, 
     text: "No text content (displays a video).", 
-    hoverScale: 10.8,
+    hoverScale: 7.8,
     xPercent: 77,
     special: { 
       type: 'video', 
@@ -1310,7 +1249,7 @@ function animate() {
       ev.boxElement.style.borderRadius = '0';
     }
 
-    // Check synergy expansions
+    // Determine if it's expanded
     const isExpanded = 
       (hoveredEvent === ev)
       || ( (ev.id === 5 || ev.id === 6) && synergyIsExpanded_67 )
@@ -1319,8 +1258,20 @@ function animate() {
       || ( (ev.id === 11 || ev.id === 12) && synergyIsExpanded_1112 );
 
     if (isExpanded) {
-      ev.boxElement.style.backgroundColor = "black";
+      /* 
+         If in #81–#86 => indexes 78–83, we make the box partly transparent 
+         AND we add the 'coast-reveal' class so the coast image is clipped by the box.
+      */
+      if (ev.id >= 78 && ev.id <= 83) {
+        ev.boxElement.style.backgroundColor = "rgba(0,0,0,0.6)";
+        ev.boxElement.classList.add("coast-reveal");
+      } else {
+        ev.boxElement.style.backgroundColor = "black";
+        ev.boxElement.classList.remove("coast-reveal");
+      }
+
       ev.element.classList.add('active');
+
       if (ev.originalText.includes("diffWord")) {
         ev.textElement.innerHTML = ev.originalText;
       } else {
@@ -1335,6 +1286,9 @@ function animate() {
       if (ev.videoElement) ev.videoElement.style.display = "block";
       if (ev.quotesWrapper) ev.quotesWrapper.style.display = "block";
     } else {
+      // not expanded => remove coast reveal if it was there
+      ev.boxElement.classList.remove("coast-reveal");
+
       if (ev.dormant) {
         ev.boxElement.style.backgroundColor = "#ff4d01"; 
       } else {
@@ -1874,28 +1828,26 @@ function init() {
   // Prepare your audio sequence
   const audioFiles = [
     "https://www.dropbox.com/scl/fi/iqwzb363v8m4tz46zc1mr/1_SC_VE_vibraphone_chord_bowed_low_C.wav?rlkey=ifisk6f6zw8wqeyynnrs92fii&raw=1",
+    "https://www.dropbox.com/scl/fi/iqwzb363v8m4tz46zc1mr/1_SC_VE_vibraphone_chord_bowed_low_C.wav?rlkey=ifisk6f6zw8wqeyynnrs92fii&raw=1",
     "https://www.dropbox.com/scl/fi/nr236nf9774eazqvq4zef/2_SC_VE_vibraphone_note_mallet_loud_G3.wav?rlkey=xg2xon8tgkwdnz8emfj6zeos9&raw=1",
     "https://www.dropbox.com/scl/fi/jh4bcbslg2zk3plw97qsn/3_SC_VE_vibraphone_note_mallet_medium_D4.wav?rlkey=98l6iaq49arwcse5so1ni1adr&raw=1",
     "https://www.dropbox.com/scl/fi/k5bz1ou2pn5lb9cmqeqyp/4_SC_VE_vibraphone_chord_bowed_octaves_G.wav?rlkey=yek2i0tvuyh5ejk6oiwegj6n8&raw=1",
-    "https://www.dropbox.com/scl/fi/i1jnd019noxaf33dpezua/5_CO_JK_soft_piano_note_G.wav?rlkey=h84tj2ufxe6ypvz8wwarvb98d&raw=1",
-    "https://www.dropbox.com/scl/fi/z4xy441eb8mgzx7s9q962/6_SC_VE_vibraphone_note_mallet_medium_G4.wav?rlkey=lq5e44gb1n4bv95p1yvcbdfwb&raw=1",
-    "https://www.dropbox.com/scl/fi/s45llwipsapn6yn2ig0os/7_CO_JK_soft_piano_chord_Cmaj.wav?rlkey=gf4393oqnuhgdiq4u97lox4pe8&raw=1",
     "https://www.dropbox.com/scl/fi/5178gx4qszidr3wat9lmz/8_SC_VE_vibraphone_note_bowed_single_B4.wav?rlkey=gegfylfnlgncikcorl6usoflp&raw=1",
-    "https://www.dropbox.com/scl/fi/gnrg43ctojt6uc1y1jqmy/9_SC_VE_vibraphone_note_mallet_medium_C5.wav?rlkey=muz23oj0wphidm36rdv1ojbe2&raw=1",
-    "https://www.dropbox.com/scl/fi/d4ltd2mo5khddl6xr86ni/10_SC_VE_vibraphone_chord_bowed_Cmaj.wav?rlkey=bzuadn019ailxmn0fmw192hi7&raw=1",
+    "https://www.dropbox.com/scl/fi/s45llwipsapn6yn2ig0os/7_CO_JK_soft_piano_chord_Cmaj.mp3?rlkey=gf4393oqnuhgdi4u97lox4pe8&raw=1",
     "https://www.dropbox.com/scl/fi/zj02g0yr5kca0nn2g2sqt/12_SC_VE_vibraphone_note_mallet_medium_A4.wav?rlkey=pcqdhmtpcw7ywhfs4ota6wwxd&raw=1",
     "https://www.dropbox.com/scl/fi/gr19fc95umnguddiqpn0f/13_CO_JK_soft_piano_chord_Fmaj.wav?rlkey=eudpl939hmklrnbd4m6cxxnc0&raw=1",
     "https://www.dropbox.com/scl/fi/nr236nf9774eazqvq4zef/2_SC_VE_vibraphone_note_mallet_loud_G3.wav?rlkey=xg2xon8tgkwdnz8emfj6zeos9&raw=1",
-    "https://www.dropbox.com/scl/fi/jh4bcbslg2zk3plw97qsn/3_SC_VE_vibraphone_note_mallet_medium_D4.wav?rlkey=98l6iaq49arwcse5so1ni1adr&raw=1",
-    "https://www.dropbox.com/scl/fi/h9cxd5l1gvwctnuod4yq5/15_N23_BFFG1_piano_oneshot_deeper_Cmaj.wav?rlkey=fwjgar1hk5j0h4idkuki0ml9s&raw=1",
-    "https://www.dropbox.com/scl/fi/uxottk7kyhetbhkfx4e73/11_SC_VE_vibraphone_note_mallet_loud_C4.mp3?rlkey=mft433jfvmdrr3ex789sxoe15&raw=1",
-    "https://www.dropbox.com/scl/fi/zj02g0yr5kca0nn2g2sqt/12_SC_VE_vibraphone_note_mallet_medium_A4.mp3?rlkey=pcqdhmtpcw7ywhfs4ota6wwxd&raw=1",
+    "https://www.dropbox.com/scl/fi/o29m7v2wjpuiqef1i8xls/CO_JK_soft_piano_chord_Amin.mp3?rlkey=turlvry2tnyya4acx9db8z5hy&raw=1",
     "https://www.dropbox.com/scl/fi/fq71cy447yu9oihovn4fn/14_SC_VE_vibraphone_note_bowed_single_B4.mp3?rlkey=wm1zmikqqo9jt2wk2udutuzio&raw=1",
     "https://www.dropbox.com/scl/fi/yef4fm725wl4rhnm6ll77/18_SC_VE_vibraphone_chord_bowed_Cmaj.mp3?rlkey=nrourfm1vt0glalh7d7t7lsuh&raw=1",
+    "https://www.dropbox.com/scl/fi/2p4acw5456ocxnlij4esb/SC_EK_piano_chords_9th_Dm.mp3?rlkey=pdsqkqxr5198kpag40sggyktm&raw=1",
+    "https://www.dropbox.com/scl/fi/zj02g0yr5kca0nn2g2sqt/12_SC_VE_vibraphone_note_mallet_medium_A4.mp3?rlkey=pcqdhmtpcw7ywhfs4ota6wwxd&raw=1",
+    "https://www.dropbox.com/scl/fi/wwtgii79c9aqgcx9jm21i/oa_chord_one_shot_piano_leisure_Amin9.mp3?rlkey=jsdjqx3jhljb8bo221odauny9&raw=1",
+    "https://www.dropbox.com/scl/fi/z4xy441eb8mgzx7s9q962/6_SC_VE_vibraphone_note_mallet_medium_G4.wav?rlkey=lq5e44gb1n4bv95p1yvcbdfwb&raw=1",
+    "https://www.dropbox.com/scl/fi/5178gx4qszidr3wat9lmz/8_SC_VE_vibraphone_note_bowed_single_B4.wav?rlkey=gegfylfnlgncikcorl6usoflp&raw=1",
+    "https://www.dropbox.com/scl/fi/zafxbouoetewg1jyifwzp/oa_chord_one_shot_piano_derius_Fmaj7.mp3?rlkey=qns7kv9w1w9k61qyktf0cetbz&raw=1",
     "https://www.dropbox.com/scl/fi/bdkqtornl2hvhsrinpq58/aoe_piano_chord_one_shot_emilia_Em.mp3?rlkey=led4rcm84n08qxiu4kbh59gyz&raw=1",
-    "https://www.dropbox.com/scl/fi/o29m7v2wjpuiqef1i8xls/CO_JK_soft_piano_chord_Amin.mp3?rlkey=turlvry2tnyya4acx9db8z5hy&raw=1",
-    "https://www.dropbox.com/scl/fi/gj5jgcs1vw72ffgb9o83k/SC_VE_vibraphone_note_mallet_soft_E3.mp3?rlkey=ofij92rn0n4ejrx8l0995m2ho&raw=1",
-    "https://www.dropbox.com/scl/fi/avhalrnr02mu509i1o5t1/Top_40_Pop_C_Major_Soft_Grand_Piano_Chord.wav?rlkey=a5cckpt087c8tvhjsz4zurtnu&raw=1",
+    "https://www.dropbox.com/scl/fi/5178gx4qszidr3wat9lmz/8_SC_VE_vibraphone_note_bowed_single_B4.wav?rlkey=gegfylfnlgncikcorl6usoflp&raw=1",
   ];
   const audioElements = audioFiles.map(src => {
     const audio = new Audio(src);
@@ -2165,7 +2117,7 @@ function init() {
           break;
         }
         case 'colorsScreen':
-          // We'll show/hide colorsContainer if hovered ID matches index=50
+          // We'll show/hide colorsContainer if hovered ID=50
           break;
         default: break;
       }
@@ -2182,7 +2134,7 @@ function init() {
       boxDiv.appendChild(holeDiv);
     }
 
-    // If addSpinner => add spinner
+    // If addSpinner => add spinner-like ring (but static now)
     if (cfg.addSpinner) {
       const spinDiv = document.createElement("div");
       spinDiv.classList.add("spin-guide");
@@ -2318,30 +2270,6 @@ function init() {
           evObj.videoElement.currentTime=0;
           evObj.videoElement.play().catch(()=>{});
         }
-
-        // Coast reveal if hovered over #84..#89 => old indexes 83..88 => new might be 84..??:
-        // We'll just check if (index >=80 && index <=88):
-        if ((index >= 80 && index <= 88)) {
-          revealStarted = true;
-          enableImageReveal();
-        } 
-        else if (cfg.text && cfg.text.includes("horizon seems endless")) {
-          revealStarted = true;
-          enableImageReveal();
-        }
-        else if (revealStarted && !(cfg.text||"").includes("horizon seems endless")) {
-          if (!(index >=80 && index <=88)) {
-            revealStarted=false;
-            disableImageReveal();
-          }
-        }
-
-        // If we have quotes => pick random on hover
-        if (evObj.quotes && evObj.quotesTextDiv) {
-          const randomIndex = Math.floor(Math.random() * evObj.quotes.length);
-          evObj.quotesIndex = randomIndex; 
-          evObj.quotesTextDiv.textContent = evObj.quotes[randomIndex];
-        }
       }
 
       // #12 => triggers #13 => indexes 11 => 12
@@ -2369,7 +2297,6 @@ function init() {
         e6.element.style.transform = "translate(-50%,-50%) scale(0)";
         e7.element.style.transform = "translate(-50%,-50%) scale(0)";
       }
-
       // #6 => #5 shrinks, #6 & #7 dormant => indexes 5 => 4, (5,6) 
       if (index === 6) {
         const e5 = events[5];
@@ -2423,7 +2350,6 @@ function init() {
         events[11].dormant = true;
         events[12].dormant = true;
       }
-
     });
 
     eventOuter.addEventListener("mouseleave", ()=>{
@@ -2618,76 +2544,6 @@ function createMatterScene(canvas) {
   World.add(engine.world, [head,neck,body,leftArm,rightArm,leftLeg,rightLeg,floor]);
   Engine.run(engine);
   Render.run(render);
-}
-</script>
-
-<!-- 
-   Five-square reveal with trail (coast image)
--->
-<script>
-let revealStarted=false;
-
-const imageContainer = document.getElementById('imageContainer');
-const squares = [
-  document.getElementById('square1'),
-  document.getElementById('square2'),
-  document.getElementById('square3'),
-  document.getElementById('square4'),
-  document.getElementById('square5')
-];
-
-let positions=[];
-const maxStored= squares.length;
-let mouseX = window.innerWidth/2;
-let mouseY = window.innerHeight/2;
-
-// init positions
-for (let i=0;i<maxStored;i++){
-  positions.push({x:mouseX, y:mouseY});
-}
-
-document.addEventListener('mousemove',(e)=>{
-  mouseX=e.clientX;
-  mouseY=e.clientY;
-});
-
-function updatePositions(){
-  positions.unshift({x:mouseX, y:mouseY});
-  positions=positions.slice(0,maxStored);
-
-  squares.forEach((sq,i)=>{
-    const pos=positions[i];
-    sq.style.transform=`translate(${pos.x}px, ${pos.y}px) translate(-50%,-50%)`;
-  });
-
-  const sq1Size=250;
-  const halfSize=sq1Size/2;
-  const mainPos=positions[0];
-
-  const topInset    = mainPos.y - halfSize;
-  const rightInset  = window.innerWidth - (mainPos.x + halfSize);
-  const bottomInset = window.innerHeight - (mainPos.y + halfSize);
-  const leftInset   = mainPos.x - halfSize;
-
-  imageContainer.style.clipPath=`inset(
-    ${topInset}px
-    ${rightInset}px
-    ${bottomInset}px
-    ${leftInset}px
-  )`;
-
-  requestAnimationFrame(updatePositions);
-}
-
-function enableImageReveal(){
-  imageContainer.style.display='block';
-  squares.forEach(sq=>{ sq.style.display='block'; });
-  requestAnimationFrame(updatePositions);
-}
-
-function disableImageReveal(){
-  imageContainer.style.display='none';
-  squares.forEach(sq=>{ sq.style.display='none'; });
 }
 </script>
 
