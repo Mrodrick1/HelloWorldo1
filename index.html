@@ -131,6 +131,19 @@
       margin: 10px 0;
     }
 
+    /* Make title text 50% smaller on mobile (max-width ~600px) */
+    @media only screen and (max-width: 600px) {
+      .background-text .line1 {
+        font-size: 3rem; /* half of 6rem */
+      }
+      .background-text .line2 {
+        font-size: 1rem; /* half of 2rem */
+      }
+      .background-text .line3 {
+        font-size: 0.6rem; /* half of 1.2rem */
+      }
+    }
+
     /* EVENT CIRCLES */
     .event {
       position: absolute;
@@ -140,7 +153,6 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.7s ease;
-      /* no contentEditable to avoid triggers on mobile */
     }
 
     .event-box {
@@ -328,6 +340,34 @@
       pointer-events: none;
       transform: translate(-50%, -50%);
     }
+
+    /* 
+      ENDING OVERLAY 
+      (shown after user leaves event #87 => index 84)
+    */
+    #endingOverlay {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100vw; 
+      height: 100vh;
+      background-color: black;
+      display: none; /* hidden by default */
+      z-index: 999999; 
+      color: white;
+      font-size: 2rem;
+      font-family: 'Montserrat', sans-serif;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    #endingText {
+      color: white;
+      font-size: 2rem;
+      max-width: 600px;
+      width: 80%;
+      margin: 0 auto;
+    }
   </style>
 </head>
 
@@ -347,6 +387,11 @@
 
   <!-- Tooltip Element for the network -->
   <div id="tooltip" class="tooltip"></div>
+
+  <!-- The overlay that appears at the end -->
+  <div id="endingOverlay">
+    <div id="endingText"></div>
+  </div>
 
   <script>
   /********************************************************
@@ -1036,7 +1081,7 @@
       text: "...always there, evolving quietly with time.",
       hoverScale: 5.5
     },
-    // #87 (index 84) => video
+    // #87 (index 84) => video (no coast reveal at all)
     {
       baseSize: 100, 
       text: "No text content (displays a video).", 
@@ -1068,6 +1113,10 @@
   let hoveredEvent = null; 
   let experienceStarted = false;
 
+  // We'll allow the "ending" only once, after #87 => index 84 has been hovered
+  let lastEvent84Hovered = false;
+  let endingTriggered = false;
+
   /********************************************************
    * E) HELPER FUNCTIONS
    ********************************************************/
@@ -1090,6 +1139,17 @@
       if (dist > FALL_OFF_RANGE) return 0;
       return 1 - dist / FALL_OFF_RANGE;
     }
+  }
+
+  function typeText(element, text, speed=100) {
+    let i = 0;
+    const interval = setInterval(() => {
+      element.textContent = text.slice(0, i);
+      i++;
+      if (i > text.length) {
+        clearInterval(interval);
+      }
+    }, speed);
   }
 
   /********************************************************
@@ -1137,37 +1197,11 @@
   const MAX_FONT_SIZE = 34;          
 
   function animate() {
-    const is67Hovered = (hoveredEvent === events[5] || hoveredEvent === events[6]);
-    const is45Hovered = (hoveredEvent === events[3] || hoveredEvent === events[4]);
-    const is910Hovered = (hoveredEvent === events[9] || hoveredEvent === events[10]);
-    const is1112Hovered = (hoveredEvent === events[11] || hoveredEvent === events[12]);
-
-    // Scale up if synergy or hovered
+    // Scale up or not based on synergy/hover
     for (let ev of events) {
       if (hoveredEvent === ev) {
         ev.currentSize = ev.hoverSize;
-      }
-      else if (
-        (ev.id === 5 || ev.id === 6) && events[5].dormant && events[6].dormant && is67Hovered
-      ) {
-        ev.currentSize = ev.hoverSize;
-      }
-      else if (
-        (ev.id === 3 || ev.id === 4) && events[3].dormant && events[4].dormant && is45Hovered
-      ) {
-        ev.currentSize = ev.hoverSize;
-      }
-      else if (
-        (ev.id === 9 || ev.id === 10) && events[9].dormant && events[10].dormant && is910Hovered
-      ) {
-        ev.currentSize = ev.hoverSize;
-      }
-      else if (
-        (ev.id === 11 || ev.id === 12) && events[11].dormant && events[12].dormant && is1112Hovered
-      ) {
-        ev.currentSize = ev.hoverSize;
-      }
-      else {
+      } else {
         ev.currentSize = ev.baseSize;
       }
     }
@@ -1228,11 +1262,6 @@
     }
 
     // Render
-    const synergyIsExpanded_67   = is67Hovered   && events[5].dormant  && events[6].dormant;
-    const synergyIsExpanded_45   = is45Hovered   && events[3].dormant  && events[4].dormant;
-    const synergyIsExpanded_910  = is910Hovered  && events[9].dormant  && events[10].dormant;
-    const synergyIsExpanded_1112 = is1112Hovered && events[11].dormant && events[12].dormant;
-
     for (let ev of events) {
       ev.element.style.left = ev.x + "px";
       ev.element.style.top  = ev.y + "px";
@@ -1249,14 +1278,11 @@
         ev.boxElement.style.borderRadius = '0';
       }
 
-      const isExpanded = 
-        (hoveredEvent === ev)
-        || ( (ev.id === 5 || ev.id === 6) && synergyIsExpanded_67 )
-        || ( (ev.id === 3 || ev.id === 4) && synergyIsExpanded_45 )
-        || ( (ev.id === 9 || ev.id === 10) && synergyIsExpanded_910 )
-        || ( (ev.id === 11 || ev.id === 12) && synergyIsExpanded_1112 );
+      const isExpanded = (hoveredEvent === ev);
 
       if (isExpanded) {
+        // Only apply coastal background if event.id is between 78 and 83 
+        // (which excludes #87 => index 84).
         if (ev.id >= 78 && ev.id <= 83) {
           ev.boxElement.style.backgroundColor = "rgba(0,0,0,0.6)";
           ev.boxElement.classList.add("coast-reveal");
@@ -1267,9 +1293,11 @@
 
         ev.element.classList.add('active');
 
+        // If the text has <span class='diffWord'>, keep that HTML
         if (ev.originalText.includes("diffWord")) {
           ev.textElement.innerHTML = ev.originalText;
         } else {
+          // "No text content" means no text, otherwise show the text
           ev.textElement.textContent = ev.originalText.includes("No text content") 
             ? "" 
             : ev.originalText.trimEnd();
@@ -1283,12 +1311,8 @@
 
       } else {
         ev.boxElement.classList.remove("coast-reveal");
-
-        if (ev.dormant) {
-          ev.boxElement.style.backgroundColor = "#ff4d01"; 
-        } else {
-          ev.boxElement.style.backgroundColor = "black";
-        }
+        // If it's dormant or had synergy we set color, but here let's keep it simple:
+        ev.boxElement.style.backgroundColor = "black";
         ev.element.classList.remove('active');
         ev.textElement.textContent = "";
 
@@ -2310,14 +2334,28 @@
             events[11].dormant = true;
             events[12].dormant = true;
           }
+
+          // If we hovered event #87 => index 84
+          if (evObj.id === 84) {
+            lastEvent84Hovered = true;
+          }
         }
       }
 
+      // On mouseleave
       eventOuter.addEventListener("mouseleave", ()=>{
         if (hoveredEvent === evObj) {
           hoveredEvent = null;
         }
         evObj.element.style.zIndex = 3;
+
+        // If user leaves #87 => index 84 and it was hovered, let's show the ending
+        if (evObj.id === 84 && lastEvent84Hovered && !endingTriggered) {
+          endingTriggered = true;
+          const overlay = document.getElementById("endingOverlay");
+          overlay.style.display = "flex";
+          typeText(document.getElementById("endingText"), "hi...how are you?");
+        }
       });
     });
 
