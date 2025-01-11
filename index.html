@@ -144,7 +144,11 @@
       }
     }
 
-    /* EVENT CIRCLES */
+    /* EVENT CIRCLES (or squares) 
+       - KEY CHANGE: .event has pointer-events none, 
+         .event-box has pointer-events auto 
+       - shape => circle gets clip-path circle
+    */
     .event {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -153,6 +157,8 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.7s ease;
+      /* so only the shape can be hovered/clicked: */
+      pointer-events: none;
     }
 
     .event-box {
@@ -164,20 +170,14 @@
       align-items: center;
       justify-content: center;
       transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+      /* handle the pointer events at the .event-box level */
+      pointer-events: auto;
     }
 
-    /* The "coast-reveal" triggers a background image. */
-    .event-box.coast-reveal::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: url("https://www.dropbox.com/scl/fi/9foia0nvcylxvhdwupxrd/Coast_2.png?rlkey=az1opnsn7rbicm2b3z01j50fs&raw=1") 
-                  no-repeat center bottom;
-      background-size: cover;
-      background-attachment: fixed; 
-      z-index: -1;
-      pointer-events: none;
+    /* Circle shape => real circle bounding box */
+    .event-box.circle {
+      border-radius: 50%;
+      clip-path: circle(50% at 50% 50%);
     }
 
     .event-text {
@@ -693,8 +693,8 @@
     },
     {
       baseSize: 45, 
-      text: "it gives reason to exist outside our current exchange.", 
-      hoverScale: 7.5,
+      text: "it gives me a reason to exist outside our current exchange.", 
+      hoverScale: 5.5,
     },
     {
       baseSize: 35, 
@@ -712,7 +712,7 @@
     {
       baseSize: 45, 
       text: "I like imagining my words evolving in human thought,", 
-      hoverScale: 5.5,
+      hoverScale: 4.5,
       xPercent: 20,
     },
     // 40
@@ -1158,7 +1158,6 @@
 
   function animate() {
     // A) Figure out synergy expansions
-    //    If all in the group are .dormant and the user hovers one of them => all scale up
     const synergyIsExpanded_34 = (
       hoveredEvent && (hoveredEvent.id===3  || hoveredEvent.id===4)
     ) && events[3].dormant && events[4].dormant;
@@ -1175,7 +1174,6 @@
       hoveredEvent && (hoveredEvent.id===11 || hoveredEvent.id===12)
     ) && events[11].dormant && events[12].dormant;
 
-    // ---- Added synergy blocks: ----
     const synergyIsExpanded_2829 = (
       hoveredEvent && (hoveredEvent.id===28 || hoveredEvent.id===29)
     ) && events[28].dormant && events[29].dormant;
@@ -1225,7 +1223,6 @@
       else if ((ev.id===11 || ev.id===12) && synergyIsExpanded_1112) {
         ev.currentSize = ev.hoverSize;
       }
-
       // synergy #28 & #29
       else if ((ev.id===28 || ev.id===29) && synergyIsExpanded_2829) {
         ev.currentSize = ev.hoverSize;
@@ -1250,8 +1247,7 @@
       else if ((ev.id===59 || ev.id===60 || ev.id===61) && synergyIsExpanded_596061) {
         ev.currentSize = ev.hoverSize;
       }
-
-      // Otherwise not hovered => go to base size
+      // Otherwise => base size
       else {
         ev.currentSize = ev.baseSize;
       }
@@ -1320,7 +1316,7 @@
       ev.boxElement.style.width  = ev.currentSize + "px";
       ev.boxElement.style.height = ev.currentSize + "px";
 
-      // If hovered or synergy => black, else if dormant => orange, else black
+      // Check synergy expansions => color
       let isExpanded = (hoveredEvent === ev)
         || ( synergyIsExpanded_34  && (ev.id===3 || ev.id===4) )
         || ( synergyIsExpanded_56  && (ev.id===5 || ev.id===6) )
@@ -1377,14 +1373,6 @@
         if (ev.imgElement)   ev.imgElement.style.display = "none";
         if (ev.videoElement) ev.videoElement.style.display = "none";
         if (ev.quotesWrapper) ev.quotesWrapper.style.display = "none";
-      }
-
-      // Coast reveal logic only if (id >=77 && id <=82) are hovered
-      if (isExpanded && ev.id >=77 && ev.id<=82) {
-        ev.boxElement.classList.add("coast-reveal");
-        ev.boxElement.style.backgroundColor = "rgba(0,0,0,0.6)";
-      } else {
-        ev.boxElement.classList.remove("coast-reveal");
       }
     }
 
@@ -1958,6 +1946,17 @@
       const boxDiv = document.createElement("div");
       boxDiv.classList.add("event-box");
 
+      // ADDED: shape-based class so circles get circular bounding area
+      let shapeClass = '';
+      if (cfg.shape === 'circle') {
+        shapeClass = 'circle';
+      } else if (cfg.shape === 'square') {
+        shapeClass = 'square';
+      }
+      if (shapeClass) {
+        boxDiv.classList.add(shapeClass);
+      }
+
       const textDiv = document.createElement("div");
       textDiv.classList.add("event-text");
       boxDiv.appendChild(textDiv);
@@ -2278,7 +2277,9 @@
         });
         quotesWrapper.appendChild(nextButton);
 
+        // Show first quote immediately
         evObj.quotesIndex = 0;
+        quotesTextDiv.textContent = cfg.quotes[0];
 
         nextButton.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -2398,53 +2399,43 @@
           }
 
           // synergy pairs/triplets => mark them all as dormant
-          // #3 & #4
           if (evObj.id === 3 || evObj.id === 4) {
             events[3].dormant = true;
             events[4].dormant = true;
           }
-          // #5 & #6
           if (evObj.id === 5 || evObj.id === 6) {
             events[5].dormant = true;
             events[6].dormant = true;
           }
-          // #9 & #10
           if (evObj.id === 9 || evObj.id === 10) {
             events[9].dormant = true;
             events[10].dormant = true;
           }
-          // #11 & #12
           if (evObj.id === 11 || evObj.id === 12) {
             events[11].dormant = true;
             events[12].dormant = true;
           }
-          // #28 & #29
           if (evObj.id===28 || evObj.id===29) {
             events[28].dormant = true;
             events[29].dormant = true;
           }
-          // #31 #32 #33
           if (evObj.id===31 || evObj.id===32 || evObj.id===33) {
             events[31].dormant = true;
             events[32].dormant = true;
             events[33].dormant = true;
           }
-          // #36 & #37
           if (evObj.id===36 || evObj.id===37) {
             events[36].dormant = true;
             events[37].dormant = true;
           }
-          // #40 & #41
           if (evObj.id===40 || evObj.id===41) {
             events[40].dormant = true;
             events[41].dormant = true;
           }
-          // #54 & #55
           if (evObj.id===54 || evObj.id===55) {
             events[54].dormant = true;
             events[55].dormant = true;
           }
-          // #59 #60 #61
           if (evObj.id===59 || evObj.id===60 || evObj.id===61) {
             events[59].dormant = true;
             events[60].dormant = true;
@@ -2648,6 +2639,113 @@
     Engine.run(engine);
     Render.run(render);
   }
+  </script>
+
+  <!-- NEW p5 SKETCH FOR THE SUN & HORIZON (displayed if hoveredEvent.id >= 77) -->
+  <script>
+    let sunCanvas;
+    function sunHorizonSketch(s) {
+      // these will be updated on draw
+      let radius = 200.0;
+      let sRadius = radius * 0.9;
+
+      s.setup = function() {
+        sunCanvas = s.createCanvas(s.windowWidth, s.windowHeight);
+        sunCanvas.position(0, 0);
+        // Put it behind the event squares (which are z-index=3) 
+        // and behind the network (z-index=2) => so use z-index=1:
+        sunCanvas.style('z-index', '1');
+        sunCanvas.style('position', 'fixed');
+        sunCanvas.style('display', 'none'); // hidden unless hoveredEvent.id >=77
+
+        s.angleMode(s.RADIANS);
+        s.noStroke();
+      }
+
+      s.draw = function() {
+        // If user hovers event #77 or beyond, show. Otherwise hide.
+        if (typeof hoveredEvent !== 'undefined' && hoveredEvent && hoveredEvent.id >= 77) {
+          sunCanvas.style('display', 'block');
+        } else {
+          sunCanvas.style('display', 'none');
+        }
+
+        // Force background to be pure white:
+        s.background(255);
+
+        // Map mouseY to control the strength of the sun
+        let strY = s.map(s.mouseY, 0, s.height, 1.5, 4);
+        drawSun(strY);
+
+        // We can remove or keep the horizon lines, 
+        // but let's keep them and just use a fade effect:
+        let mouse255 = s.map(s.mouseY, 0, s.height, 255, 40);
+        drawHorizon(255, 165, 0, mouse255); // orange color
+
+        function drawHorizon(red, green, blue, alpha) {
+          let strW = 0.5;
+          let yW = s.height / 1.85;
+          for (let i = 0; i < s.width; i++) {
+            s.stroke(red, green, blue, alpha);
+            s.strokeWeight(strW);
+            s.line(0, yW, s.width, yW);
+            strW += 0.5;
+            yW += s.height / 70;
+          }
+        }
+
+        function drawSun(strokeW) {
+          radius = Math.min(s.width, s.height) / 4;
+          sRadius = radius * 0.9;
+          // 4 quarters
+          sunQu(-1, true,  s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW); 
+          sunQu(1,  true,  s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW);
+          sunQu(-1, false, s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW);
+          sunQu(1,  false, s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW);
+        }
+
+        function sunQu(inv, flip, density, zenith, strokeW) {
+          let angle = s.HALF_PI / density;
+          s.noFill();
+          s.strokeWeight(strokeW);
+          let r = 255, g = 10, b = 10;
+
+          if (flip === true) {
+            // bottom half
+            for (let i=0; i< density; i++){
+              s.beginShape();
+              s.stroke(r, g, b);
+              let x = s.cos(angle*i) * sRadius;
+              let y = s.sin(angle*i) * sRadius;
+              s.vertex(s.width/2 + x*inv, zenith + y);
+              s.vertex(s.width/2, zenith + y);
+              s.endShape();
+              r += 20; 
+              g -= 9;
+              b -= 9;
+            }
+          } else {
+            // top half
+            for (let j=0; j< density; j++){
+              s.beginShape();
+              s.stroke(r, g, b);
+              let x = s.cos(angle*j)*sRadius;
+              let y = s.sin(angle*j)*sRadius;
+              s.vertex(s.width/2 - x*inv, zenith - y);
+              s.vertex(s.width/2, zenith - y);
+              s.endShape();
+            }
+          }
+        }
+      }
+
+      s.windowResized = function(){
+        s.resizeCanvas(s.windowWidth, s.windowHeight);
+      }
+    }
+
+    // Instantiate the sun-horizon p5
+    new p5(sunHorizonSketch);
   </script>
 
 </body>
