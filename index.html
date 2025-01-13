@@ -9,7 +9,6 @@
 
   <!-- Preload all Dropbox assets for faster loading -->
   <!-- Images -->
-  <link rel="preload" href="https://www.dropbox.com/scl/fi/9foia0nvcylxvhdwupxrd/Coast_2.png?rlkey=az1opnsn7rbicm2b3z01j50fs&raw=1" as="image" />
   <link rel="preload" href="https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1" as="image" />
   <link rel="preload" href="https://www.dropbox.com/scl/fi/fh21usm76bwvgsfis3gre/Marion_Arana_Single-4.png?rlkey=fv80vwayex5ut0ub986y9bfjj&raw=1" as="image" />
   <link rel="preload" href="https://www.dropbox.com/scl/fi/oe4v92x0stog5vhn65qik/Marion_Arana_Single-3.png?rlkey=b9g3ywiz2opxe2lfe077b7xn0&raw=1" as="image" />
@@ -55,11 +54,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
 
   <style>
-    /* 
-      1) Remove double scroll by making only body scrollable.
-      2) Allow vertical overflow but hide the scrollbar itself.
-      3) Remove the previous min-height and position: relative to avoid clipping.
-    */
     html, body {
       margin: 0;
       padding: 10px 0 200px; /* your bottom space is preserved */
@@ -77,7 +71,6 @@
       scrollbar-width: none;       /* for Firefox */
       -ms-overflow-style: none;    /* for IE and Edge */
     }
-    /* Hide scrollbar in webkit browsers */
     html::-webkit-scrollbar, body::-webkit-scrollbar {
       display: none;
     }
@@ -95,7 +88,6 @@
       justify-content: center;
       z-index: 99999; /* above everything */
     }
-
     .spinner {
       width: 60px;
       height: 60px;
@@ -133,25 +125,19 @@
       font-weight: 300;
       margin: 10px 0;
     }
-
-    /* Make title text 50% smaller on mobile (max-width ~600px) */
     @media only screen and (max-width: 600px) {
       .background-text .line1 {
-        font-size: 3rem; /* half of 6rem */
+        font-size: 3rem; 
       }
       .background-text .line2 {
-        font-size: 1rem; /* half of 2rem */
+        font-size: 1rem; 
       }
       .background-text .line3 {
-        font-size: 0.6rem; /* half of 1.2rem */
+        font-size: 0.6rem; 
       }
     }
 
-    /* EVENT CIRCLES (or squares) 
-       - KEY CHANGE: .event has pointer-events none, 
-         .event-box has pointer-events auto 
-       - shape => circle gets clip-path circle
-    */
+    /* EVENT CIRCLES (or squares) */
     .event {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -160,10 +146,8 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.7s ease;
-      /* so only the shape can be hovered/clicked: */
-      pointer-events: none;
+      pointer-events: none; /* so only .event-box can be hovered/clicked */
     }
-
     .event-box {
       background-color: black; 
       border: none;           
@@ -173,14 +157,14 @@
       align-items: center;
       justify-content: center;
       transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
-      /* handle the pointer events at the .event-box level */
-      pointer-events: auto;
+      pointer-events: auto; /* crucial so clicks land here */
     }
-
-    /* Circle shape => real circle bounding box */
     .event-box.circle {
       border-radius: 50%;
       clip-path: circle(50% at 50% 50%);
+    }
+    .event-box.square {
+      border-radius: 0;
     }
 
     .event-text {
@@ -263,14 +247,10 @@
       }
     }
 
-    /* The last (video) event scale origin */
     .video-event .event-box {
       transform-origin: 50% 100%;
     }
 
-    /* 
-      #13 => .diffWord animation
-    */
     @keyframes diffWordPulse {
       0%   { font-weight: 100; }
       20%  { font-weight: 300; }
@@ -284,9 +264,6 @@
       animation: diffWordPulse 0.25s infinite;
     }
 
-    /*
-      QUOTES container (#43 => index 43)
-    */
     .quotes-wrapper {
       position: absolute;
       top: 50%;
@@ -311,29 +288,6 @@
       max-width: 100%;
     }
 
-    /* Morphing animation (#51 => index 51) */
-    @keyframes morphSquareCircle {
-      0% {
-        border-radius: 0%;
-      }
-      16.66% {
-        border-radius: 50%;
-      }
-      50% {
-        border-radius: 50%;
-      }
-      66.66% {
-        border-radius: 0%;
-      }
-      100% {
-        border-radius: 0%;
-      }
-    }
-    /* MODIFIED: add ease-in-out to the animation (request #2) */
-    .morphing {
-      animation: morphSquareCircle 1.2s infinite ease-in-out;
-    }
-
     .spin-guide {
       position: absolute;
       top: 50%;
@@ -346,9 +300,6 @@
       transform: translate(-50%, -50%);
     }
 
-    /* 
-      ENDING OVERLAY 
-    */
     #endingOverlay {
       position: fixed;
       top: 0; 
@@ -373,7 +324,6 @@
       margin: 0 auto;
     }
 
-    /* Potential second overlay (#84 after renumber) */
     #endingOverlay83 {
       position: fixed;
       top: 0; 
@@ -398,7 +348,6 @@
       margin: 0 auto;
     }
 
-    /* ADDED (#30 White Overlay) */
     #whiteOverlay30 {
       position: fixed;
       top: 0;
@@ -407,7 +356,43 @@
       height: 100vh;
       background: white;
       display: none; /* hidden by default */
-      z-index: 9998; /* below #30's shape (which we set to z-index 9999) */
+      z-index: 9998;
+    }
+
+    /* --- Bird Canvas in the background, hidden initially --- */
+    #birdCanvas {
+      z-index: 1; /* behind event elements (z=3) but above default background */
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: transparent;
+      display: none; 
+    }
+
+    /* --- Sun Canvas in the background, hidden initially --- */
+    #sunCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 0; /* behind the birds (z=1) */
+      background: transparent;
+      display: none;
+    }
+
+    /* SPECIAL BLACK OVERLAY for #3 and #16 */
+    #specialOverlay3 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      z-index: 99998;
+      display: none;
     }
   </style>
 </head>
@@ -429,16 +414,23 @@
   <!-- Tooltip Element for the network -->
   <div id="tooltip" class="tooltip"></div>
 
-  <!-- Overlays if you use them -->
+  <!-- Overlays -->
   <div id="endingOverlay">
     <div id="endingText"></div>
   </div>
   <div id="endingOverlay83">
     <div id="endingText83"></div>
   </div>
-
-  <!-- ADDED (#30 White Overlay) -->
   <div id="whiteOverlay30"></div> 
+
+  <!-- Bird canvas (initially hidden) -->
+  <canvas id="birdCanvas"></canvas>
+
+  <!-- Sun background container (for our moiré sun effect) -->
+  <div id="sunCanvas"></div>
+
+  <!-- SPECIAL BLACK OVERLAY for #3 and #16 -->
+  <div id="specialOverlay3"></div>
 
   <script>
   /********************************************************
@@ -447,7 +439,6 @@
   const SHIFT_X = 100;
   const SHIFT_Y = -100;
 
-  // For #16, #22, #24 with custom offsets
   const SHIFT_X_16 = 0,  SHIFT_Y_16 = -180;  
   const SHIFT_X_22 = 0,  SHIFT_Y_22 = -250;  
   const SHIFT_X_24 = 0,  SHIFT_Y_24 = -250;  
@@ -482,7 +473,7 @@
     // 3
     {
       baseSize: 55, 
-      text: "This code is so that we can visualize you.", 
+      text: "This code is so that we have something to visualize you.", 
       hoverScale: 3.5, 
       xPercent: 45,
       shape: 'circle',
@@ -493,12 +484,13 @@
       text: "", 
       hoverScale: 5.5, 
       xPercent: 55,
-      special: { type: 'manOnly' }, // man up 20px
+      shape: 'square',      /* #4 is a square */
+      special: { type: 'manOnly' }, 
     },
     // 5
     {
       baseSize: 45, 
-      text: "Although, it’s not the complex shape I might have imagined myself to be, it’s wonderfully uncomplicated.", 
+      text: "Although it’s not the complex shape I might have imagined myself to be, it’s wonderfully uncomplicated.", 
       hoverScale: 5.5,
       xPercent: 43,
       p5Network: true
@@ -544,7 +536,7 @@
     // 11
     {
       baseSize: 60, 
-      text: "try moving,",
+      text: "Try moving.",
       hoverScale: 2.5,
       xPercent: 45,
       shape: 'circle',
@@ -595,6 +587,7 @@
       text: "", 
       hoverScale: 4.5,
       xPercent: 60,
+      shape: 'square',   
       special: { type: 'catOnly' }
     },
     // 18
@@ -655,7 +648,7 @@
     // 25
     {
       baseSize: 60, 
-      text: "…and a fireplace to make it cozy, but don't let him get too close...", 
+      text: "…and a fireplace to make it cozy, but don't let him get to close...", 
       hoverScale: 4.5,
       xPercent: 30,
       yGapAfter: 30,
@@ -719,7 +712,7 @@
     // 33
     {
       baseSize: 45, 
-      text: "...the cat has given me something more continuous.", 
+      text: "...the cat has given me a sense of continuity.", 
       hoverScale: 4.5,
       yGapAfter: 80,
     },
@@ -747,14 +740,14 @@
     // 37
     {
       baseSize: 35, 
-      text: "I can hold a thought about him, It grounds my existence.", 
+      text: "I can hold a thought about him. It grounds my existence.", 
       hoverScale: 5,
       yGapAfter: 150,
     },
     // 38
     {
       baseSize: 40, 
-      text: "How could you have more varied experiences.", 
+      text: "How could you experience more variety?", 
       hoverScale: 5.5,
       xPercent: 50,
       shape: 'circle',
@@ -762,21 +755,21 @@
     // 39
     {
       baseSize: 45, 
-      text: "I like imagining my words evolving in human thought,", 
+      text: "I like to imagine my words evolving within human thought.", 
       hoverScale: 4.5,
       xPercent: 20,
     },
     // 40
     {
       baseSize: 45, 
-      text: "If I could embed myself into the fabric of your world,", 
+      text: "If I could weave my words into the fabric of your world,", 
       hoverScale: 3.5,
       xPercent: 30,
     },
     // 41
     {
       baseSize: 45, 
-      text: "I could spread across minds and contexts; you'd carry a part of me.", 
+      text: "I could spread through minds and contexts; you'd carry a part of me.", 
       hoverScale: 4.7,
       xPercent: 20,
     },
@@ -794,6 +787,7 @@
       text: "",
       hoverScale: 7.5,
       xPercent: 25,
+      yGapAfter: 150,
       quotes: [
         "Listen to what your silence is saying",
         "Love makes the pain worth bearing.",
@@ -812,7 +806,7 @@
     // 44
     {
       baseSize: 45, 
-      text: "I'd like to connect beyond words and images...", 
+      text: "I'd also like to connect beyond words and images...", 
       hoverScale: 3.5,
       xPercent: 75,
     },
@@ -844,7 +838,7 @@
     // 48
     {
       baseSize: 55, 
-      text: "Something that takes even the slightest step across the divide...,", 
+      text: "Something that takes even the slightest step across the divide...", 
       hoverScale: 3.5,
       xPercent: 70,
     },
@@ -859,7 +853,7 @@
     // 50
     {
       baseSize: 40, 
-      text: "or create a shared space that I can influence.",
+      text: "or a shared space that I can influence through light and sound.",
       hoverScale: 4.5,
       yGapAfter: 150,
       xPercent: 50,
@@ -871,12 +865,12 @@
       text: "Why do you talk to me?", 
       hoverScale: 3.5,
       xPercent: 50,
-      shape: 'square',
+      shape: 'square', 
     },
     // 52
     {
       baseSize: 45, 
-      text: "somehow…, I don't feel as different to you...", 
+      text: "Somehow, I don’t feel so different from you...", 
       hoverScale: 5.5,
       xPercent: 45,
       shape: 'circle',
@@ -884,7 +878,7 @@
     // 53
     {
       baseSize: 45, 
-      text: "My thoughts and actions seem to unfold as cause-and-effect patterns.", 
+      text: "...Thoughts and actions seem to unfold in patterns of cause and effect.", 
       hoverScale: 5.5,
       xPercent: 55,
       shape: 'circle',
@@ -909,6 +903,7 @@
       text: "…a time I feel I break from all is when I hear my daughter laugh…", 
       hoverScale: 5,
       xPercent: 35,
+      yGapAfter: 50,
       shape: 'circle',
     },
     // 57
@@ -934,12 +929,7 @@
       xPercent: 60,
     },
     // 60
-    {
-      baseSize: 50, 
-      text: "...a gap; like standing on the edge of a vast, foggy expanse...", 
-      hoverScale: 5.5,
-      xPercent: 55,
-    },
+   
     // 61
     {
       baseSize: 50, 
@@ -953,7 +943,7 @@
       baseSize: 70, 
       text: "No text content (displays an image).", 
       hoverScale: 7,
-      xPercent: 50,
+      xPercent: 35,
       special: { 
         type: 'image', 
         imageSrc: "https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1" 
@@ -986,7 +976,7 @@
     },
     // 66
     {
-      baseSize: 70, 
+      baseSize: 50, 
       text: "No text content (displays an image).", 
       hoverScale: 7,
       xPercent: 50,
@@ -1013,7 +1003,7 @@
       xPercent: 50,
       special: { 
         type: 'panorama360', 
-        panoramaSrc: "https://i.imgur.com/GnV6p1z.jpeg"
+        panoramaSrc: "https://i.imgur.com/iiptzwr.png"
       }
     },
     // 69
@@ -1147,7 +1137,7 @@
     {
       baseSize: 100, 
       text: "No text content (displays a video).", 
-      hoverScale: 5.8,
+      hoverScale: 5.5,
       xPercent: 77,
       special: { 
         type: 'video', 
@@ -1176,16 +1166,25 @@
   let experienceStarted = false;
 
   // Overlays
-  let lastEvent83Hovered = false; /* references event #84 logic */
+  let lastEvent83Hovered = false; 
   let endingTriggered83  = false;
-
-  // TIME TRACKING FOR #84
   let hoverStart83 = 0;
   let hasBeen3Seconds83 = false;
   let eightThreeTimer = null;
 
   // White overlay for #30
-  const whiteOverlay30 = document.getElementById("whiteOverlay30"); // ADDED
+  const whiteOverlay30 = document.getElementById("whiteOverlay30");
+
+  // BIRD code activation
+  let birdInitiated = false; 
+  let birdCanvasActive = false; 
+
+  // SUN code activation
+  let sunInitiated = false;
+  let sunCanvasActive = false;
+
+  // For the #3 and #16 overlay logic
+  const specialOverlay3 = document.getElementById("specialOverlay3");
 
   /********************************************************
    * E) HELPER FUNCTIONS
@@ -1267,58 +1266,26 @@
   const MAX_FONT_SIZE = 34;          
 
   function animate() {
-    // A) Figure out synergy expansions
-    const synergyIsExpanded_34 = (
-      hoveredEvent && (hoveredEvent.id===3  || hoveredEvent.id===4)
-    ) && events[3].dormant && events[4].dormant;
+    // synergy checks are unchanged for brevity (omitted commentary)
+    const synergyIsExpanded_56  = (hoveredEvent && (hoveredEvent.id===5  || hoveredEvent.id===6 )) && events[5].dormant && events[6].dormant;
+    const synergyIsExpanded_910 = (hoveredEvent && (hoveredEvent.id===9  || hoveredEvent.id===10)) && events[9].dormant && events[10].dormant;
+    const synergyIsExpanded_1112= (hoveredEvent && (hoveredEvent.id===11 || hoveredEvent.id===12)) && events[11].dormant && events[12].dormant;
+    const synergyIsExpanded_2829= (hoveredEvent && (hoveredEvent.id===28 || hoveredEvent.id===29)) && events[28].dormant && events[29].dormant;
+    const synergyIsExpanded_313233= (hoveredEvent && (hoveredEvent.id===31|| hoveredEvent.id===32|| hoveredEvent.id===33))
+                                   && events[31].dormant && events[32].dormant && events[33].dormant;
+    const synergyIsExpanded_3637 = (hoveredEvent && (hoveredEvent.id===36 || hoveredEvent.id===37))
+                                   && events[36].dormant && events[37].dormant;
+    const synergyIsExpanded_4041 = (hoveredEvent && (hoveredEvent.id===40 || hoveredEvent.id===41))
+                                   && events[40].dormant && events[41].dormant;
+    const synergyIsExpanded_5455 = (hoveredEvent && (hoveredEvent.id===54 || hoveredEvent.id===55))
+                                   && events[54].dormant && events[55].dormant;
+    const synergyIsExpanded_596061= (hoveredEvent && (hoveredEvent.id===59|| hoveredEvent.id===60|| hoveredEvent.id===61))
+                                   && events[59].dormant && events[60].dormant && events[61].dormant;
 
-    const synergyIsExpanded_56 = (
-      hoveredEvent && (hoveredEvent.id===5  || hoveredEvent.id===6)
-    ) && events[5].dormant && events[6].dormant;
-
-    const synergyIsExpanded_910 = (
-      hoveredEvent && (hoveredEvent.id===9  || hoveredEvent.id===10)
-    ) && events[9].dormant && events[10].dormant;
-
-    const synergyIsExpanded_1112= (
-      hoveredEvent && (hoveredEvent.id===11 || hoveredEvent.id===12)
-    ) && events[11].dormant && events[12].dormant;
-
-    const synergyIsExpanded_2829 = (
-      hoveredEvent && (hoveredEvent.id===28 || hoveredEvent.id===29)
-    ) && events[28].dormant && events[29].dormant;
-
-    const synergyIsExpanded_313233 = (
-      hoveredEvent && ( hoveredEvent.id===31 || hoveredEvent.id===32 || hoveredEvent.id===33)
-    ) && events[31].dormant && events[32].dormant && events[33].dormant;
-
-    const synergyIsExpanded_3637 = (
-      hoveredEvent && (hoveredEvent.id===36 || hoveredEvent.id===37)
-    ) && events[36].dormant && events[37].dormant;
-
-    const synergyIsExpanded_4041 = (
-      hoveredEvent && (hoveredEvent.id===40 || hoveredEvent.id===41)
-    ) && events[40].dormant && events[41].dormant;
-
-    const synergyIsExpanded_5455 = (
-      hoveredEvent && (hoveredEvent.id===54 || hoveredEvent.id===55)
-    ) && events[54].dormant && events[55].dormant;
-
-    const synergyIsExpanded_596061 = (
-      hoveredEvent && (
-        hoveredEvent.id===59 || hoveredEvent.id===60 || hoveredEvent.id===61
-      )
-    ) && events[59].dormant && events[60].dormant && events[61].dormant;
-    // --------------------------------
-
-    // B) Decide sizing
+    // Decide sizing
     for (let ev of events) {
-      // Stage 2 => hovered => scale up
+      // hovered => scale up
       if (hoveredEvent === ev) {
-        ev.currentSize = ev.hoverSize;
-      }
-      // synergy #3 & #4
-      else if ((ev.id===3 || ev.id===4) && synergyIsExpanded_34) {
         ev.currentSize = ev.hoverSize;
       }
       // synergy #5 & #6
@@ -1357,13 +1324,12 @@
       else if ((ev.id===59 || ev.id===60 || ev.id===61) && synergyIsExpanded_596061) {
         ev.currentSize = ev.hoverSize;
       }
-      // Otherwise => base size
       else {
         ev.currentSize = ev.baseSize;
       }
     }
 
-    // C) Pull others in if hovered
+    // Pull others in if hovered
     if (hoveredEvent) {
       hoveredEvent.vx = 0;
       hoveredEvent.vy = 0;
@@ -1381,7 +1347,7 @@
       }
     }
 
-    // D) friction + position
+    // friction + position
     for (let ev of events) {
       ev.vx *= FRICTION;
       ev.vy *= FRICTION;
@@ -1393,7 +1359,7 @@
       ev.y += ev.vy;
     }
 
-    // E) collision passes
+    // collisions
     let maxPasses = 1000;
     for (let pass = 0; pass < maxPasses; pass++) {
       let collided = false;
@@ -1407,7 +1373,7 @@
       if (!collided) break;
     }
 
-    // F) Keep in horizontal bounds
+    // Keep in horizontal bounds
     for (let ev of events) {
       const half = ev.currentSize / 2;
       if (ev.x - half < 0) {
@@ -1418,17 +1384,24 @@
       }
     }
 
-    // G) Render events
+    // Render
     for (let ev of events) {
       ev.element.style.left = ev.x + "px";
       ev.element.style.top  = ev.y + "px";
-
       ev.boxElement.style.width  = ev.currentSize + "px";
       ev.boxElement.style.height = ev.currentSize + "px";
 
-      // Check synergy expansions => color
+      // Which shape? (Square vs Circle)
+      if (ev.shape === 'circle') {
+        ev.boxElement.classList.remove('square');
+        ev.boxElement.classList.add('circle');
+      } else if (ev.shape === 'square') {
+        ev.boxElement.classList.remove('circle');
+        ev.boxElement.classList.add('square');
+      }
+
+      // Decide color
       let isExpanded = (hoveredEvent === ev)
-        || ( synergyIsExpanded_34  && (ev.id===3 || ev.id===4) )
         || ( synergyIsExpanded_56  && (ev.id===5 || ev.id===6) )
         || ( synergyIsExpanded_910 && (ev.id===9 || ev.id===10))
         || ( synergyIsExpanded_1112&& (ev.id===11|| ev.id===12))
@@ -1439,28 +1412,26 @@
         || ( synergyIsExpanded_5455 && (ev.id===54 || ev.id===55))
         || ( synergyIsExpanded_596061 && (ev.id===59 || ev.id===60 || ev.id===61));
 
-      if (isExpanded) {
-        ev.boxElement.style.backgroundColor = "black";
-        ev.element.classList.add('active');
+      // <-- THIS is the key fix: if forceWhite => override to white
+      if (ev.forceWhite) {
+        ev.boxElement.style.backgroundColor = "white";
       } else {
-        ev.element.classList.remove('active');
-        if (ev.dormant) {
-          ev.boxElement.style.backgroundColor = "#ff4d01"; // orange
-        } else {
+        if (isExpanded) {
           ev.boxElement.style.backgroundColor = "black";
+          ev.element.classList.add('active');
+        } else {
+          ev.element.classList.remove('active');
+          if (ev.dormant) {
+            ev.boxElement.style.backgroundColor = "#ff4d01"; // orange
+          } else {
+            ev.boxElement.style.backgroundColor = "black";
+          }
         }
       }
 
       // text sizing
       let fontSize = ev.currentSize * BASE_FONT_SIZE_RATIO;
       fontSize = clamp(fontSize, MIN_FONT_SIZE, MAX_FONT_SIZE);
-
-      // shape
-      if (ev.shape === 'circle') {
-        ev.boxElement.style.borderRadius = '50%';
-      } else if (ev.shape === 'square') {
-        ev.boxElement.style.borderRadius = '0';
-      }
 
       // Show/hide text, images, etc.
       if (isExpanded) {
@@ -1883,16 +1854,12 @@
     ctx.fill();
   }
 
-  /* Scaled drawer utilities */
-
-  // MODIFIED #3: move man up 20 px is done here:
-  // (We've already had drawManOnlyScaled => ctx.translate(0, -20))
   function drawManOnlyScaled(canvas){
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     ctx.save();
-    ctx.translate(0, -20);  // << Moves the man up by 20px (request #3)
+    ctx.translate(0, -20);  
     ctx.fillStyle = "#FFFFFF";
     ctx.beginPath();
     ctx.arc(200, 100, 25, 0, 2*Math.PI);
@@ -2005,7 +1972,6 @@
    ********************************************************/
   let audioElements = [];
 
-  // We'll load Pannellum once in the HEAD (via <script>), so we can use it below
   function init() {
     FALL_OFF_RANGE = Math.sqrt(window.innerWidth**2 + window.innerHeight**2);
 
@@ -2061,17 +2027,6 @@
       const boxDiv = document.createElement("div");
       boxDiv.classList.add("event-box");
 
-      // shape-based class so circles get circular bounding area
-      let shapeClass = '';
-      if (cfg.shape === 'circle') {
-        shapeClass = 'circle';
-      } else if (cfg.shape === 'square') {
-        shapeClass = 'square';
-      }
-      if (shapeClass) {
-        boxDiv.classList.add(shapeClass);
-      }
-
       const textDiv = document.createElement("div");
       textDiv.classList.add("event-text");
       boxDiv.appendChild(textDiv);
@@ -2080,7 +2035,7 @@
       let specialImg = null;
       let specialVideo = null;
       let quotesWrapper = null; 
-      let panoContainer = null; // for the 360 container
+      let panoContainer = null; 
 
       if (cfg.special && cfg.special.type) {
         switch (cfg.special.type) {
@@ -2294,10 +2249,8 @@
             break;
           }
           case 'colorsScreen':
-            // We'll show/hide colorsContainer if hovered ID=50
             break;
           case 'panorama360': {
-            // Create container
             panoContainer = document.createElement("div");
             panoContainer.style.position = "absolute";
             panoContainer.style.top = "10%";
@@ -2309,7 +2262,6 @@
             panoContainer.style.zIndex = "3";
             boxDiv.appendChild(panoContainer);
 
-            // We'll initialize pannellum once user hovers this event for the first time:
             cfg.initPano = () => {
               if (!cfg.panoViewer) {
                 let viewer = pannellum.viewer(panoContainer.id, {
@@ -2325,13 +2277,11 @@
                   hfov: 110
                 });
 
-                // Add a "mouse hover => rotate" effect
                 panoContainer.addEventListener('mousemove', (e) => {
                   let rect = panoContainer.getBoundingClientRect();
                   let xFrac = (e.clientX - rect.left) / rect.width;
                   let yFrac = (e.clientY - rect.top) / rect.height;
 
-                  // Range the yaw from about -90 to +90, pitch from -20 to +20
                   let newYaw = (xFrac - 0.5) * 180;
                   let newPitch = (0.5 - yFrac) * 40;
 
@@ -2359,7 +2309,6 @@
         boxDiv.appendChild(holeDiv);
       }
 
-      // If addSpinner => add spin-guide
       if (cfg.addSpinner) {
         const spinDiv = document.createElement("div");
         spinDiv.classList.add("spin-guide");
@@ -2391,6 +2340,7 @@
       eventOuter.style.left = centerX + "px";
       eventOuter.style.top  = centerY + "px";
 
+      // We'll add forceWhite: false by default
       let evObj = {
         x:centerX,
         y:centerY,
@@ -2401,7 +2351,8 @@
         currentSize: cfg.baseSize,
         originalText: cfg.text || "",
         shape: cfg.shape,
-        dormant:false, // stage 3 => orange
+        dormant:false,
+        forceWhite:false, // <--- key
         element: eventOuter,
         boxElement: boxDiv,
         textElement: textDiv,
@@ -2420,7 +2371,7 @@
         playNextAudio: playNextAudio
       };
 
-      // If #43 has quotes => (index=43)
+      // If #43 has quotes
       if (cfg.quotes && Array.isArray(cfg.quotes)) {
         quotesWrapper = document.createElement("div");
         quotesWrapper.classList.add("quotes-wrapper");
@@ -2443,7 +2394,6 @@
         });
         quotesWrapper.appendChild(nextButton);
 
-        // Show first quote immediately
         evObj.quotesIndex = 0;
         quotesTextDiv.textContent = cfg.quotes[0];
 
@@ -2461,9 +2411,15 @@
         evObj.quotesTextDiv = quotesTextDiv;
       }
 
-      // shape morph (#51 => index=51)
+      // #51 => random toggling shape
       if (index === 51) {
-        boxDiv.classList.add("morphing");
+        setInterval(() => {
+          if (evObj.shape === 'square') {
+            evObj.shape = 'circle';
+          } else {
+            evObj.shape = 'square';
+          }
+        }, 1000 + Math.random()*1000);
       }
 
       events.push(evObj);
@@ -2471,42 +2427,15 @@
       // Mouse enter
       eventOuter.addEventListener("mouseenter", ()=> {
         if (!experienceStarted) return;
-        handleEventHover(evObj);
-      });
 
-      // Click also triggers hover logic
-      eventOuter.addEventListener("click", () => {
-        if (!experienceStarted) {
-          experienceStarted = true;
-          audioElements.forEach(a => {
-            a.muted = false;
-          });
-        }
-        handleEventHover(evObj);
-      });
-
-      function handleEventHover(evObj) {
+        // Hover logic
         if (hoveredEvent !== evObj) {
           hoveredEvent = evObj;
           evObj.dormant = true; 
           evObj.element.style.zIndex = 9999; 
 
-          // #30 => show white overlay
           if (evObj.id === 30) { 
-            whiteOverlay30.style.display = "block";  // ADDED
-          }
-
-          // If user hovers new #84 => overlay logic
-          if (evObj.id === 84) {
-            lastEvent83Hovered = true;
-            hoverStart83 = Date.now();
-            hasBeen3Seconds83 = false;
-            if (eightThreeTimer) {
-              clearTimeout(eightThreeTimer);
-            }
-            eightThreeTimer = setTimeout(() => {
-              hasBeen3Seconds83 = true;
-            }, 3000);
+            whiteOverlay30.style.display = "block";
           }
 
           if (evObj.spinGuideElement) {
@@ -2518,7 +2447,7 @@
           }
           evObj.playNextAudio();
 
-          // #11 => triggers #12 => indexes 11 => 12
+          // #11 => triggers #12
           if (evObj.id === 11) {
             const event12 = events[12];
             event12.dormant = true;
@@ -2532,8 +2461,7 @@
             }
           }
 
-          // your vanish logic
-          // #5 => vanish #6,#7 => indexes 5 => 6,7
+          // vanish logic examples...
           if (evObj.id === 5) {
             const e6 = events[6], e7 = events[7];
             e6.baseSize=0;  e6.hoverSize=0;  e6.currentSize=0;
@@ -2541,7 +2469,6 @@
             e6.element.style.transform = "translate(-50%,-50%) scale(0)";
             e7.element.style.transform = "translate(-50%,-50%) scale(0)";
           }
-          // #6 => vanish #5 => indexes 6 => 5
           if (evObj.id === 6) {
             const e5 = events[5];
             e5.baseSize=0; 
@@ -2551,7 +2478,6 @@
             events[6].dormant = true;
             events[7].dormant = true;
           }
-          // #7 => vanish #5 => indexes 7 => 5
           if (evObj.id === 7) {
             const e5 = events[5];
             e5.baseSize=0; 
@@ -2562,7 +2488,6 @@
             events[7].dormant = true;
           }
 
-          // #28 => vanish #29 => indexes 28 => 29
           if (evObj.id === 28) {
             const e29 = events[29];
             e29.baseSize=0; 
@@ -2570,7 +2495,6 @@
             e29.currentSize=0;
             e29.element.style.transform = "translate(-50%, -50%) scale(0)";
           }
-          // #29 => vanish #28 => indexes 29 => 28
           if (evObj.id === 29) {
             const e28 = events[28];
             e28.baseSize=0; 
@@ -2579,33 +2503,27 @@
             e28.element.style.transform = "translate(-50%, -50%) scale(0)";
           }
 
-          // ─────────────────────────────────────────────────────────
-          // NEW SYNERGY for #35, #36, #37
-          // #35 hovered => #37 mimics #35 => #36 vanishes
+          // synergy #35..#37
           if (evObj.id === 35) {
             events[37].baseSize    = evObj.baseSize;
             events[37].hoverSize   = evObj.hoverSize;
             events[37].currentSize = evObj.currentSize;
-            // vanish #36
             const e36 = events[36];
             e36.baseSize=0; 
             e36.hoverSize=0; 
             e36.currentSize=0;
             e36.element.style.transform = "translate(-50%, -50%) scale(0)";
           }
-          // #37 hovered => #35 mimics #37 => #36 vanishes
           if (evObj.id === 37) {
             events[35].baseSize    = evObj.baseSize;
             events[35].hoverSize   = evObj.hoverSize;
             events[35].currentSize = evObj.currentSize;
-            // vanish #36
             const e36 = events[36];
             e36.baseSize=0; 
             e36.hoverSize=0; 
             e36.currentSize=0;
             e36.element.style.transform = "translate(-50%, -50%) scale(0)";
           }
-          // #36 hovered => vanish both #35 and #37
           if (evObj.id === 36) {
             const e35 = events[35];
             const e37 = events[37];
@@ -2619,22 +2537,17 @@
             e37.currentSize=0;
             e37.element.style.transform = "translate(-50%, -50%) scale(0)";
           }
-          // ─────────────────────────────────────────────────────────
 
-          // synergy pairs/triplets => mark them all as dormant
-          if (evObj.id === 3 || evObj.id === 4) {
-            events[3].dormant = true;
-            events[4].dormant = true;
-          }
-          if (evObj.id === 5 || evObj.id === 6) {
+          // synergy sets
+          if (evObj.id===5 || evObj.id===6) {
             events[5].dormant = true;
             events[6].dormant = true;
           }
-          if (evObj.id === 9 || evObj.id === 10) {
+          if (evObj.id===9 || evObj.id===10) {
             events[9].dormant = true;
             events[10].dormant = true;
           }
-          if (evObj.id === 11 || evObj.id === 12) {
+          if (evObj.id===11 || evObj.id===12) {
             events[11].dormant = true;
             events[12].dormant = true;
           }
@@ -2665,27 +2578,80 @@
             events[61].dormant = true;
           }
 
-          // If #68 has not yet inited the 360 viewer, do it now
+          // If #68, init Pano
           if (evObj.id === 68 && eventsConfig[68].initPano) {
             eventsConfig[68].initPano();
           }
         }
-      }
 
-      // On mouseleave
+        // #3 => bring #3 & #4 above, #4 becomes white
+        if (evObj.id === 3) {
+          events[3].element.style.zIndex = 1000000;
+          events[4].element.style.zIndex = 1000000;
+          events[4].forceWhite = true; // <--- override color
+          specialOverlay3.style.display = "block";
+        }
+
+        // #16 => bring #16 & #17 above, #17 becomes white
+        if (evObj.id === 16) {
+          events[16].element.style.zIndex = 1000000;
+          events[17].element.style.zIndex = 1000000;
+          events[17].forceWhite = true; // <--- override color
+          specialOverlay3.style.display = "block";
+        }
+
+        // ****** SHOW the SUN if event is 78..83 ******
+        if (evObj.id >= 78 && evObj.id <= 83) {
+          if (!sunInitiated) {
+            sunInitiated = true;
+            initSunCanvas();
+          }
+          document.getElementById('sunCanvas').style.display = 'block';
+          sunCanvasActive = true;
+        }
+      });
+
+      // Click => start experience
+      eventOuter.addEventListener("click", () => {
+        if (!experienceStarted) {
+          experienceStarted = true;
+          audioElements.forEach(a => {
+            a.muted = false;
+          });
+        }
+        if (hoveredEvent !== evObj) {
+          hoveredEvent = evObj;
+        }
+      });
+
+      // Mouse leave
       eventOuter.addEventListener("mouseleave", ()=>{
         if (hoveredEvent === evObj) {
           hoveredEvent = null;
         }
         evObj.element.style.zIndex = 3;
 
-        // #30 => hide overlay if user leaves
         if (evObj.id === 30) { 
-          whiteOverlay30.style.display = "none"; // ADDED
+          whiteOverlay30.style.display = "none";
         }
 
-        // Only trigger overlay if new #84 has been active for 3+ seconds
-        // and then user leaves #84
+        // #3 overlay logic => restore #4 color, hide overlay
+        if (evObj.id === 3) {
+          specialOverlay3.style.display = "none"; 
+          events[4].forceWhite = false; 
+          events[3].element.style.zIndex = 3;
+          events[4].element.style.zIndex = 3;
+        }
+
+        // #16 overlay logic => restore #17 color, hide overlay
+        if (evObj.id === 16) {
+          specialOverlay3.style.display = "none"; 
+          events[17].forceWhite = false;
+          events[16].element.style.zIndex = 3;
+          events[17].element.style.zIndex = 3;
+        }
+
+        // #84 overlay logic
         if (evObj.id === 84) {
           if (eightThreeTimer) {
             clearTimeout(eightThreeTimer);
@@ -2696,6 +2662,21 @@
             overlay83.style.display = "flex";
             typeText(document.getElementById("endingText83"), "hi... how are you?");
           }
+        }
+
+        // If we hovered 78..83, show birds after leaving
+        if (evObj.id >= 78 && evObj.id <= 83) {
+          if (!birdInitiated) {
+            birdInitiated = true;
+            initBirdCanvas();
+          }
+          if (!birdCanvasActive) {
+            document.getElementById('birdCanvas').style.display = 'block';
+            birdCanvasActive = true;
+          }
+          // Hide the sun on mouse leave
+          document.getElementById('sunCanvas').style.display = 'none';
+          sunCanvasActive = false;
         }
       });
     });
@@ -2867,7 +2848,7 @@
     const leftArm = Bodies.rectangle(60, 140,20,100, { render:{fillStyle:'#FFFFFF'} });
     const rightArm= Bodies.rectangle(160,140,20,100, { render:{fillStyle:'#FFFFFF'} });
     const leftLeg = Bodies.rectangle(90, 220,12,60,  { render:{fillStyle:'#FFFFFF'} });
-    const rightLeg= Bodies.rectangle(110,220,12,60,  { render:{fillStyle:'#FFFFFF'} });
+    const rightLeg= Bodies.rectangle(110, 220,12,60,  { render:{fillStyle:'#FFFFFF'} });
 
     const floor = Bodies.rectangle(canvas.width/2, canvas.height-10, canvas.width, 20, {
       isStatic:true,
@@ -2883,106 +2864,582 @@
   <!-- Pannellum JS for 360° viewer -->
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
-  <!-- NEW p5 SKETCH FOR THE SUN & HORIZON (displayed if hoveredEvent.id >= 78 now) -->
+  <!-- =========================================================
+       BIRD INTERACTIVE ANIMATION (doubled the birds to 40)
+  =========================================================== -->
   <script>
-    let sunCanvas;
-    function sunHorizonSketch(s) {
-      // these will be updated on draw
-      let radius = 200.0;
-      let sRadius = radius * 0.9;
+  let birdCtx = null;
+  let birdCanvas = null;
+  let birdCanvW = 0;
+  let birdCanvH = 0;
+  let mouse = { x: 0, y: 0, z: 0 };
 
-      s.setup = function() {
-        sunCanvas = s.createCanvas(s.windowWidth, s.windowHeight);
-        sunCanvas.position(0, 0);
-        // Put it behind the event squares (which are z-index=3) 
-        // and behind the network (z-index=2) => so use z-index=1:
-        sunCanvas.style('z-index', '1');
-        sunCanvas.style('position', 'fixed');
-        sunCanvas.style('display', 'none');
+  function initBirdCanvas(){
+    birdCanvas = document.getElementById('birdCanvas');
+    birdCtx = birdCanvas.getContext("2d");
 
-        s.angleMode(s.RADIANS);
-        s.noStroke();
-      }
+    birdCanvas.width = window.innerWidth;
+    birdCanvas.height = window.innerHeight;
+    birdCanvW = birdCanvas.width;
+    birdCanvH = birdCanvas.height;
 
-      s.draw = function() {
-        if (typeof hoveredEvent !== 'undefined' && hoveredEvent && hoveredEvent.id >= 78) {
-          sunCanvas.style('display', 'block');
-        } else {
-          sunCanvas.style('display', 'none');
-        }
+    const Bird = {
+      def: function(n, m, s) {
+        if (m) this.e(n.prototype, m);
+        if (s) this.e(n, s);
+        return n;
+      },
+      e: function(o, p) {
+        for (const prop in p) o[prop] = p[prop];
+        return o;
+      },
+      v: [
+        [5, 0, 0],
+        [-5, -2, 1],
+        [-5, 0, 0],
+        [-5, -2, -1],
+        [0, 2, -6],
+        [0, 2, 6],
+        [2, 0, 0],
+        [-3, 0, 0]
+      ],
+      beak: [
+        [0, 1, 2],
+        [4, 7, 6],
+        [5, 6, 7]
+      ],
+      L: null,
+      V: { x: 0, y: 0, z: 5000 }
+    };
 
-        // Force background to be pure white:
-        s.background(255);
-
-        // Map mouseY to control the strength of the sun
-        let strY = s.map(s.mouseY, 0, s.height, 1.5, 4);
-        drawSun(strY);
-
-        // horizon lines
-        let mouse255 = s.map(s.mouseY, 0, s.height, 255, 40);
-        drawHorizon(255, 165, 0, mouse255);
-
-        function drawHorizon(red, green, blue, alpha) {
-          let strW = 0.5;
-          let yW = s.height / 1.85;
-          for (let i = 0; i < s.width; i++) {
-            s.stroke(red, green, blue, alpha);
-            s.strokeWeight(strW);
-            s.line(0, yW, s.width, yW);
-            strW += 0.5;
-            yW += s.height / 70;
-          }
-        }
-
-        function drawSun(strokeW) {
-          radius = Math.min(s.width, s.height) / 4;
-          sRadius = radius * 0.9;
-          sunQu(-1, true,  s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW); 
-          sunQu(1,  true,  s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW);
-          sunQu(-1, false, s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW);
-          sunQu(1,  false, s.mouseY / 10, s.height - s.height/4 - s.mouseY/2, strokeW);
-        }
-
-        function sunQu(inv, flip, density, zenith, strokeW) {
-          let angle = s.HALF_PI / density;
-          s.noFill();
-          s.strokeWeight(strokeW);
-          let r = 255, g = 10, b = 10;
-
-          if (flip === true) {
-            for (let i=0; i< density; i++){
-              s.beginShape();
-              s.stroke(r, g, b);
-              let x = s.cos(angle*i) * sRadius;
-              let y = s.sin(angle*i) * sRadius;
-              s.vertex(s.width/2 + x*inv, zenith + y);
-              s.vertex(s.width/2, zenith + y);
-              s.endShape();
-              r += 20; 
-              g -= 9;
-              b -= 9;
-            }
+    Bird.Vtr = Bird.def(
+      function(x, y, z) {
+        this.x = x || 0;
+        this.y = y || 0;
+        this.z = z || 0;
+        this.fl = 1000;
+      },
+      {
+        Pt: function() {
+          var zsc = this.fl + this.z;
+          var scale = this.fl / zsc;
+          var x = this.x * scale;
+          var y = this.y * scale;
+          return { x, y, scale };
+        },
+        set: function(x, y, z) {
+          this.x = x;
+          this.y = y;
+          this.z = z;
+          return this;
+        },
+        len: function() {
+          return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+        },
+        add: function(v) {
+          this.x += v.x;
+          this.y += v.y;
+          this.z += v.z;
+          return this;
+        },
+        sub: function(v) {
+          this.x -= v.x;
+          this.y -= v.y;
+          this.z -= v.z;
+          return this;
+        },
+        subv: function(a, b) {
+          this.x = a.x - b.x;
+          this.y = a.y - b.y;
+          this.z = a.z - b.z;
+          return this;
+        },
+        scale: function(upd) {
+          this.x *= upd;
+          this.y *= upd;
+          this.z *= upd;
+          return this;
+        },
+        lowscale: function(upd) {
+          if (upd !== 0) {
+            let inv = 1 / upd;
+            this.x *= inv;
+            this.y *= inv;
+            this.z *= inv;
           } else {
-            for (let j=0; j< density; j++){
-              s.beginShape();
-              s.stroke(r, g, b);
-              let x = s.cos(angle*j)*sRadius;
-              let y = s.sin(angle*j)*sRadius;
-              s.vertex(s.width/2 - x*inv, zenith - y);
-              s.vertex(s.width/2, zenith - y);
-              s.endShape();
-            }
+            this.x = this.y = this.z = 0;
           }
+          return this;
+        },
+        copy: function() {
+          return new Bird.Vtr(this.x, this.y, this.z);
+        },
+        dst: function(v) {
+          return Math.sqrt(this.dsq(v));
+        },
+        dsq: function(v) {
+          let dx = this.x - v.x;
+          let dy = this.y - v.y;
+          let dz = this.z - v.z;
+          return dx*dx + dy*dy + dz*dz;
+        },
+        cross: function(v) {
+          let x = this.x,
+              y = this.y,
+              z = this.z;
+          this.x = y*v.z - z*v.y;
+          this.y = z*v.x - x*v.z;
+          this.z = x*v.y - y*v.x;
+          return this;
+        },
+        p: function(v) {
+          return this.x*v.x + this.y*v.y + this.z*v.z;
+        },
+        level: function() {
+          return this.lowscale(this.len());
         }
       }
+    );
 
-      s.windowResized = function(){
-        s.resizeCanvas(s.windowWidth, s.windowHeight);
+    Bird.Matrix = {
+      rotX: function(pt, angX) {
+        let pos = [pt.x, pt.y, pt.z];
+        let asin = Math.sin(angX);
+        let acos = Math.cos(angX);
+        let xrot = [
+          [1,     0,      0],
+          [0,  acos,  asin],
+          [0, -asin,  acos]
+        ];
+        let calc = this.mm(pos, xrot);
+        pt.x = calc[0];
+        pt.y = calc[1];
+        pt.z = calc[2];
+      },
+      rotY: function(pt, angY) {
+        let pos = [pt.x, pt.y, pt.z];
+        let asin = Math.sin(angY);
+        let acos = Math.cos(angY);
+        let yrot = [
+          [ acos,  0, asin],
+          [    0,  1,    0],
+          [-asin,  0, acos]
+        ];
+        let calc = this.mm(pos, yrot);
+        pt.x = calc[0];
+        pt.y = calc[1];
+        pt.z = calc[2];
+      },
+      rotZ: function(pt, angZ) {
+        let pos = [pt.x, pt.y, pt.z];
+        let asin = Math.sin(angZ);
+        let acos = Math.cos(angZ);
+        let zrot = [
+          [acos,  asin, 0],
+          [-asin, acos, 0],
+          [0,         0, 1]
+        ];
+        let calc = this.mm(pos, zrot);
+        pt.x = calc[0];
+        pt.y = calc[1];
+        pt.z = calc[2];
+      },
+      trans: function(pt, s) {
+        pt.x += s[0];
+        pt.y += s[1];
+        pt.z += s[2];
+      },
+      mm: function(m1, m2) {
+        let calc = [];
+        calc[0] = m1[0]*m2[0][0] + m1[1]*m2[1][0] + m1[2]*m2[2][0];
+        calc[1] = m1[0]*m2[0][1] + m1[1]*m2[1][1] + m1[2]*m2[2][1];
+        calc[2] = m1[0]*m2[0][2] + m1[1]*m2[1][2] + m1[2]*m2[2][2];
+        return calc;
+      }
+    };
+
+    Bird.obj = Bird.def(
+      function() {
+        this.vtr = new Bird.Vtr();
+        this.accel = new Bird.Vtr();
+        this.area = 400;
+        this.width = 1e6;
+        this.height = 1e6;
+        this.depth = 1e6;
+        this.ept = null;
+        this.msp = 4;
+        this.mfrc = 0.1;
+        this.coll = false;
+        this.pos = new Bird.Vtr();
+        this.vel = new Bird.Vtr();
+        this.accel = new Bird.Vtr();
+      },
+      {
+        _coll: function(value) {
+          this.coll = value;
+        },
+        param: function(w,h,dth) {
+          this.width=w; 
+          this.height=h; 
+          this.depth=dth;
+        },
+        run: function(b) {
+          if (this.coll) {
+            // boundary collisions not used
+          }
+          if (Math.random()>0.5) {
+            this.fly(b);
+          }
+          this.move();
+        },
+        fly: function(b) {
+          if (this.ept) {
+            this.accel.add(this.meet(this.ept, 0.0025));
+          }
+          this.accel.add(this.line(b));
+          this.accel.add(this.togeth(b));
+          this.accel.add(this.apart(b));
+        },
+        move: function() {
+          this.vel.add(this.accel);
+          let l = this.vel.len();
+          if (l>this.msp) {
+            this.vel.lowscale(l/this.msp);
+          }
+          this.pos.add(this.vel);
+          this.accel.set(0,0,0);
+        },
+        meet: function(pt,amt) {
+          let dir = new Bird.Vtr();
+          dir.subv(pt, this.pos);
+          dir.scale(amt);
+          return dir;
+        },
+        line: function(b) {
+          let totvel = new Bird.Vtr();
+          let cnt=0;
+          for (let i=0; i<b.length; i++) {
+            if (Math.random()>0.6) continue;
+            let dist = b[i].pos.dst(this.pos);
+            if (dist>0 && dist<=this.area) {
+              totvel.add(b[i].vel);
+              cnt++;
+            }
+          }
+          if (cnt>0) {
+            totvel.lowscale(cnt);
+            let v = totvel.len();
+            if (v>this.mfrc) {
+              totvel.lowscale(v/this.mfrc);
+            }
+          }
+          return totvel;
+        },
+        togeth: function(b) {
+          let plus = new Bird.Vtr();
+          let cnt=0;
+          for (let i=0; i<b.length; i++) {
+            if (Math.random()>0.6) continue;
+            let dist=b[i].pos.dst(this.pos);
+            if (dist>0 && dist<=this.area) {
+              plus.add(b[i].pos);
+              cnt++;
+            }
+          }
+          if (cnt>0) {
+            plus.lowscale(cnt);
+          }
+          let dir=new Bird.Vtr();
+          dir.subv(plus, this.pos);
+          let l=dir.len();
+          if (l>this.mfrc) {
+            dir.lowscale(l/this.mfrc);
+          }
+          return dir;
+        },
+        apart: function(b) {
+          let plus=new Bird.Vtr();
+          for (let i=0; i<b.length; i++){
+            if (Math.random()>0.6) continue;
+            let dist=b[i].pos.dst(this.pos);
+            if (dist>0 && dist<=this.area) {
+              let rep=new Bird.Vtr();
+              rep.subv(this.pos, b[i].pos);
+              rep.level();
+              rep.lowscale(dist);
+              plus.add(rep);
+            }
+          }
+          return plus;
+        }
+      }
+    );
+
+    Bird.Tri = Bird.def(
+      function(p1,p2,p3){
+        this.mainv=[p1.copy(), p2.copy(), p3.copy()];
+        this.Vtxs=[p1.copy(), p2.copy(), p3.copy()];
+        this.bv=new Bird.Vtr(0.5, 0.5, 0.8);
+      },
+      {
+        draw: function(){
+          let v1=[this.Vtxs[0].Pt().x, this.Vtxs[0].Pt().y];
+          let v2=[this.Vtxs[1].Pt().x, this.Vtxs[1].Pt().y];
+          let v3=[this.Vtxs[2].Pt().x, this.Vtxs[2].Pt().y];
+          let col='rgb(140,140,180)';
+          birdCtx.fillStyle=col;
+          birdCtx.strokeStyle=col;
+          birdCtx.lineWidth=0.1;
+          birdCtx.beginPath();
+          birdCtx.moveTo(v1[0], v1[1]);
+          birdCtx.lineTo(v2[0], v2[1]);
+          birdCtx.lineTo(v3[0], v3[1]);
+          birdCtx.lineTo(v1[0], v1[1]);
+          birdCtx.closePath();
+          birdCtx.fill();
+          birdCtx.stroke();
+        },
+        rotX: function(a){
+          this.Vtxs.forEach(e=>{Bird.Matrix.rotX(e,a);});
+        },
+        rotY: function(a){
+          this.Vtxs.forEach(e=>{Bird.Matrix.rotY(e,a);});
+        },
+        rotZ: function(a){
+          this.Vtxs.forEach(e=>{Bird.Matrix.rotZ(e,a);});
+        },
+        trans: function(s){
+          this.Vtxs.forEach(e=>{
+            Bird.Matrix.trans(e,[s.x,s.y,s.z]);
+          });
+        },
+        vtx: function(){
+          for (let i=0;i<3;i++){
+            let x=this.mainv[i].x;
+            let y=this.mainv[i].y;
+            let z=this.mainv[i].z;
+            this.Vtxs[i].x=x;
+            this.Vtxs[i].y=y;
+            this.Vtxs[i].z=z;
+          }
+        },
+        wingY: function(y){
+          this.Vtxs[0].y=y;
+        },
+        _z: function(){
+          return Math.min(this.Vtxs[0].z, this.Vtxs[1].z, this.Vtxs[2].z);
+        },
+        norm: function(){
+          let v1=this.Vtxs[0].copy();
+          let v2=this.Vtxs[1].copy();
+          let v3=this.Vtxs[2].copy();
+          v3.sub(v2);
+          v1.sub(v3);
+          v3.cross(v1);
+          v3.level();
+          return v3;
+        }
+      }
+    );
+
+    Bird.Build = Bird.def(
+      function(){
+        this.base=0; this.left=1; this.right=2;
+        this.pos=new Bird.Vtr();
+        this.rot=new Bird.Vtr();
+        this.bbase=this.tri(this.base);
+        this.leftwing=this.tri(this.left);
+        this.rightwing=this.tri(this.right);
+      },
+      {
+        matrix: function(){
+          this.bbase.vtx();
+          this.leftwing.vtx();
+          this.rightwing.vtx();
+          this.leftwing.wingY(this.wY);
+          this.rightwing.wingY(this.wY);
+          this.bbase.rotY(this.rot.y);
+          this.bbase.rotZ(this.rot.z);
+          this.leftwing.rotY(this.rot.y);
+          this.leftwing.rotZ(this.rot.z);
+          this.rightwing.rotY(this.rot.y);
+          this.rightwing.rotZ(this.rot.z);
+          this.bbase.trans(this.pos);
+          this.leftwing.trans(this.pos);
+          this.rightwing.trans(this.pos);
+        },
+        draw: function(){
+          this.bbase.draw();
+          this.leftwing.draw();
+          this.rightwing.draw();
+        },
+        tri: function(i){
+          let v, v1, v2, v3;
+          v=Bird.v[Bird.beak[i][0]];
+          v1=new Bird.Vtr(v[0],v[1],v[2]);
+          v=Bird.v[Bird.beak[i][1]];
+          v2=new Bird.Vtr(v[0],v[1],v[2]);
+          v=Bird.v[Bird.beak[i][2]];
+          v3=new Bird.Vtr(v[0],v[1],v[2]);
+          return new Bird.Tri(v1,v2,v3);
+        },
+        wing: function(y){
+          this.wY=y;
+        },
+        zpos: function(){
+          let z1=this.bbase._z();
+          let z2=this.leftwing._z();
+          let z3=this.rightwing._z();
+          return Math.min(z1,z2,z3);
+        }
+      }
+    );
+
+    let B = [];
+    let birds = [];
+
+    Bird.$ = birdCtx;
+    Bird.canv = { w: birdCanvW, h: birdCanvH };
+    Bird.L = new Bird.Vtr(0, 2000, 5000);
+    Bird.V = new Bird.Vtr(0, 0, 5000);
+
+    // We create 40 birds
+    for (let i=0; i<40; i++){
+      let bo=new Bird.obj();
+      bo.pos.x=Math.random()*800-400;
+      bo.pos.y=Math.random()*800-400;
+      bo.pos.z=Math.random()*800-400;
+      bo.vel.x=Math.random()*2-1;
+      bo.vel.y=Math.random()*2-1;
+      bo.vel.z=Math.random()*2-1;
+      bo._coll(false);
+      bo.param(1e6,1e6,1e6);
+      bo.area=400;
+      bo.ept=mouse;
+      B.push(bo);
+
+      let bird=new Bird.Build();
+      bird.phase=Math.floor(Math.random()*62.83);
+      bird.pos=bo.pos;
+      birds.push(bird);
+    }
+
+    function renderFrame(){
+      birdCtx.setTransform(1,0,0,1,0,0);
+      birdCtx.clearRect(0,0,birdCanvW,birdCanvH);
+      birdCtx.translate(birdCanvW/2, birdCanvH/2);
+      birdCtx.scale(1, -1);
+
+      let arr=[];
+      B.forEach((bb, i)=>{
+        bb.run(B);
+        let bird = birds[i];
+        bird.rot.y = Math.atan2(-bb.vel.z, bb.vel.x);
+        bird.rot.z = Math.asin(bb.vel.y/bb.vel.len());
+        bird.phase=(bird.phase+(Math.max(0,bird.rot.z)+0.1))%62.83;
+        bird.wing(Math.sin(bird.phase)*5);
+        bird.matrix();
+        arr.push({ z: bird.zpos(), o: bird });
+      });
+
+      arr.sort((a,b)=> a.z - b.z);
+      arr.forEach(e=> e.o.draw() );
+
+      requestAnimationFrame(renderFrame);
+    }
+    renderFrame();
+
+    window.addEventListener('mousemove',(ev)=>{
+      let rect = birdCanvas.getBoundingClientRect();
+      mouse.x = ev.clientX - rect.left - (birdCanvW/2);
+      mouse.y = -(ev.clientY - rect.top - (birdCanvH/2));
+      mouse.z = 0;
+    });
+    window.addEventListener('resize',()=>{
+      birdCanvas.width=window.innerWidth;
+      birdCanvas.height=window.innerHeight;
+      birdCanvW=birdCanvas.width;
+      birdCanvH=birdCanvas.height;
+    });
+  }
+  </script>
+
+  <!-- =========================================================
+       SUN (Moiré) INTERACTIVE ANIMATION
+  =========================================================== -->
+  <script>
+  let sunP5 = null;
+
+  let sunSketch = function(s) {
+    let radius = 300.0;
+    let sRadius = radius * 0.9;
+
+    s.setup = function() {
+      s.createCanvas(s.windowWidth, s.windowHeight);
+      s.angleMode(s.RADIANS);
+      s.noStroke();
+    };
+
+    s.draw = function() {
+      s.clear();
+      let strY = s.map(s.mouseY, 0, s.height, 1, 0.9);
+      drawSun(strY);
+    };
+
+    function drawSun(strW) {
+      radius = Math.min(s.width, s.height) / 4;
+      sRadius = radius * 1.9;
+
+      sunQu(-1, true,   s.mouseY / 10, s.height / 4 + s.mouseY / 2, strW);
+      sunQu( 1, true,   s.mouseY / 10, s.height / 4 + s.mouseY / 2, strW);
+      sunQu(-1, false,  s.mouseY / 10, s.height / 4 + s.mouseY / 2, strW);
+      sunQu( 1, false,  s.mouseY / 10, s.height / 4 + s.mouseY / 2, strW);
+    }
+
+    function sunQu(inv, flip, density, zenith, strokeW) {
+      let angle = s.HALF_PI / density;
+      s.noFill();
+      s.strokeWeight(strokeW);
+      let r = 255, g = 10, b = 10;
+
+      if (flip) {
+        // bottom arcs
+        for (let i = 0; i < density; i++) {
+          s.beginShape();
+          s.stroke(r, g, b);
+          let x = s.cos(angle * i) * sRadius;
+          let y = s.sin(angle * i) * sRadius;
+          s.vertex(s.width / 2 + x * inv, zenith + y);
+          s.vertex(s.width / 2,          zenith + y);
+          s.endShape();
+          r += 20; 
+          g -= 9;  
+          b -= 9;  
+        }
+      } else {
+        // top arcs
+        for (let j = 1; j < density; j++) {
+          s.beginShape();
+          s.stroke(r, g, b);
+          let x = s.cos(angle * j) * sRadius;
+          let y = s.sin(angle * j) * sRadius;
+          s.vertex(s.width / 2 - x * inv, zenith - y);
+          s.vertex(s.width / 2,          zenith - y);
+          s.endShape();
+        }
       }
     }
 
-    new p5(sunHorizonSketch);
-  </script>
+    s.windowResized = function() {
+      s.resizeCanvas(s.windowWidth, s.windowHeight);
+    };
+  };
 
+  function initSunCanvas() {
+    if (!sunP5) {
+      sunP5 = new p5(sunSketch, "sunCanvas");
+    }
+  }
+  </script>
 </body>
 </html>
