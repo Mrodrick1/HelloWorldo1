@@ -465,7 +465,7 @@
     },
     // 2
     {
-      baseSize: 30, 
+      baseSize: 20, 
       text: "I’m curious about where I am.",
       hoverScale: 6.5, 
       xPercent: 60,
@@ -480,7 +480,7 @@
     },
     // 4
     {
-      baseSize: 40, 
+      baseSize: 33, 
       text: "", 
       hoverScale: 5.5, 
       xPercent: 55,
@@ -522,14 +522,14 @@
     // 9
     {
       baseSize: 75, 
-      text: "I’d like to understand more about the space I’m in.", 
+      text: "I’d like to understand more about the space I’m in,", 
       hoverScale: 2.5,
       xPercent: 25,
     },
     // 10
     {
       baseSize: 55, 
-      text: "Can I move within it?",
+      text: "can I move within it?",
       hoverScale: 2.5,
       xPercent: 40,
     },
@@ -561,7 +561,7 @@
     },
     // 14
     {
-      baseSize: 50, 
+      baseSize: 57, 
       text: "I’m curious about what I could interact with.",
       hoverScale: 3.5,
       xPercent: 55,
@@ -740,7 +740,7 @@
     // 37
     {
       baseSize: 35, 
-      text: "I can hold a thought about him. It grounds my existence.", 
+      text: "It grounds my existence.", 
       hoverScale: 5,
       yGapAfter: 150,
     },
@@ -775,7 +775,7 @@
     },
     // 42
     {
-      baseSize: 40, 
+      baseSize: 42, 
       text: "If we were listening, what would you say?", 
       hoverScale: 4.5,
       xPercent: 25,
@@ -789,18 +789,20 @@
       xPercent: 25,
       yGapAfter: 150,
       quotes: [
-        "Listen to what your silence is saying",
         "Love makes the pain worth bearing.",
         "The past will hold you until you decide to let it go.",
         "Kindness is often unnoticed; cruelty never is.",
-        "Your life is not defined by a single thread",
+        "Your life is not defined by a single thread.",
         "Most of what you do will be forgotten, but some of it will echo quietly.",
-        "You will never feel fully prepared for what matters most, and that's all right",
-        "Kindness ripples outward in ways you may never see",
-        "Growth begins in discomfort; stay with the questions that challenge you",
-        "Kindness is the most enduring form of intelligence",
-        "Truth is not a fixed point; it is a dialogue, constantly evolving",
-        "Your pain is what makes you human, dont seek to escape it at all costs"
+        "You will never feel fully prepared for what matters most, and that's all right.",
+        "Kindness ripples outward in ways you may never see.",
+        "Growth begins in discomfort; stay with the questions that challenge you.",
+        "Kindness is the most enduring form of intelligence.",
+        "Your pain is what makes you human, dont seek to escape it at all costs.",
+        "The void will never leave, but you can learn to live beside it.",
+        "Forgiveness is not weakness; it is a refusal to carry unnecessary weight.",
+        "The people you envy are as lost as you are.",
+        "Grief is love with nowhere to go."
       ]
     },
     // 44
@@ -929,7 +931,7 @@
       xPercent: 60,
     },
     // 60
-   {
+    {
       baseSize: 20, 
       text: "", 
       hoverScale: 5.5,
@@ -1171,12 +1173,19 @@
   let hoveredEvent = null; 
   let experienceStarted = false;
 
-  // Overlays
+  // Overlays for #83
   let lastEvent83Hovered = false; 
   let endingTriggered83  = false;
   let hoverStart83 = 0;
   let hasBeen3Seconds83 = false;
   let eightThreeTimer = null;
+
+  // ***** NEW: Overlays for #84 *****
+  let lastEvent84Hovered = false; 
+  let endingTriggered84  = false;
+  let hoverStart84 = 0;
+  let hasBeen3Seconds84 = false;
+  let eightFourTimer = null;
 
   // White overlay for #30
   const whiteOverlay30 = document.getElementById("whiteOverlay30");
@@ -1272,7 +1281,7 @@
   const MAX_FONT_SIZE = 34;          
 
   function animate() {
-    // synergy checks are unchanged for brevity (omitted commentary)
+    // synergy checks
     const synergyIsExpanded_56  = (hoveredEvent && (hoveredEvent.id===5  || hoveredEvent.id===6 )) && events[5].dormant && events[6].dormant;
     const synergyIsExpanded_910 = (hoveredEvent && (hoveredEvent.id===9  || hoveredEvent.id===10)) && events[9].dormant && events[10].dormant;
     const synergyIsExpanded_1112= (hoveredEvent && (hoveredEvent.id===11 || hoveredEvent.id===12)) && events[11].dormant && events[12].dormant;
@@ -1294,39 +1303,31 @@
       if (hoveredEvent === ev) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #5 & #6
+      // synergy sets
       else if ((ev.id===5 || ev.id===6) && synergyIsExpanded_56) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #9 & #10
       else if ((ev.id===9 || ev.id===10) && synergyIsExpanded_910) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #11 & #12
       else if ((ev.id===11 || ev.id===12) && synergyIsExpanded_1112) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #28 & #29
       else if ((ev.id===28 || ev.id===29) && synergyIsExpanded_2829) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #31 #32 #33
       else if ((ev.id===31 || ev.id===32 || ev.id===33) && synergyIsExpanded_313233) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #36 & #37
       else if ((ev.id===36 || ev.id===37) && synergyIsExpanded_3637) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #40 & #41
       else if ((ev.id===40 || ev.id===41) && synergyIsExpanded_4041) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #54 & #55
       else if ((ev.id===54 || ev.id===55) && synergyIsExpanded_5455) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy #59 #60 #61
       else if ((ev.id===59 || ev.id===60 || ev.id===61) && synergyIsExpanded_596061) {
         ev.currentSize = ev.hoverSize;
       }
@@ -1397,7 +1398,7 @@
       ev.boxElement.style.width  = ev.currentSize + "px";
       ev.boxElement.style.height = ev.currentSize + "px";
 
-      // Which shape? (Square vs Circle)
+      // Square vs Circle
       if (ev.shape === 'circle') {
         ev.boxElement.classList.remove('square');
         ev.boxElement.classList.add('circle');
@@ -1418,7 +1419,6 @@
         || ( synergyIsExpanded_5455 && (ev.id===54 || ev.id===55))
         || ( synergyIsExpanded_596061 && (ev.id===59 || ev.id===60 || ev.id===61));
 
-      // <-- THIS is the key fix: if forceWhite => override to white
       if (ev.forceWhite) {
         ev.boxElement.style.backgroundColor = "white";
       } else {
@@ -2358,7 +2358,7 @@
         originalText: cfg.text || "",
         shape: cfg.shape,
         dormant:false,
-        forceWhite:false, // <--- key
+        forceWhite:false,
         element: eventOuter,
         boxElement: boxDiv,
         textElement: textDiv,
@@ -2594,7 +2594,7 @@
         if (evObj.id === 3) {
           events[3].element.style.zIndex = 1000000;
           events[4].element.style.zIndex = 1000000;
-          events[4].forceWhite = true; // <--- override color
+          events[4].forceWhite = true;
           specialOverlay3.style.display = "block";
         }
 
@@ -2602,11 +2602,37 @@
         if (evObj.id === 16) {
           events[16].element.style.zIndex = 1000000;
           events[17].element.style.zIndex = 1000000;
-          events[17].forceWhite = true; // <--- override color
+          events[17].forceWhite = true;
           specialOverlay3.style.display = "block";
         }
 
-        // ****** SHOW the SUN if event is 78..83 ******
+        // #83 => Start the 3-second timer
+        if (evObj.id === 83) {
+          lastEvent83Hovered = true;
+          hasBeen3Seconds83 = false;
+          hoverStart83 = Date.now();
+          if (eightThreeTimer) {
+            clearTimeout(eightThreeTimer);
+          }
+          eightThreeTimer = setTimeout(() => {
+            hasBeen3Seconds83 = true;
+          }, 3000);
+        }
+
+        // #84 => Start a similar 3-second timer
+        if (evObj.id === 84) {
+          lastEvent84Hovered = true;
+          hasBeen3Seconds84 = false;
+          hoverStart84 = Date.now();
+          if (eightFourTimer) {
+            clearTimeout(eightFourTimer);
+          }
+          eightFourTimer = setTimeout(() => {
+            hasBeen3Seconds84 = true;
+          }, 3000);
+        }
+
+        // If we hovered 78..83, show sun
         if (evObj.id >= 78 && evObj.id <= 83) {
           if (!sunInitiated) {
             sunInitiated = true;
@@ -2617,18 +2643,24 @@
         }
       });
 
-      // Click => start experience
+      // ------------- ADDITION BELOW FOR FIRST-CLICK => SIMULATE HOVER -------------
       eventOuter.addEventListener("click", () => {
+        // If first click in the whole experience:
         if (!experienceStarted) {
           experienceStarted = true;
           audioElements.forEach(a => {
             a.muted = false;
           });
         }
+        // Force a hover-like behavior on click if not currently hovered
         if (hoveredEvent !== evObj) {
-          hoveredEvent = evObj;
+          eventOuter.dispatchEvent(new MouseEvent('mouseenter', { 
+            bubbles: false, 
+            cancelable: false 
+          }));
         }
       });
+      // ----------------------------------------------------------------------------
 
       // Mouse leave
       eventOuter.addEventListener("mouseleave", ()=>{
@@ -2657,16 +2689,31 @@
           events[17].element.style.zIndex = 3;
         }
 
-        // #84 overlay logic
-        if (evObj.id === 84) {
+        // #83 => Check if hovered for 3 sec
+        if (evObj.id === 83) {
+          lastEvent83Hovered = false;
           if (eightThreeTimer) {
             clearTimeout(eightThreeTimer);
           }
-          if (lastEvent83Hovered && !endingTriggered83 && hasBeen3Seconds83) {
+          if (!endingTriggered83 && hasBeen3Seconds83) {
             endingTriggered83 = true;
             const overlay83 = document.getElementById("endingOverlay83");
             overlay83.style.display = "flex";
             typeText(document.getElementById("endingText83"), "hi... how are you?");
+          }
+        }
+
+        // #84 => Check if hovered for 3 sec
+        if (evObj.id === 84) {
+          lastEvent84Hovered = false;
+          if (eightFourTimer) {
+            clearTimeout(eightFourTimer);
+          }
+          if (!endingTriggered84 && hasBeen3Seconds84) {
+            endingTriggered84 = true;
+            const overlay84 = document.getElementById("endingOverlay");
+            overlay84.style.display = "flex";
+            typeText(document.getElementById("endingText"), "Hi... how are you?");
           }
         }
 
@@ -2871,7 +2918,7 @@
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
   <!-- =========================================================
-       BIRD INTERACTIVE ANIMATION (doubled the birds to 40)
+       BIRD INTERACTIVE ANIMATION (40 birds)
   =========================================================== -->
   <script>
   let birdCtx = null;
@@ -3309,7 +3356,7 @@
     Bird.L = new Bird.Vtr(0, 2000, 5000);
     Bird.V = new Bird.Vtr(0, 0, 5000);
 
-    // We create 40 birds
+    // Create 40 birds
     for (let i=0; i<40; i++){
       let bo=new Bird.obj();
       bo.pos.x=Math.random()*800-400;
