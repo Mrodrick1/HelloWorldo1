@@ -7,7 +7,6 @@
   <!-- Responsive / Mobile Friendly -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Preload all Dropbox assets for faster loading -->
   <!-- Images -->
   <link rel="preload" href="https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1" as="image" />
   <link rel="preload" href="https://www.dropbox.com/scl/fi/fh21usm76bwvgsfis3gre/Marion_Arana_Single-4.png?rlkey=fv80vwayex5ut0ub986y9bfjj&raw=1" as="image" />
@@ -56,7 +55,8 @@
   <style>
     html, body {
       margin: 0;
-      padding: 10px 0 200px; /* your bottom space is preserved */
+      /* Remove top gap; only keep bottom space: */
+      padding: 0 0 200px; /* your bottom space is preserved */
       width: 100%;
       background: transparent;
       font-family: 'Montserrat', sans-serif;
@@ -101,25 +101,32 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* BACKGROUND TEXT */
+    /* BACKGROUND TEXT: Centered horizontally/vertically,
+       full width on mobile, 1/3 on desktop */
     .background-text {
       position: absolute;
-      top: 20px; 
-      left: 20px; 
-      z-index: 1; 
-      pointer-events: none; 
-      text-align: left; 
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+      text-align: center;
+      width: 100%; /* full width on mobile */
     }
+    @media only screen and (min-width: 600px) {
+      .background-text {
+        width: 33%; /* one-third on desktop */
+      }
+    }
+    /* Tweak the font sizes as you like */
     .background-text .line1 {
       font-size: 6rem; 
       font-weight: 400;
-      /* was margin: 5px 0; => now half => 2px 0 */
       margin: 2px 0;
     }
     .background-text .line2 {
       font-size: 2rem;
       font-weight: 300;
-      /* was margin: 10px 0; => now half => 5px 0 */
       margin: 5px 0;
     }
     .background-text .line3 {
@@ -127,17 +134,17 @@
       font-weight: 300;
       margin: 10px 0;
     }
+    /* Adjust for very small screens */
     @media only screen and (max-width: 600px) {
       .background-text .line1 {
         font-size: 3rem; 
-        margin: 2px 0; /* keep it consistent in mobile */
+        margin: 2px 0; 
       }
       .background-text .line2 {
         font-size: 1rem; 
-        margin: 5px 0; /* keep it consistent in mobile */
+        margin: 5px 0; 
       }
       .background-text .line3 {
-        /* was 0.6rem => +50% => 0.9rem */
         font-size: 0.9rem; 
       }
     }
@@ -409,7 +416,7 @@
     <div class="spinner"></div>
   </div>
 
-  <!-- Some background text in the upper-left corner -->
+  <!-- Background text in the center of the viewport -->
   <div class="background-text">
     <div class="line1">Hello World</div>
     <div class="line2">a story told through code</div>
@@ -1185,7 +1192,7 @@
   let hasBeen3Seconds83 = false;
   let eightThreeTimer = null;
 
-  // ***** NEW: Overlays for #84 *****
+  // Overlays for #84
   let lastEvent84Hovered = false; 
   let endingTriggered84  = false;
   let hoverStart84 = 0;
@@ -2025,16 +2032,9 @@
       audioIndexGlobal = (audioIndexGlobal + 1) % audioElements.length;
     };
 
-    // --------------------------
-    // Adjust vertical offset based on mobile or not
-    let verticalStartOffset = 200;
-    if (window.innerWidth < 600) {
-      // If mobile => half of 200 => 100
-      verticalStartOffset = 100;
-    }
-    // --------------------------
-
-    let lastEventBottom = 100;
+    // Completely remove the top gap:
+    let lastEventBottom = 0;
+    let verticalStartOffset = 0;
 
     // Colors screen
     initColorsScreen();
@@ -2354,7 +2354,7 @@
         centerX = Math.floor(Math.random()*(maxX - minX+1))+minX;
       }
 
-      // Use our adjusted 'verticalStartOffset'
+      // Start from the very top now (no vertical offset)
       const centerY = lastEventBottom + half + verticalStartOffset;
       const gap = (typeof cfg.yGapAfter==='number') ? cfg.yGapAfter : 20;
       lastEventBottom += cfg.baseSize + gap;
@@ -2362,7 +2362,6 @@
       eventOuter.style.left = centerX + "px";
       eventOuter.style.top  = centerY + "px";
 
-      // We'll add forceWhite: false by default
       let evObj = {
         x:centerX,
         y:centerY,
@@ -2393,7 +2392,7 @@
         playNextAudio: playNextAudio
       };
 
-      // If #43 has quotes
+      // If #43 has quotes => pick one random quote, show it once.
       if (cfg.quotes && Array.isArray(cfg.quotes)) {
         quotesWrapper = document.createElement("div");
         quotesWrapper.classList.add("quotes-wrapper");
@@ -2402,35 +2401,14 @@
         quotesTextDiv.classList.add("quotes-text");
         quotesWrapper.appendChild(quotesTextDiv);
 
-        const nextButton = document.createElement("button");
-        nextButton.textContent = "Next";
-        Object.assign(nextButton.style, {
-          position: "absolute",
-          bottom: "10px",
-          right: "10px",
-          background: "transparent",
-          color: "white",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "16px"
-        });
-        quotesWrapper.appendChild(nextButton);
-
-        evObj.quotesIndex = 0;
-        quotesTextDiv.textContent = cfg.quotes[0];
-
-        nextButton.addEventListener("click", (e) => {
-          e.stopPropagation();
-          evObj.quotesIndex = (evObj.quotesIndex + 1) % cfg.quotes.length;
-          quotesTextDiv.textContent = cfg.quotes[evObj.quotesIndex];
-        });
+        // pick a random quote from the array
+        const randomIndex = Math.floor(Math.random() * cfg.quotes.length);
+        quotesTextDiv.textContent = cfg.quotes[randomIndex];
 
         quotesWrapper.style.display = "none";
         boxDiv.appendChild(quotesWrapper);
 
         evObj.quotesWrapper = quotesWrapper;
-        evObj.quotes = cfg.quotes;
-        evObj.quotesTextDiv = quotesTextDiv;
       }
 
       // #51 => random toggling shape
@@ -2659,16 +2637,15 @@
         }
       });
 
-      // ------------- ADDITION BELOW FOR FIRST-CLICK => SIMULATE HOVER -------------
+      // FIRST-CLICK => start experience
       eventOuter.addEventListener("click", () => {
-        // If first click in the whole experience:
         if (!experienceStarted) {
           experienceStarted = true;
           audioElements.forEach(a => {
             a.muted = false;
           });
         }
-        // Force a hover-like behavior on click if not currently hovered
+        // If not hovered, trigger the mouseenter logic artificially
         if (hoveredEvent !== evObj) {
           eventOuter.dispatchEvent(new MouseEvent('mouseenter', { 
             bubbles: false, 
@@ -2676,7 +2653,6 @@
           }));
         }
       });
-      // ----------------------------------------------------------------------------
 
       // Mouse leave
       eventOuter.addEventListener("mouseleave", ()=>{
@@ -2733,7 +2709,7 @@
           }
         }
 
-        // If we hovered 78..83, show birds after leaving
+        // If we hovered 78..83, then show birds after leaving
         if (evObj.id >= 78 && evObj.id <= 83) {
           if (!birdInitiated) {
             birdInitiated = true;
@@ -3435,21 +3411,15 @@
 
   <!-- =========================================================
        SUN (Moiré) INTERACTIVE ANIMATION
-       Now with inverted mapping: 
-       More lines & thicker at top (mouseY=0), 
-       Fewer & thinner at bottom (mouseY=height)
   =========================================================== -->
   <script>
   let sunP5 = null;
 
   let sunSketch = function(s) {
-    // Adjust these so the sun is more "solid" when mouse is near the top,
-    // and sparser at the bottom.
-    let startLineCount = 260;  // many lines at top
-    let endLineCount   = 1;    // fewer lines at bottom
-    let startLineWidth = 6;    // thicker lines at top
-    let endLineWidth   = 1;    // thinner lines at bottom
-
+    let startLineCount = 260; 
+    let endLineCount   = 1;   
+    let startLineWidth = 6;   
+    let endLineWidth   = 1;   
     let radius = 300.0;
     let sRadius = radius * 0.9;
 
@@ -3462,11 +3432,9 @@
     s.draw = function() {
       s.clear();
 
-      // We map mouseY from 0..height => 260..1 lines
       let lineCount = s.map(s.mouseY, 0, s.height, startLineCount, endLineCount);
-      lineCount = s.constrain(lineCount, 1, 300); 
+      lineCount = s.constrain(lineCount, 1, 300);
 
-      // We map mouseY from 0..height => 6..1 stroke width
       let lineWidth = s.map(s.mouseY, 0, s.height, startLineWidth, endLineWidth);
       lineWidth = s.constrain(lineWidth, 0.1, 10);
 
@@ -3477,7 +3445,6 @@
       radius = Math.min(s.width, s.height) / 4;
       sRadius = radius * 1.9;
 
-      // We'll keep a vertical offset to simulate the sun's position.
       let zenith = s.height / 4 + s.mouseY / 2;
 
       // 4 "quadrants" arcs
@@ -3487,13 +3454,12 @@
       sunQu( 1, false,  lineCount, zenith, lineWidth);
     }
 
-    // If flip==true => bottom arcs, else => top arcs
     function sunQu(inv, flip, density, zenith, strokeW) {
       let angle = s.HALF_PI / density;
       s.noFill();
       s.strokeWeight(strokeW);
 
-      let r = 255, g = 10, b = 10; // color base
+      let r = 255, g = 10, b = 10; 
       if (flip) {
         // bottom arcs
         for (let i = 0; i < density; i++) {
@@ -3504,7 +3470,6 @@
           s.vertex(s.width / 2 + x * inv, zenith + y);
           s.vertex(s.width / 2,          zenith + y);
           s.endShape();
-          // slightly shift color if desired
           r += 20; 
           g -= 9;  
           b -= 9;  
