@@ -1184,12 +1184,11 @@
      * It is *not* part of the usual sequence layout.
      ****************************************************/
     {
-      baseSize: 60,
+      baseSize: 100,
       text: "hi... how are you?.",
       hoverScale: 4.0,
       shape: 'circle',
       specialPosition: 'centerViewport' 
-      // We'll handle special positioning logic in init().
     },
   ];
 
@@ -2387,13 +2386,10 @@
       }
 
       let centerY;
-      // If it is a center event, we just place it in the absolute center.
-      // Otherwise, we do the usual "sequence" offset logic.
       if (isCenter) {
         centerX = window.innerWidth / 2;
         centerY = window.innerHeight / 2;
       } else {
-        // Normal vertical offset-based layout
         centerY = lastEventBottom + half + verticalStartOffset;
         const gap = (typeof cfg.yGapAfter==='number') ? cfg.yGapAfter : 20;
         lastEventBottom += cfg.baseSize + gap;
@@ -2666,16 +2662,23 @@
           }, 3000);
         }
 
-        // If hovered on #43: start rotating quotes every 2 seconds
+        // If we hovered on #43: immediately show one quote, then start rotating every 2s
         if (evObj.id === 43 && evObj.quotesArray) {
+          // Immediately display one quote
+          const randomIndex2 = Math.floor(Math.random() * evObj.quotesArray.length);
+          if (evObj.quotesTextDiv) {
+            evObj.quotesTextDiv.textContent = evObj.quotesArray[randomIndex2];
+          }
+
+          // Start rotating quotes every 2 seconds
           if (evObj.quotesInterval) {
             clearInterval(evObj.quotesInterval);
             evObj.quotesInterval = null;
           }
           evObj.quotesInterval = setInterval(() => {
-            const randomIndex2 = Math.floor(Math.random() * evObj.quotesArray.length);
+            const randomIndex = Math.floor(Math.random() * evObj.quotesArray.length);
             if (evObj.quotesTextDiv) {
-              evObj.quotesTextDiv.textContent = evObj.quotesArray[randomIndex2];
+              evObj.quotesTextDiv.textContent = evObj.quotesArray[randomIndex];
             }
           }, 2000);
         }
