@@ -53,10 +53,13 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
 
   <style>
-    /* Updated margin to have 300px on top (previously 'margin: 200;') */
+    /* 
+      1) Remove big margins from html/body (often ignored on mobile).
+      2) Instead, create #contentWrapper that has the large margins you want.
+    */
     html, body {
-      margin: 300px 200px 200px 200px; /* top=300, right=200, bottom=200, left=200 */
-      padding: 0 0 200px; /* your bottom space is preserved */
+      margin: 0;
+      padding: 0;
       width: 100%;
       background: transparent;
       font-family: 'Montserrat', sans-serif;
@@ -73,6 +76,23 @@
     }
     html::-webkit-scrollbar, body::-webkit-scrollbar {
       display: none;
+    }
+
+    /*
+      The container with the big margins.
+      This ensures the margins will actually be visible on mobile devices.
+    */
+    #contentWrapper {
+      margin: 300px 200px 200px 200px; /* big margins */
+      padding: 0 0 200px; /* keep some bottom padding as before */
+      box-sizing: border-box;
+    }
+
+    /* Decrease margins on small screens if you want, so content fits better. */
+    @media only screen and (max-width: 600px) {
+      #contentWrapper {
+        margin: 100px 20px 100px 20px;
+      }
     }
 
     /* START SCREEN */
@@ -412,7 +432,6 @@
 </head>
 
 <body>
-
   <!-- START SCREEN -->
   <div id="startScreen">
     <div class="background-text">
@@ -427,26 +446,29 @@
     <div class="spinner"></div>
   </div>
 
-  <!-- Tooltip Element for the network -->
-  <div id="tooltip" class="tooltip"></div>
+  <!-- We wrap everything else in a container that has big margins -->
+  <div id="contentWrapper">
+    <!-- Tooltip Element for the network -->
+    <div id="tooltip" class="tooltip"></div>
 
-  <!-- Overlays -->
-  <div id="endingOverlay">
-    <div id="endingText"></div>
-  </div>
-  <div id="whiteOverlay30"></div>
+    <!-- Overlays -->
+    <div id="endingOverlay">
+      <div id="endingText"></div>
+    </div>
+    <div id="whiteOverlay30"></div>
 
-  <!-- Bird canvas (initially hidden) -->
-  <canvas id="birdCanvas"></canvas>
+    <!-- Bird canvas (initially hidden) -->
+    <canvas id="birdCanvas"></canvas>
 
-  <!-- Sun background container (for our moiré sun effect) -->
-  <div id="sunCanvas"></div>
+    <!-- Sun background container (for our moiré sun effect) -->
+    <div id="sunCanvas"></div>
 
-  <!-- SPECIAL BLACK OVERLAY for #3, #16, #21 synergy, etc. -->
-  <div id="specialOverlay3"></div>
+    <!-- SPECIAL BLACK OVERLAY for #3, #16, #21 synergy, etc. -->
+    <div id="specialOverlay3"></div>
 
-  <!-- SPECIAL BLACK OVERLAY for #64..#67 synergy -->
-  <div id="specialOverlay64"></div>
+    <!-- SPECIAL BLACK OVERLAY for #64..#67 synergy -->
+    <div id="specialOverlay64"></div>
+  </div><!-- end #contentWrapper -->
 
   <script>
   /********************************************************
@@ -934,7 +956,7 @@
       xPercent: 50,
       special: {
         type: 'panorama360',
-        panoramaSrc: "https://i.imgur.com/Jl92HVk.png"
+        panoramaSrc: "https://i.imgur.com/lDplXuZ.png"
       }
     },
     // #64
@@ -1065,7 +1087,7 @@
     {
       baseSize: 100,
       text: "No text content (displays a video).",
-      hoverScale: 4.5,
+      hoverScale: 5.5,
       xPercent: 80,
       special: {
         type: 'video',
@@ -1212,7 +1234,7 @@
     const synergyIsExpanded_5657  = ( hoveredEvent && (hoveredEvent.id===56 || hoveredEvent.id===57) );
     const synergyIsExpanded_737475= ( hoveredEvent && [73,74,75].includes(hoveredEvent.id) );
     
-    // ***** THIS IS THE ONE CHANGE WE'D MADE BEFORE (synergy #64..#67) *****
+    // synergy #64..#67
     const synergyIsExpanded_64_67 = ( hoveredEvent && [64,65,66,67].includes(hoveredEvent.id) );
 
     for (let ev of events) {
@@ -1246,7 +1268,6 @@
       else if ([73,74,75].includes(ev.id) && synergyIsExpanded_737475) {
         ev.currentSize = ev.hoverSize;
       }
-      // synergy block for #64..#67
       else if ([64,65,66,67].includes(ev.id) && synergyIsExpanded_64_67) {
         ev.currentSize = ev.hoverSize;
       }
@@ -3299,7 +3320,7 @@
       sunQu(-1, true,   lineCount, zenith, lineWidth);
       sunQu( 1, true,   lineCount, zenith, lineWidth);
       sunQu(-1, false,  lineCount, zenith, lineWidth);
-      sunQu( 1, false,  lineCount, zenith, lineWidth);
+      sunQu( 1, false,  lineCount, lineWidth);
     }
 
     function sunQu(inv, flip, density, zenith, strokeW) {
@@ -3476,6 +3497,5 @@
     };
     new p5(circleOverlay35);
   </script>
-
 </body>
 </html>
