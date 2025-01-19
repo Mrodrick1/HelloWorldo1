@@ -325,17 +325,16 @@
       transform: translate(-50%, -50%);
     }
 
-    /* The final ending overlay is now white with black text */
     #endingOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: white; /* changed to white */
+      background-color: black;
       display: none; /* hidden by default */
       z-index: 999999;
-      color: black;   /* changed text to black */
+      color: white;
       font-size: 2rem;
       font-family: 'Montserrat', sans-serif;
       align-items: center;
@@ -343,7 +342,7 @@
       text-align: center;
     }
     #endingText {
-      color: black;  /* changed to black */
+      color: white;
       font-size: 2rem;
       max-width: 600px;
       width: 80%;
@@ -385,7 +384,7 @@
       display: none;
     }
 
-    /* SPECIAL BLACK OVERLAY for #3 and other synergy */
+    /* SPECIAL BLACK OVERLAY for #3 and others */
     #specialOverlay3 {
       position: fixed;
       top: 0;
@@ -397,7 +396,7 @@
       display: none;
     }
 
-    /* SPECIAL BLACK OVERLAY for #64..#67 synergy */
+    /* NEW BLACK OVERLAY for #64,#65,#66,#67 synergy */
     #specialOverlay64 {
       position: fixed;
       top: 0;
@@ -407,25 +406,6 @@
       background-color: black;
       z-index: 99998;
       display: none;
-    }
-
-    /* NEW FULLSCREEN BLACK OVERLAY for #79 */
-    #specialOverlay79 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: black;
-      display: none;
-      z-index: 999998;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Center the video inside this overlay (#79) */
-    #specialOverlay79 video {
-      width: 80%;
-      height: auto;
     }
   </style>
 </head>
@@ -461,14 +441,11 @@
   <!-- Sun background container (for our moiré sun effect) -->
   <div id="sunCanvas"></div>
 
-  <!-- SPECIAL BLACK OVERLAY for synergy #3, #16, #21 etc. -->
+  <!-- SPECIAL BLACK OVERLAY for #3, #16, #21 synergy, etc. -->
   <div id="specialOverlay3"></div>
 
-  <!-- SPECIAL BLACK OVERLAY for synergy #64..#67 -->
+  <!-- SPECIAL BLACK OVERLAY for #64..#67 synergy -->
   <div id="specialOverlay64"></div>
-
-  <!-- NEW FULLSCREEN BLACK OVERLAY for #79 -->
-  <div id="specialOverlay79"></div>
 
   <script>
   /********************************************************
@@ -483,6 +460,9 @@
 
   /********************************************************
    * B) DEFINE OUR EVENTS
+   *
+   * NOTE: #80 is the center circle (specialPosition: 'centerViewport').
+   * We place #0..#4 above it, #5..#79 below it.
    ********************************************************/
   const eventsConfig = [
     // #0
@@ -1133,7 +1113,6 @@
   // Overlays for synergy
   const specialOverlay3  = document.getElementById("specialOverlay3");
   const specialOverlay64 = document.getElementById("specialOverlay64");
-  const specialOverlay79 = document.getElementById("specialOverlay79");
 
   // For final overlay (#79)
   let endingTriggered = false;
@@ -1230,7 +1209,8 @@
     const synergyIsExpanded_5354  = ( hoveredEvent && (hoveredEvent.id===53 || hoveredEvent.id===54) );
     const synergyIsExpanded_5657  = ( hoveredEvent && (hoveredEvent.id===56 || hoveredEvent.id===57) );
     const synergyIsExpanded_737475= ( hoveredEvent && [73,74,75].includes(hoveredEvent.id) );
-    // synergy #64..#67
+    
+    // ***** THIS IS THE ONE CHANGE: synergy for #64..#67 *****
     const synergyIsExpanded_64_67 = ( hoveredEvent && [64,65,66,67].includes(hoveredEvent.id) );
 
     for (let ev of events) {
@@ -1264,10 +1244,12 @@
       else if ([73,74,75].includes(ev.id) && synergyIsExpanded_737475) {
         ev.currentSize = ev.hoverSize;
       }
+      // >>> NEW synergy block for #64..#67 <<<
       else if ([64,65,66,67].includes(ev.id) && synergyIsExpanded_64_67) {
         ev.currentSize = ev.hoverSize;
       }
       else {
+        // fallback
         ev.currentSize = ev.baseSize;
       }
     }
@@ -1303,7 +1285,7 @@
       ev.y += ev.vy;
     }
 
-    // collisions (iterative)
+    // collisions
     let maxPasses = 1000;
     for (let pass = 0; pass < maxPasses; pass++) {
       let collided = false;
@@ -1351,7 +1333,7 @@
         ev.boxElement.classList.remove('square');
       }
 
-      // Is it hovered/expanded?
+      // Are we expanded?
       let isExpanded = (ev.currentSize === ev.hoverSize);
 
       if (ev.forceWhite) {
@@ -1363,7 +1345,7 @@
         } else {
           ev.element.classList.remove('active');
           if (ev.dormant) {
-            ev.boxElement.style.backgroundColor = "#ff4d01";
+            ev.boxElement.style.backgroundColor = "#ff4d01"; // orange (dormant)
           } else {
             ev.boxElement.style.backgroundColor = "black";
           }
@@ -1384,12 +1366,9 @@
         }
         ev.textElement.style.fontSize = fontSize + "px";
 
-        // We do NOT display the video here for #79 because we moved it into a full overlay
         if (ev.canvas)       ev.canvas.style.display = "block";
         if (ev.imgElement)   ev.imgElement.style.display = "block";
-        if (ev.videoElement && ev.id !== 79) {
-          ev.videoElement.style.display = "block";
-        }
+        if (ev.videoElement) ev.videoElement.style.display = "block";
         if (ev.quotesWrapper) ev.quotesWrapper.style.display = "block";
         if (ev.panoContainer) ev.panoContainer.style.display = "block";
       } else {
@@ -1609,6 +1588,41 @@
     ctx.fill();
   }
 
+  function drawFireOriginal(ctx, shiftUp=0) {
+    const fireScale=1;
+    const fireOffsetX = 100 + SHIFT_X;
+    const fireOffsetY = 150 + SHIFT_Y - shiftUp;
+
+    function sX(x){return fireOffsetX + x*fireScale;}
+    function sY(y){return fireOffsetY + y*fireScale;}
+
+    ctx.fillStyle="#fdd500";
+    ctx.beginPath();
+    ctx.moveTo(sX(50), sY(20));
+    ctx.lineTo(sX(20), sY(70));
+    ctx.lineTo(sX(80), sY(70));
+    ctx.closePath();
+    ctx.fill();
+
+    if(!ctx.roundRect){
+      CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+        if(w<2*r)r=w/2;
+        if(h<2*r)r=h/2;
+        this.beginPath();
+        this.moveTo(x+r,y);
+        this.arcTo(x+w,y,x+w,y+h,r);
+        this.arcTo(x+w,y+h,x,y+h,r);
+        this.arcTo(x,y+h,x,y,r);
+        this.closePath();
+        return this;
+      };
+    }
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    ctx.roundRect(sX(28),sY(55),45*fireScale,10*fireScale,3*fireScale);
+    ctx.fill();
+  }
+
   function drawManCatOriginalWithCustomOffsets(ctx, mouseX, mouseY, offsetX, offsetY) {
     ctx.clearRect(0,0,1200,1200);
     const manOffsetX = -25 + offsetX;
@@ -1727,7 +1741,38 @@
   }
 
   function drawFireOriginalWithCustomOffsets(ctx, offsetX, offsetY, shiftUp=0) {
-    // #24 was removed, so no usage now
+    const fireScale=1;
+    const fireOffsetX = 160 + offsetX;
+    const fireOffsetY = 720 + offsetY - shiftUp;
+
+    function sX(x){return fireOffsetX + x*fireScale;}
+    function sY(y){return fireOffsetY + y*fireScale;}
+
+    ctx.fillStyle="#ffd500";
+    ctx.beginPath();
+    ctx.moveTo(sX(50), sY(20));
+    ctx.lineTo(sX(20), sY(70));
+    ctx.lineTo(sX(80), sY(70));
+    ctx.closePath();
+    ctx.fill();
+
+    if(!ctx.roundRect){
+      CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+        if(w<2*r)r=w/2;
+        if(h<2*r)r=h/2;
+        this.beginPath();
+        this.moveTo(x+r,y);
+        this.arcTo(x+w,y,x+w,y+h,r);
+        this.arcTo(x+w,y+h,x,y+h,r);
+        this.arcTo(x,y+h,x,y,r);
+        this.closePath();
+        return this;
+      };
+    }
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    ctx.roundRect(sX(28),sY(55),45*fireScale,10*fireScale,3*fireScale);
+    ctx.fill();
   }
 
   function drawManOnlyScaled(canvas){
@@ -1780,12 +1825,17 @@
     drawToyOriginal(c);
   });
   const drawManCatToyFireScaled = createScaledDrawer((c,mx,my)=>{
-    // #24 removed
+    drawManCatOriginal(c,mx,my);
+    drawToyOriginal(c);
+    drawFireOriginal(c);
   });
   const drawManCatScaledCustom16 = createScaledDrawer(drawManCatOriginalWithCustomOffsets);
   const drawManCatToyScaledCustom22 = createScaledDrawer((ctx,mx,my)=> {
     drawManCatOriginalWithCustomOffsets(ctx, mx, my, SHIFT_X_22, SHIFT_Y_22);
     drawToyOriginalWithCustomOffsets(ctx, SHIFT_X_22, SHIFT_Y_22);
+  });
+  const drawManCatToyFireScaledCustom24 = createScaledDrawer((ctx,mx,my)=>{
+    // #24 removed, no drawing
   });
 
   /********************************************************
@@ -1882,12 +1932,14 @@
     // Prepare the color screen
     initColorsScreen();
 
+    // We'll track positioning for above/center/below logic.
     const centerYpos = window.innerHeight / 2;
     let topAccumulator = centerYpos - 400;
     let bottomAccumulator = centerYpos + 200;
 
     eventsConfig.forEach((cfg, index) => {
       if (!cfg) {
+        // null events
         events.push(null);
         return;
       }
@@ -1909,7 +1961,6 @@
       let quotesWrapper = null;
       let panoContainer = null;
 
-      // special config
       if (cfg.special && cfg.special.type) {
         switch (cfg.special.type) {
           case 'manOnly': {
@@ -2029,6 +2080,10 @@
             redraw();
             break;
           }
+          case 'manCatToyFire': {
+            // #24 removed
+            break;
+          }
           case 'matter': {
             specialCanvas = document.createElement("canvas");
             specialCanvas.width  = 300;
@@ -2077,14 +2132,21 @@
             specialVideo.muted = true;
             specialVideo.loop = true;
             specialVideo.playsInline = true;
-            // We'll append it to #specialOverlay79 if this is #79
             Object.assign(specialVideo.style, {
+              position:"absolute",
+              width:"80%",
+              height:"auto",
+              top:"10%",
+              left:"10%",
+              zIndex:"3",
               display:"none"
             });
+            eventOuter.classList.add('video-event');
+            boxDiv.appendChild(specialVideo);
             break;
           }
           case 'colorsScreen':
-            // handled in the draw loop
+            // controlled in draw() logic
             break;
           case 'panorama360': {
             panoContainer = document.createElement("div");
@@ -2191,6 +2253,7 @@
 
       let centerY;
       if (index === 80) {
+        // #80 => center
         centerX = window.innerWidth / 2;
         centerY = window.innerHeight / 2;
       }
@@ -2256,7 +2319,7 @@
 
       events.push(evObj);
 
-      // MOUSEENTER
+      // Mouse enter
       eventOuter.addEventListener("mouseenter", ()=> {
         if (!experienceStarted) return;
         if (hoveredEvent !== evObj) {
@@ -2272,8 +2335,7 @@
           if (evObj.spinGuideElement) {
             evObj.spinGuideElement.style.display = "none";
           }
-          // If there's a small video (not #79) we can play it here if we wanted
-          if (evObj.videoElement && evObj.id !== 79) {
+          if (evObj.videoElement) {
             evObj.videoElement.currentTime=0;
             evObj.videoElement.play().catch(()=>{});
           }
@@ -2314,24 +2376,14 @@
           }
         }
 
-        // #79 => show full screen black overlay with the video
+        // #79 => 1s timer for ending
         if (evObj.id === 79) {
-          // Start the 1s timer for final text
           timer79 = setTimeout(() => {
             endingReady = true;
-          }, oneSecond);
-          // Show the full overlay, bring event top:
-          specialOverlay79.style.display = "flex";
-          evObj.element.style.zIndex = 1000000;
-          if (evObj.videoElement) {
-            specialOverlay79.appendChild(evObj.videoElement);
-            evObj.videoElement.style.display = "block";
-            evObj.videoElement.currentTime = 0;
-            evObj.videoElement.play().catch(()=>{});
-          }
+          }, 1000);
         }
 
-        // FULLSCREEN BLACK OVERLAY logic (#2,#3,#16,#21,#29 etc.)
+        // FULLSCREEN BLACK OVERLAY logic:
         if ([2,3,16,21,29,30,37,38,49,50,51,52,53,54,56,57,58].includes(evObj.id)) {
           specialOverlay3.style.display = "block";
 
@@ -2389,7 +2441,7 @@
           }
         }
 
-        // synergy #64..#67
+        // synergy #64..#67 overlay
         if ([64,65,66,67].includes(evObj.id)) {
           specialOverlay64.style.display = "block";
           [64,65,66,67].forEach(sId => {
@@ -2397,10 +2449,11 @@
               events[sId].element.style.zIndex = 1000000;
             }
           });
+          // *** REMOVED the line that forced #68 white *** (The only change asked)
         }
       });
 
-      // FIRST CLICK => start experience
+      // FIRST-CLICK => start experience
       eventOuter.addEventListener("click", () => {
         if (!experienceStarted) {
           experienceStarted = true;
@@ -2408,7 +2461,7 @@
             a.muted = false;
           });
         }
-        // If not hovered, forcibly hover
+        // If not hovered, trigger mouseenter artificially
         if (hoveredEvent !== evObj) {
           eventOuter.dispatchEvent(new MouseEvent('mouseenter', {
             bubbles: false,
@@ -2417,7 +2470,7 @@
         }
       });
 
-      // MOUSELEAVE
+      // Mouse leave
       eventOuter.addEventListener("mouseleave", ()=>{
         if (hoveredEvent === evObj) {
           hoveredEvent = null;
@@ -2433,12 +2486,6 @@
           if (timer79) {
             clearTimeout(timer79);
           }
-          // Hide the overlay
-          specialOverlay79.style.display = "none";
-          if (evObj.videoElement) {
-            evObj.videoElement.pause();
-            evObj.videoElement.style.display = "none";
-          }
           if (endingReady && !endingTriggered) {
             endingTriggered = true;
             const overlay = document.getElementById("endingOverlay");
@@ -2447,7 +2494,7 @@
           }
         }
 
-        // remove black overlay for synergy
+        // remove black overlay for synergy/singles
         if ([2,3,16,21,29,30,37,38,49,50,51,52,53,54,56,57,58].includes(evObj.id)) {
           specialOverlay3.style.display = "none";
 
@@ -3005,7 +3052,7 @@
         },
         apart: function(b) {
           let plus=new Bird.Vtr();
-          for (let i=0;i<b.length;i++){
+          for (let i=0; i<b.length; i++){
             if (Math.random()>0.6) continue;
             let dist=b[i].pos.dst(this.pos);
             if (dist>0 && dist<=this.area) {
