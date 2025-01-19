@@ -1333,6 +1333,16 @@
       if (ev.x + half > window.innerWidth) {
         ev.x = window.innerWidth - half; ev.vx = 0;
       }
+
+      // Keep in vertical bounds (ADDED)
+      if (ev.y - half < 0) {
+        ev.y = half; 
+        ev.vy = 0;
+      }
+      if (ev.y + half > window.innerHeight) {
+        ev.y = window.innerHeight - half;
+        ev.vy = 0;
+      }
     }
 
     // Render
@@ -3319,8 +3329,8 @@
       // 4 "quadrants" arcs
       sunQu(-1, true,   lineCount, zenith, lineWidth);
       sunQu( 1, true,   lineCount, zenith, lineWidth);
-      sunQu(-1, false,  lineCount, zenith, lineWidth);
-      sunQu( 1, false,  lineCount, lineWidth);
+      sunQu(-1, false,  lineCount, lineWidth);
+      sunQu( 1, false,  lineCount);
     }
 
     function sunQu(inv, flip, density, zenith, strokeW) {
