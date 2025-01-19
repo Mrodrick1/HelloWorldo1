@@ -53,8 +53,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
 
   <style>
+    /* Updated margin to have 300px on top (previously 'margin: 200;') */
     html, body {
-      margin: 200;
+      margin: 300px 200px 200px 200px; /* top=300, right=200, bottom=200, left=200 */
       padding: 0 0 200px; /* your bottom space is preserved */
       width: 100%;
       background: transparent;
@@ -933,7 +934,7 @@
       xPercent: 50,
       special: {
         type: 'panorama360',
-        panoramaSrc: "https://i.imgur.com/lDplXuZ.png"
+        panoramaSrc: "https://i.imgur.com/Jl92HVk.png"
       }
     },
     // #64
@@ -1211,7 +1212,7 @@
     const synergyIsExpanded_5657  = ( hoveredEvent && (hoveredEvent.id===56 || hoveredEvent.id===57) );
     const synergyIsExpanded_737475= ( hoveredEvent && [73,74,75].includes(hoveredEvent.id) );
     
-    // ***** THIS IS THE ONE CHANGE: synergy for #64..#67 *****
+    // ***** THIS IS THE ONE CHANGE WE'D MADE BEFORE (synergy #64..#67) *****
     const synergyIsExpanded_64_67 = ( hoveredEvent && [64,65,66,67].includes(hoveredEvent.id) );
 
     for (let ev of events) {
@@ -1245,7 +1246,7 @@
       else if ([73,74,75].includes(ev.id) && synergyIsExpanded_737475) {
         ev.currentSize = ev.hoverSize;
       }
-      // >>> NEW synergy block for #64..#67 <<<
+      // synergy block for #64..#67
       else if ([64,65,66,67].includes(ev.id) && synergyIsExpanded_64_67) {
         ev.currentSize = ev.hoverSize;
       }
@@ -2450,7 +2451,6 @@
               events[sId].element.style.zIndex = 1000000;
             }
           });
-          // *** REMOVED the line that forced #68 white *** (The only change asked)
         }
       });
 
