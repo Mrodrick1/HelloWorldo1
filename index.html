@@ -1778,9 +1778,14 @@
     }
   }
   function activateEvent(evObj) {
+    // -----------------------------------------------------------
+    // FIX: Also call trySetToDormant on the previously active event
+    // to ensure overlays are hidden on mobile:
+    // -----------------------------------------------------------
     let oldActive = window.events[window.currentActiveIndex];
     if (oldActive && oldActive !== evObj && oldActive.state === 2) {
       setEventState(oldActive, 3);
+      trySetToDormant(oldActive); // Make sure we hide overlays if needed
     }
 
     if (!evObj.hasBeenActivated) {
