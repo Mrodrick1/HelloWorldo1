@@ -180,19 +180,18 @@
       text-align: left;
       color: #0D0D0D;
       max-width: 600px; 
-      /* Removed width:80% so line1 "Hello" isn't shifted right */
       box-sizing: border-box;
     }
 
     .background-text .line1 {
       font-size: 6rem;
       font-weight: 300;
-      margin: 2px 0; /* unchanged */
+      margin: 2px 0;
     }
     .background-text .line2 {
       font-size: 2rem;
       font-weight: 300;
-      margin: 2px 0; /* was 5px => now 2px to reduce gap to ~50% */
+      margin: 2px 0;
     }
     .background-text .line3 {
       font-size: 1.2rem;
@@ -437,8 +436,7 @@
       z-index: 1000;
     }
 
-    /* The overlay #50 was removed, see JS. Keeping the ID if needed elsewhere
-       but set display:none to effectively disable. */
+    /* The overlay #50 was removed, see JS. We keep the ID as no-op: */
     #darkOverlay50 {
       display: none;
     }
@@ -1616,9 +1614,9 @@
       if(dist>0){ ux=dx/dist; uy=dy/dist; }
 
       const leftPupilX  = (135 + catOffsetX) + ux * maxOffset;
-      const leftPupilY  = (135 + catOffsetY) + uy * maxOffset;
+      const leftPupilY  = (135 + catOffsetY) + ux * maxOffset;
       const rightPupilX = (165 + catOffsetX) + ux * maxOffset;
-      const rightPupilY = (135 + catOffsetY) + uy * maxOffset;
+      const rightPupilY = (135 + catOffsetY) + ux * maxOffset;
 
       c.fillStyle="white";
       c.beginPath();
@@ -1694,7 +1692,7 @@
   }
 
   /********************************************************
-   * Colors Screen (event #37) - updated for 0.5s hold + 0.25s transition
+   * Colors Screen (event #37)
    ********************************************************/
   let colorsContainer = null;
   let colorsIndex = 0;
@@ -1720,7 +1718,7 @@
   }
 
   /********************************************************
-   * D) EVENT STATE MANAGEMENT
+   * EVENT STATE MANAGEMENT
    ********************************************************/
   let audioElements = [];
   function unlockEvent(evId) {
@@ -1880,7 +1878,6 @@
     // #48 => hideMultiOverlay45
     if (evObj.id === 48) {
       hideMultiOverlay45();
-      // DO NOT unlock #49,#50 here; let them follow the normal linear sequence
     }
 
     // #51 => showMultiOverlay51([51,52]), unlock #52
@@ -2031,9 +2028,6 @@
       if (evObj.id === 48) {
         hideMultiOverlay45();
       }
-
-      // #49, #50 => no overlay logic now. 
-      // (Removed references to show/hideDarkOverlay50)
 
       if (evObj.id === 51 || evObj.id === 52) {
         const s51 = window.events[51]?.state;
@@ -2434,6 +2428,8 @@
 
       window.events.push(evObj);
 
+      // DESKTOP: mouseenter/mouseleave
+      // MOBILE: click toggles
       if (!isMobile()) {
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
@@ -2497,17 +2493,30 @@
           }
         });
       } else {
-        // Mobile: use click
+        // MOBILE: tap toggles
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
             audioElements.forEach(a => { a.muted = false; });
           }
+          // If locked, do nothing
           if (evObj.state === 0) return;
+
+          // If already active, set it dormant (this hides overlays)
+          if (evObj.state === 2) {
+            if (window.hoveredEvent === evObj) {
+              window.hoveredEvent = null;
+            }
+            trySetToDormant(evObj);
+            return;
+          }
+
+          // If unlocked or dormant => activate
           if (evObj.state === 1 || evObj.state === 3) {
             activateEvent(evObj);
           }
           window.hoveredEvent = evObj;
+
           if (evObj.videoElement) {
             evObj.videoElement.currentTime=0;
             evObj.videoElement.play().catch(()=>{});
@@ -2533,6 +2542,7 @@
           if (evObj.id === 26) {
             const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
             if (overlayDiv) {
+              // Show/hide the overlay for a moment if desired
               overlayDiv.style.display =
                 overlayDiv.style.display === "none" ? "block" : "none";
             }
@@ -3146,6 +3156,164 @@
     };
   };
 
+  // p5 instance for the circle overlay on #26
+  let circleOverlay26 = function(sk) {
+    let colors = ['#1F438C', '#F24C27', '#F2A999', '#261B1D', '#BF0404'];
+    let ctx;
+    let motion;
+
+    sk.setup = function() {
+      let container = document.getElementById("circleOverlay26Container");
+      if (!container) {
+        return;
+      }
+      let w = container.offsetWidth || 300;
+      let h = container.offsetHeight || 300;
+
+      let cnv = sk.createCanvas(w, h);
+      cnv.parent("circleOverlay26Container");
+
+      sk.rectMode(sk.CENTER);
+      ctx = sk.drawingContext;
+
+      let d = sk.width * 0.8;
+      let x = sk.width / 2;
+      let y = sk.height / 2;
+      motion = new Motion(x, y, d);
+    };
+
+    sk.draw = function() {
+      let container = document.getElementById("circleOverlay26Container");
+      if (!container || container.style.display === "none") {
+        sk.clear();
+        return;
+      }
+      sk.clear();
+      motion.show();
+      motion.move();
+    };
+
+    function easeOutCirc(x) {
+      return Math.sqrt(1 - Math.pow(x - 1, 2));
+    }
+
+    class Motion {
+      constructor(x, y, d) {
+        this.x = x;
+        this.y = y;
+        this.d = d;
+        this.n = sk.int(sk.random(4, 15));
+        this.sw = d / this.n;
+        this.te = sk.int(sk.random(200, 400));
+        this.t = 0;
+        this.circles = [];
+        this.cols = [];
+
+        sk.shuffle(colors, true);
+        for (let i = 0; i < this.n; i++) {
+          this.cols.push(colors[i % colors.length]);
+          this.circles.push(new Circle(0, 0, this.d * 1.1, -((this.te / this.n) * i) + this.te, this.te, this.cols[i]));
+        }
+        this.count = 0;
+      }
+      show() {
+        sk.push();
+        sk.translate(this.x, this.y);
+        sk.noStroke();
+        sk.fill(255, 0);
+        sk.circle(0, 0, this.d);
+        ctx.clip();
+
+        for (let i = 0; i < this.circles.length; i++) {
+          let r = this.circles[i];
+          r.show();
+          r.move();
+        }
+        for (let i = 0; i < this.circles.length; i++) {
+          let r = this.circles[i];
+          if (r.isDead) {
+            this.count++;
+            this.circles.splice(i, 1);
+            this.circles.push(new Circle(0, 0, this.d * 1.1, 0, this.te, this.cols[this.count % this.cols.length]));
+          }
+        }
+        sk.pop();
+      }
+      move() {
+        this.t++;
+      }
+    }
+
+    class Circle {
+      constructor(x, y, d, t0, t1, col) {
+        let th = sk.random(sk.TAU);
+        let r = sk.random(0, 0.5) * d;
+        this.x0 = x + r * sk.cos(th);
+        this.x1 = x;
+        this.y0 = y + r * sk.sin(th);
+        this.y1 = y;
+        this.x = this.x0;
+        this.y = this.y0;
+
+        this.d = 0;
+        this.d1 = d;
+        this.t = t0;
+        this.t1 = t1;
+        this.isDead = false;
+        this.col = col;
+      }
+
+      show() {
+        sk.noStroke();
+        sk.fill(this.col);
+        sk.circle(this.x, this.y, this.d);
+      }
+      move() {
+        if (0 < this.t && this.t < this.t1) {
+          let n = sk.norm(this.t, 0, this.t1 - 1);
+          this.d = sk.lerp(0, this.d1, easeOutCirc(n));
+          this.x = sk.lerp(this.x0, this.x1, easeOutCirc(n));
+          this.y = sk.lerp(this.y0, this.y1, easeOutCirc(n));
+        }
+        if (this.t > this.t1) {
+          this.isDead = true;
+        }
+        this.t++;
+      }
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const startReadLink = document.getElementById('startReadLink');
+    if (startReadLink) {
+      startReadLink.style.pointerEvents = 'auto';
+      startReadLink.addEventListener('click', () => {
+        startReadLink.style.visibility = 'hidden';
+        startReadLink.style.pointerEvents = 'none';
+
+        // 1) Initialize everything
+        init();
+
+        // 2) Make them visible, but start at scale(0)
+        const allEvents = Array.from(document.querySelectorAll('.event'));
+        allEvents.forEach(e => {
+          e.style.display = 'block';
+          e.classList.add('hiddenEvent');
+        });
+
+        // 3) Stagger fade-in
+        allEvents.forEach((ev, i) => {
+          setTimeout(() => {
+            ev.classList.remove('hiddenEvent');
+          }, i * 8);
+        });
+
+        // Hide start screen
+        const startScreen = document.getElementById('startScreen');
+        if (startScreen) startScreen.style.display = 'none';
+      });
+    }
+  });
   </script>
 </head>
 
@@ -3192,165 +3360,5 @@
 
   <!-- p5.js for both the circle overlay (#26) and the sun moiré effect -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
-  <script>
-    // p5 instance for the circle overlay on #26
-    let circleOverlay26 = function(sk) {
-      let colors = ['#1F438C', '#F24C27', '#F2A999', '#261B1D', '#BF0404'];
-      let ctx;
-      let motion;
-
-      sk.setup = function() {
-        let container = document.getElementById("circleOverlay26Container");
-        if (!container) {
-          return;
-        }
-        let w = container.offsetWidth || 300;
-        let h = container.offsetHeight || 300;
-
-        let cnv = sk.createCanvas(w, h);
-        cnv.parent("circleOverlay26Container");
-
-        sk.rectMode(sk.CENTER);
-        ctx = sk.drawingContext;
-
-        let d = sk.width * 0.8;
-        let x = sk.width / 2;
-        let y = sk.height / 2;
-        motion = new Motion(x, y, d);
-      };
-
-      sk.draw = function() {
-        let container = document.getElementById("circleOverlay26Container");
-        if (!container || container.style.display === "none") {
-          sk.clear();
-          return;
-        }
-        sk.clear();
-        motion.show();
-        motion.move();
-      };
-
-      function easeOutCirc(x) {
-        return Math.sqrt(1 - Math.pow(x - 1, 2));
-      }
-
-      class Motion {
-        constructor(x, y, d) {
-          this.x = x;
-          this.y = y;
-          this.d = d;
-          this.n = sk.int(sk.random(4, 15));
-          this.sw = d / this.n;
-          this.te = sk.int(sk.random(200, 400));
-          this.t = 0;
-          this.circles = [];
-          this.cols = [];
-
-          sk.shuffle(colors, true);
-          for (let i = 0; i < this.n; i++) {
-            this.cols.push(colors[i % colors.length]);
-            this.circles.push(new Circle(0, 0, this.d * 1.1, -((this.te / this.n) * i) + this.te, this.te, this.cols[i]));
-          }
-          this.count = 0;
-        }
-        show() {
-          sk.push();
-          sk.translate(this.x, this.y);
-          sk.noStroke();
-          sk.fill(255, 0);
-          sk.circle(0, 0, this.d);
-          ctx.clip();
-
-          for (let i = 0; i < this.circles.length; i++) {
-            let r = this.circles[i];
-            r.show();
-            r.move();
-          }
-          for (let i = 0; i < this.circles.length; i++) {
-            let r = this.circles[i];
-            if (r.isDead) {
-              this.count++;
-              this.circles.splice(i, 1);
-              this.circles.push(new Circle(0, 0, this.d * 1.1, 0, this.te, this.cols[this.count % this.cols.length]));
-            }
-          }
-          sk.pop();
-        }
-        move() {
-          this.t++;
-        }
-      }
-
-      class Circle {
-        constructor(x, y, d, t0, t1, col) {
-          let th = sk.random(sk.TAU);
-          let r = sk.random(0, 0.5) * d;
-          this.x0 = x + r * sk.cos(th);
-          this.x1 = x;
-          this.y0 = y + r * sk.sin(th);
-          this.y1 = y;
-          this.x = this.x0;
-          this.y = this.y0;
-
-          this.d = 0;
-          this.d1 = d;
-          this.t = t0;
-          this.t1 = t1;
-          this.isDead = false;
-          this.col = col;
-        }
-
-        show() {
-          sk.noStroke();
-          sk.fill(this.col);
-          sk.circle(this.x, this.y, this.d);
-        }
-        move() {
-          if (0 < this.t && this.t < this.t1) {
-            let n = sk.norm(this.t, 0, this.t1 - 1);
-            this.d = sk.lerp(0, this.d1, easeOutCirc(n));
-            this.x = sk.lerp(this.x0, this.x1, easeOutCirc(n));
-            this.y = sk.lerp(this.y0, this.y1, easeOutCirc(n));
-          }
-          if (this.t > this.t1) {
-            this.isDead = true;
-          }
-          this.t++;
-        }
-      }
-    };
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const startReadLink = document.getElementById('startReadLink');
-      if (startReadLink) {
-        startReadLink.style.pointerEvents = 'auto';
-        startReadLink.addEventListener('click', () => {
-          startReadLink.style.visibility = 'hidden';
-          startReadLink.style.pointerEvents = 'none';
-
-          // 1) Initialize everything
-          init();
-
-          // 2) Make them visible, but start at scale(0)
-          const allEvents = Array.from(document.querySelectorAll('.event'));
-          allEvents.forEach(e => {
-            e.style.display = 'block';
-            e.classList.add('hiddenEvent');
-          });
-
-          // 3) Stagger fade-in
-          allEvents.forEach((ev, i) => {
-            setTimeout(() => {
-              ev.classList.remove('hiddenEvent');
-            }, i * 8);
-          });
-
-          // Hide start screen
-          const startScreen = document.getElementById('startScreen');
-          if (startScreen) startScreen.style.display = 'none';
-        });
-      }
-    });
-  </script>
 </body>
 </html>
