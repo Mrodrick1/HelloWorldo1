@@ -1209,11 +1209,16 @@
   /********************************************************
    * F) HELPER MATH FUNCTIONS
    ********************************************************/
+  // --- FIX: broaden detection for iPad (iPadOS 13+ often not recognized as mobile) ---
   function isMobile() {
-    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(
-      navigator.userAgent
+    // Old check plus an extra condition for iPadOS 13+ which pretends to be Mac.
+    return (
+      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+        // iPadOS 13+ => platform "MacIntel" but with touch points
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
     );
   }
+
   function clamp(value, min, max) {
     return Math.max(min, Math.min(value, max));
   }
@@ -2428,9 +2433,9 @@
 
       window.events.push(evObj);
 
-      // DESKTOP: mouseenter/mouseleave
-      // MOBILE: click toggles
+      // DESKTOP / MOBILE logic:
       if (!isMobile()) {
+        // MOUSEENTER / LEAVE for desktop
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
@@ -2493,7 +2498,7 @@
           }
         });
       } else {
-        // MOBILE: tap toggles
+        // TAP for mobile
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
@@ -2542,7 +2547,6 @@
           if (evObj.id === 26) {
             const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
             if (overlayDiv) {
-              // Show/hide the overlay for a moment if desired
               overlayDiv.style.display =
                 overlayDiv.style.display === "none" ? "block" : "none";
             }
