@@ -385,7 +385,7 @@
       bottom: 0;
       right: 0;
       background: transparent;
-      display: none;
+      display: none; /* changed to block in the script once #65 triggers */
     }
 
     /* Updated color screen to use a 0.25s transition (see JS for .75s interval) */
@@ -436,7 +436,7 @@
       z-index: 1000;
     }
 
-    /* The overlay #50 was removed, see JS. We keep the ID as no-op: */
+    /* #50 overlay is effectively removed (unused) */
     #darkOverlay50 {
       display: none;
     }
@@ -985,8 +985,24 @@
 
   /********************************************************
    * E) HELPER: SHOW/HIDE Overlays
+   *    - Once an overlay has been shown once, it never appears again
    ********************************************************/
+  let usedDarkOverlayForEvents  = false;
+  let usedLightOverlay21        = false;
+  let usedDarkOverlay30         = false;
+  let usedMultiOverlay26        = false;
+  let usedMultiOverlay39        = false;
+  let usedMultiOverlay41        = false;
+  let usedMultiOverlay45        = false;
+  let usedMultiOverlay51        = false;
+  let usedMultiOverlay57        = false;
+  let usedMultiOverlay60        = false;
+
   function showDarkOverlayForEvents(visibleIds) {
+    // Show it only if it has never been shown
+    if (usedDarkOverlayForEvents) return;
+    usedDarkOverlayForEvents = true;
+
     const overlay = document.getElementById("darkOverlay");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1009,6 +1025,9 @@
   }
 
   function showLightOverlay21(visibleIds) {
+    if (usedLightOverlay21) return; 
+    usedLightOverlay21 = true;
+
     const overlay = document.getElementById("lightOverlay21");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1031,6 +1050,9 @@
   }
 
   function showDarkOverlay30(visibleIds) {
+    if (usedDarkOverlay30) return;
+    usedDarkOverlay30 = true;
+
     const overlay = document.getElementById("darkOverlay30");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1053,6 +1075,9 @@
   }
 
   function showMultiOverlay26(visibleIds) {
+    if (usedMultiOverlay26) return;
+    usedMultiOverlay26 = true;
+
     const overlay = document.getElementById("multiOverlay26");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1075,6 +1100,9 @@
   }
 
   function showMultiOverlay39(visibleIds) {
+    if (usedMultiOverlay39) return;
+    usedMultiOverlay39 = true;
+
     const overlay = document.getElementById("multiOverlay39");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1097,6 +1125,9 @@
   }
 
   function showMultiOverlay41(visibleIds) {
+    if (usedMultiOverlay41) return;
+    usedMultiOverlay41 = true;
+
     const overlay = document.getElementById("multiOverlay41");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1119,6 +1150,9 @@
   }
 
   function showMultiOverlay45(visibleIds) {
+    if (usedMultiOverlay45) return;
+    usedMultiOverlay45 = true;
+
     const overlay = document.getElementById("multiOverlay45");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1141,6 +1175,9 @@
   }
 
   function showMultiOverlay51(visibleIds) {
+    if (usedMultiOverlay51) return;
+    usedMultiOverlay51 = true;
+
     const overlay = document.getElementById("multiOverlay51");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1163,6 +1200,9 @@
   }
 
   function showMultiOverlay57(visibleIds) {
+    if (usedMultiOverlay57) return;
+    usedMultiOverlay57 = true;
+
     const overlay = document.getElementById("multiOverlay57");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1185,6 +1225,9 @@
   }
 
   function showMultiOverlay60(visibleIds) {
+    if (usedMultiOverlay60) return;
+    usedMultiOverlay60 = true;
+
     const overlay = document.getElementById("multiOverlay60");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
@@ -1209,16 +1252,11 @@
   /********************************************************
    * F) HELPER MATH FUNCTIONS
    ********************************************************/
-  // --- FIX: broaden detection for iPad (iPadOS 13+ often not recognized as mobile) ---
   function isMobile() {
-    // Old check plus an extra condition for iPadOS 13+ which pretends to be Mac.
-    return (
-      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
-        // iPadOS 13+ => platform "MacIntel" but with touch points
-      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(
+      navigator.userAgent
     );
   }
-
   function clamp(value, min, max) {
     return Math.max(min, Math.min(value, max));
   }
@@ -1619,9 +1657,9 @@
       if(dist>0){ ux=dx/dist; uy=dy/dist; }
 
       const leftPupilX  = (135 + catOffsetX) + ux * maxOffset;
-      const leftPupilY  = (135 + catOffsetY) + ux * maxOffset;
+      const leftPupilY  = (135 + catOffsetY) + uy * maxOffset;
       const rightPupilX = (165 + catOffsetX) + ux * maxOffset;
-      const rightPupilY = (135 + catOffsetY) + ux * maxOffset;
+      const rightPupilY = (135 + catOffsetY) + uy * maxOffset;
 
       c.fillStyle="white";
       c.beginPath();
@@ -1697,7 +1735,7 @@
   }
 
   /********************************************************
-   * Colors Screen (event #37)
+   * Colors Screen (event #37) - updated for 0.5s hold + 0.25s transition
    ********************************************************/
   let colorsContainer = null;
   let colorsIndex = 0;
@@ -1723,7 +1761,7 @@
   }
 
   /********************************************************
-   * EVENT STATE MANAGEMENT
+   * D) EVENT STATE MANAGEMENT
    ********************************************************/
   let audioElements = [];
   function unlockEvent(evId) {
@@ -2408,6 +2446,7 @@
         hole: cfg.hole || false,
         matterInitFunction: cfg.matterInitFunction || null,
         spinGuideElement: cfg.spinGuideElement || null,
+        initPano: cfg.initPano || null,
         id: index,
         playNextAudio: playNextAudio,
         quotesInterval: null,
@@ -2432,9 +2471,7 @@
 
       window.events.push(evObj);
 
-      // DESKTOP / MOBILE logic:
       if (!isMobile()) {
-        // MOUSEENTER / LEAVE for desktop
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
@@ -2497,30 +2534,17 @@
           }
         });
       } else {
-        // TAP for mobile
+        // Mobile: use click
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
             audioElements.forEach(a => { a.muted = false; });
           }
-          // If locked, do nothing
           if (evObj.state === 0) return;
-
-          // If already active, set it dormant (this hides overlays)
-          if (evObj.state === 2) {
-            if (window.hoveredEvent === evObj) {
-              window.hoveredEvent = null;
-            }
-            trySetToDormant(evObj);
-            return;
-          }
-
-          // If unlocked or dormant => activate
           if (evObj.state === 1 || evObj.state === 3) {
             activateEvent(evObj);
           }
           window.hoveredEvent = evObj;
-
           if (evObj.videoElement) {
             evObj.videoElement.currentTime=0;
             evObj.videoElement.play().catch(()=>{});
@@ -2563,26 +2587,6 @@
     const circleOverlayEl = document.getElementById("circleOverlay26Container");
     if (circleOverlayEl) {
       new p5(circleOverlay26); 
-    }
-
-    // ---------------------------
-    // FIX for mobile overlay staying open:
-    // Click anywhere outside an active event => set that event dormant
-    // (This mimics desktop's mouseleave to hide overlays.)
-    // ---------------------------
-    if (isMobile()) {
-      document.addEventListener("click", (evt) => {
-        // If we have an active event and the user tapped outside it,
-        // we set it dormant (just like a mouseleave).
-        if (window.hoveredEvent && window.hoveredEvent.state === 2) {
-          // Check if the click target is inside hoveredEvent.element
-          if (!window.hoveredEvent.element.contains(evt.target)) {
-            let evObj = window.hoveredEvent;
-            window.hoveredEvent = null;
-            trySetToDormant(evObj);
-          }
-        }
-      });
     }
   }
 
@@ -3179,7 +3183,9 @@
     };
   };
 
-  // p5 instance for the circle overlay on #26
+  /********************************************************
+   * p5 for circle overlay #26
+   ********************************************************/
   let circleOverlay26 = function(sk) {
     let colors = ['#1F438C', '#F24C27', '#F2A999', '#261B1D', '#BF0404'];
     let ctx;
@@ -3355,7 +3361,7 @@
   </div>
 
   <div id="contentWrapper">
-    <!-- White overlay (unused for now) -->
+    <!-- White overlay (unused) -->
     <div id="whiteOverlay30"></div>
     <!-- Bird canvas -->
     <canvas id="birdCanvas"></canvas>
@@ -3364,7 +3370,7 @@
   <!-- Container for the "colorsScreen" event (#37) -->
   <div id="colorsContainer"></div>
 
-  <!-- Overlays for certain events -->
+  <!-- Overlays -->
   <div id="darkOverlay"></div>
   <div id="lightOverlay21"></div>
   <div id="darkOverlay30"></div>
