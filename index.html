@@ -1251,11 +1251,11 @@
   /********************************************************
    * F) HELPER MATH FUNCTIONS
    ********************************************************/
+  // Updated to rely on touch availability to ensure iPad is treated as mobile
   function isMobile() {
-    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(
-      navigator.userAgent
-    );
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
+
   function clamp(value, min, max) {
     return Math.max(min, Math.min(value, max));
   }
@@ -1779,13 +1779,13 @@
   }
   function activateEvent(evObj) {
     // -----------------------------------------------------------
-    // FIX: Also call trySetToDormant on the previously active event
-    // to ensure overlays are hidden on mobile:
+    // Also call trySetToDormant on the previously active event
+    // so overlays are hidden if needed:
     // -----------------------------------------------------------
     let oldActive = window.events[window.currentActiveIndex];
     if (oldActive && oldActive !== evObj && oldActive.state === 2) {
       setEventState(oldActive, 3);
-      trySetToDormant(oldActive); // Make sure we hide overlays if needed
+      trySetToDormant(oldActive);
     }
 
     if (!evObj.hasBeenActivated) {
@@ -2476,8 +2476,7 @@
 
       window.events.push(evObj);
 
-      // DESKTOP: use mouseenter/mouseleave
-      // MOBILE: use click --> if it's already active, we set it to dormant
+      // DESKTOP logic
       if (!isMobile()) {
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
@@ -2540,8 +2539,9 @@
             }
           }
         });
-      } else {
-        // MOBILE branch
+      }
+      // MOBILE (touch) logic
+      else {
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
