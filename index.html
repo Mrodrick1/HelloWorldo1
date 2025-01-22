@@ -153,13 +153,13 @@
       background: #e7e7e7;
       font-family: 'Montserrat', sans-serif;
       user-select: none;
-      overflow: hidden; /* Disables both horizontal and vertical scrolling */
+      overflow: hidden; /* Disables scrolling */
     }
 
     #contentWrapper {
-      width: 100vw; /* Full width of the viewport */
-      height: 100vh; /* Full height of the viewport */
-      box-sizing: border-box; /* Ensures future borders/padding stay inside dimensions */
+      width: 100vw; 
+      height: 100vh; 
+      box-sizing: border-box;
     }
 
     #startScreen {
@@ -170,16 +170,16 @@
       height: 100vh;
       background-color: transparent;
       z-index: 1;
-      display: flex !important; /* Force flexbox */
-      align-items: center !important; /* Center vertically */
-      justify-content: center !important; /* Center horizontally */
-      flex-direction: column; /* Stack children vertically */
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-direction: column;
     }
 
     #startScreen .background-text {
       text-align: left;
       color: #0D0D0D;
-      max-width: 600px; 
+      max-width: 600px;
       box-sizing: border-box;
     }
 
@@ -226,7 +226,7 @@
       position: absolute;
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
-      z-index: 3; 
+      z-index: 3;
       display: none; 
       align-items: center;
       justify-content: center;
@@ -269,8 +269,8 @@
       color: white;
       opacity: 0;
       transition: opacity 0.3s ease, font-size 0.3s ease;
-      z-index: 999999; /* Keep text above everything in .event-box */
-      position: relative; /* needed for z-index to work */
+      z-index: 999999;
+      position: relative;
     }
     .event.active .event-text {
       opacity: 1;
@@ -376,7 +376,7 @@
       z-index: 9998;
     }
 
-    /* BIRD CANVAS: behind events, but above the background. Initially hidden. */
+    /* BIRD CANVAS */
     #birdCanvas {
       z-index: 1;
       position: fixed;
@@ -385,10 +385,10 @@
       bottom: 0;
       right: 0;
       background: transparent;
-      display: none; /* changed to block in the script once #65 triggers */
+      display: none;
     }
 
-    /* Updated color screen to use a 0.25s transition (see JS for .75s interval) */
+    /* Color screen for #37 */
     #colorsContainer {
       position: fixed;
       top: 0;
@@ -403,6 +403,7 @@
       transition: background-color 0.25s ease-in-out; 
     }
 
+    /* Overlays */
     #darkOverlay {
       position: fixed;
       top: 0;
@@ -436,7 +437,7 @@
       z-index: 1000;
     }
 
-    /* #50 overlay is effectively removed (unused) */
+    /* #50 overlay removed (unused) */
     #darkOverlay50 {
       display: none;
     }
@@ -457,10 +458,57 @@
       display: none;
       z-index: 1000;
     }
+
+    /* Extra spinner placeholder for some events */
+    .spin-guide { 
+      width: 20px; 
+      height: 20px; 
+      border: 3px solid white; 
+      border-top: 3px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      animation: spin 1.5s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
   </style>
 
   <!-- 2) MAIN (UNIFIED) SCRIPT -->
   <script>
+  /********************************************************
+   * A) GLOBALS FOR DEVICE ORIENTATION
+   ********************************************************/
+  window.orientationData = { alpha: 0, beta: 0, gamma: 0 };
+
+  // Attempt to request orientation permission on iOS13+.
+  // Called when the user taps "read" so it is user-initiated.
+  function requestDeviceOrientationPermission() {
+    if ('DeviceOrientationEvent' in window) {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // iOS
+        DeviceOrientationEvent.requestPermission()
+          .then((state) => {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', handleOrientation, true);
+            }
+          })
+          .catch(console.error);
+      } else {
+        // Non-iOS
+        window.addEventListener('deviceorientation', handleOrientation, true);
+      }
+    }
+  }
+
+  function handleOrientation(evt) {
+    window.orientationData.alpha = evt.alpha || 0;
+    window.orientationData.beta  = evt.beta  || 0;
+    window.orientationData.gamma = evt.gamma || 0;
+  }
+
   /********************************************************
    * B) DEFINE OUR EVENTS
    ********************************************************/
@@ -998,7 +1046,6 @@
   let usedMultiOverlay60        = false;
 
   function showDarkOverlayForEvents(visibleIds) {
-    // Show it only if it has never been shown
     if (usedDarkOverlayForEvents) return;
     usedDarkOverlayForEvents = true;
 
@@ -1251,7 +1298,7 @@
   /********************************************************
    * F) HELPER MATH FUNCTIONS
    ********************************************************/
-  // Updated to rely on touch availability to ensure iPad is treated as mobile
+  // check for mobile / touch
   function isMobile() {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
@@ -1734,7 +1781,7 @@
   }
 
   /********************************************************
-   * Colors Screen (event #37) - updated for 0.5s hold + 0.25s transition
+   * Colors Screen (event #37)
    ********************************************************/
   let colorsContainer = null;
   let colorsIndex = 0;
@@ -1747,7 +1794,6 @@
   ];
   function initColorsScreen() {
     colorsContainer = document.getElementById("colorsContainer");
-    // Change color every 0.75s => 0.25s transition + 0.5s hold
     setInterval(updateColorsScene, 750);
     updateColorsScene();
   }
@@ -1760,7 +1806,7 @@
   }
 
   /********************************************************
-   * D) EVENT STATE MANAGEMENT
+   * EVENT STATE MANAGEMENT
    ********************************************************/
   let audioElements = [];
   function unlockEvent(evId) {
@@ -1778,10 +1824,7 @@
     }
   }
   function activateEvent(evObj) {
-    // -----------------------------------------------------------
-    // Also call trySetToDormant on the previously active event
-    // so overlays are hidden if needed:
-    // -----------------------------------------------------------
+    // also make the previously active event dormant
     let oldActive = window.events[window.currentActiveIndex];
     if (oldActive && oldActive !== evObj && oldActive.state === 2) {
       setEventState(oldActive, 3);
@@ -2136,7 +2179,6 @@
       "https://www.dropbox.com/scl/fi/5178gx4qszidr3wat9lmz/8_SC_VE_vibraphone_note_bowed_single_B4.wav?rlkey=gegfylfnlgncikcorl6usoflp&raw=1",
       "https://www.dropbox.com/scl/fi/zafxbouoetewg1jyifwzp/oa_chord_one_shot_piano_derius_Fmaj7.mp3?rlkey=qns7kv9w1w9k61qyktf0cetbz&raw=1",
       "https://www.dropbox.com/scl/fi/i1jnd019noxaf33dpezua/5_CO_JK_soft_piano_note_G.mp3?rlkey=h84tj2ufxe6ypvz8wwarvb98d&st=lbzczlu4&raw=1"
-      
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -2311,6 +2353,7 @@
             boxDiv.appendChild(specialVideo);
             break;
           case 'colorsScreen':
+            // handled separately
             break;
           case 'panorama360':
             panoContainer = document.createElement("div");
@@ -2326,26 +2369,19 @@
 
             cfg.initPano = () => {
               if (!cfg.panoViewer) {
+                // On mobile, enable device orientation by default
                 let viewer = pannellum.viewer(panoContainer.id, {
                   type: 'equirectangular',
                   panorama: cfg.special.panoramaSrc,
                   autoLoad: true,
                   showZoomCtrl: false,
                   showFullscreenCtrl: false,
-                  compass: false,
+                  compass: true,
                   mouseZoom: false,
                   pitch: 0,
                   yaw: 0,
-                  hfov: 110
-                });
-                panoContainer.addEventListener('mousemove', (e) => {
-                  let rect = panoContainer.getBoundingClientRect();
-                  let xFrac = (e.clientX - rect.left) / rect.width;
-                  let yFrac = (e.clientY - rect.top) / rect.height;
-                  let newYaw = (xFrac - 0.5) * 180;
-                  let newPitch = (0.5 - yFrac) * 40;
-                  viewer.setYaw(newYaw);
-                  viewer.setPitch(newPitch);
+                  hfov: 110,
+                  orientationOnByDefault: isMobile() ? true : false
                 });
                 cfg.panoViewer = viewer;
               }
@@ -2476,7 +2512,7 @@
 
       window.events.push(evObj);
 
-      // DESKTOP logic
+      // DESKTOP
       if (!isMobile()) {
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
@@ -2540,17 +2576,15 @@
           }
         });
       }
-      // MOBILE (touch) logic
+      // MOBILE (touch)
       else {
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
             audioElements.forEach(a => { a.muted = false; });
           }
-          // If locked, do nothing
           if (evObj.state === 0) return;
 
-          // If unlocked or dormant => activate
           if (evObj.state === 1 || evObj.state === 3) {
             activateEvent(evObj);
             window.hoveredEvent = evObj;
@@ -2572,19 +2606,17 @@
               evObj.quotesInterval = setInterval(()=>{
                 evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
                 i++;
-              }, 3000);
+              }, 1200);
             }
             if (evObj.id === 26) {
               const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
               if (overlayDiv) {
-                overlayDiv.style.display =
-                  overlayDiv.style.display === "none" ? "block" : "block";
+                overlayDiv.style.display = "block";
               }
             }
           }
-          // If already active => toggle to dormant
           else if (evObj.state === 2) {
-            // same effect as 'mouseleave' on desktop
+            // turn dormant
             trySetToDormant(evObj);
             if (window.hoveredEvent === evObj) {
               window.hoveredEvent = null;
@@ -2669,6 +2701,7 @@
 
     let birdCanvW = birdCanvas.width;
     let birdCanvH = birdCanvas.height;
+
     let mouse = { x: 0, y: 0, z: 0 };
 
     const Bird = {
@@ -3127,16 +3160,17 @@
   }
 
   /********************************************************
-   * SUN MOIRÉ EFFECT (starts at same time as BIRDS)
+   * SUN MOIRÉ EFFECT (#65)
    ********************************************************/
   function initSunMoire() {
-    new p5(sunMoireSketch); 
+    new p5(sunMoireSketch);
   }
 
   let sunMoireSketch = function(sk) {
     let radius = 200.0;
     let sRadius = radius * 0.9;
     let canvas;
+    let isMobileDevice = isMobile();
 
     sk.setup = function() {
       canvas = sk.createCanvas(window.innerWidth, window.innerHeight);
@@ -3155,7 +3189,17 @@
 
     sk.draw = function() {
       sk.clear();
-      let strY = sk.map(sk.mouseY, 0, sk.height, 1.5, 4);
+
+      let strY;
+      if (isMobileDevice) {
+        // use orientationData beta => range about -180..180
+        let b = window.orientationData.beta || 0;
+        // map to 1.5..4
+        strY = sk.map(b, -90, 90, 1.5, 4, true);
+      } else {
+        // fallback to mouse
+        strY = sk.map(sk.mouseY, 0, sk.height, 1.5, 4);
+      }
       drawSun(strY);
     };
 
@@ -3163,7 +3207,7 @@
       radius = Math.min(sk.width, sk.height) / 4;
       sRadius = radius * 0.9;
 
-      // Four quarters
+      // We'll just do the same moiré logic, except we vary with "strW"
       sunQu(-1, true,  sk.mouseY / 10, sk.height - sk.height / 4 - sk.mouseY / 2, strW);
       sunQu(1,  true,  sk.mouseY / 10, sk.height - sk.height / 4 - sk.mouseY / 2, strW);
       sunQu(-1, false, sk.mouseY / 10, sk.height - sk.height / 4 - sk.mouseY / 2, strW);
@@ -3180,7 +3224,7 @@
       let b = 10;
 
       if (flip === true) {
-        // bottom quarters
+        // bottom
         for (let i = 0; i < density; i++) {
           sk.beginShape();
           sk.stroke(r, g, b);
@@ -3194,7 +3238,7 @@
           b -= 9;
         }
       } else {
-        // top quarters
+        // top
         for (let j = 0; j < density; j++) {
           sk.beginShape();
           sk.stroke(r, g, b);
@@ -3211,6 +3255,7 @@
       sk.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
+
 
   /********************************************************
    * p5 for circle overlay #26
@@ -3346,20 +3391,24 @@
     if (startReadLink) {
       startReadLink.style.pointerEvents = 'auto';
       startReadLink.addEventListener('click', () => {
+        // 1) Request orientation permission (iOS)
+        requestDeviceOrientationPermission();
+
+        // 2) Hide the "read" link to avoid double triggers
         startReadLink.style.visibility = 'hidden';
         startReadLink.style.pointerEvents = 'none';
 
-        // 1) Initialize everything
+        // 3) Initialize everything
         init();
 
-        // 2) Make them visible, but start at scale(0)
+        // 4) Make them visible, but start at scale(0)
         const allEvents = Array.from(document.querySelectorAll('.event'));
         allEvents.forEach(e => {
           e.style.display = 'block';
           e.classList.add('hiddenEvent');
         });
 
-        // 3) Stagger fade-in
+        // 5) Stagger fade-in
         allEvents.forEach((ev, i) => {
           setTimeout(() => {
             ev.classList.remove('hiddenEvent');
@@ -3403,10 +3452,8 @@
   <div id="darkOverlay"></div>
   <div id="lightOverlay21"></div>
   <div id="darkOverlay30"></div>
-
   <!-- #50 overlay is effectively removed -->
   <div id="darkOverlay50"></div>
-
   <!-- Overlays for multi-event synergy -->
   <div id="multiOverlay26"></div>
   <div id="multiOverlay39"></div>
@@ -3416,7 +3463,7 @@
   <div id="multiOverlay57"></div>
   <div id="multiOverlay60"></div>
 
-  <!-- p5.js for both the circle overlay (#26) and the sun moiré effect -->
+  <!-- p5.js for circle overlay (#26) and the sun moiré effect (#65) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 </body>
 </html>
