@@ -385,7 +385,7 @@
       bottom: 0;
       right: 0;
       background: transparent;
-      display: none; /* changed to block in the script once #65 triggers */
+      display: none;
     }
 
     /* Updated color screen to use a 0.25s transition (see JS for .75s interval) */
@@ -2408,7 +2408,6 @@
         hole: cfg.hole || false,
         matterInitFunction: cfg.matterInitFunction || null,
         spinGuideElement: cfg.spinGuideElement || null,
-        initPano: cfg.initPano || null,
         id: index,
         playNextAudio: playNextAudio,
         quotesInterval: null,
@@ -2564,6 +2563,26 @@
     const circleOverlayEl = document.getElementById("circleOverlay26Container");
     if (circleOverlayEl) {
       new p5(circleOverlay26); 
+    }
+
+    // ---------------------------
+    // FIX for mobile overlay staying open:
+    // Click anywhere outside an active event => set that event dormant
+    // (This mimics desktop's mouseleave to hide overlays.)
+    // ---------------------------
+    if (isMobile()) {
+      document.addEventListener("click", (evt) => {
+        // If we have an active event and the user tapped outside it,
+        // we set it dormant (just like a mouseleave).
+        if (window.hoveredEvent && window.hoveredEvent.state === 2) {
+          // Check if the click target is inside hoveredEvent.element
+          if (!window.hoveredEvent.element.contains(evt.target)) {
+            let evObj = window.hoveredEvent;
+            window.hoveredEvent = null;
+            trySetToDormant(evObj);
+          }
+        }
+      });
     }
   }
 
