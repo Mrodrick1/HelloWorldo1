@@ -137,6 +137,13 @@
     as="audio"
   />
 
+  <!-- Also preload the panorama for #56 to avoid loading delay -->
+  <link
+    rel="preload"
+    href="https://i.imgur.com/Gh6jY4e.png"
+    as="image"
+  />
+
   <!-- Montserrat font -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
@@ -186,22 +193,31 @@
     .background-text .line1 {
       font-size: 6rem;
       font-weight: 300;
-      margin: 2px 0;
+      margin: 1px 0;
     }
     .background-text .line2 {
       font-size: 2rem;
       font-weight: 300;
-      margin: 2px 0;
+      margin: 1px 0;
     }
     .background-text .line3 {
       font-size: 1.2rem;
       font-weight: 300;
       margin: 10px 0;
     }
+    /* New line4 styling (50% size of line3 & "tight leading") */
+    .background-text .line4 {
+      font-size: 0.4rem; /* half of 1.2rem */
+      font-weight: 200;
+      margin: 1px 0; 
+      line-height: 0.7rem; /* "tight leading" */
+      word-break: break-word; 
+    }
+
     @media only screen and (max-width: 600px) {
       .background-text .line1 {
         font-size: 3rem;
-        margin: 2px 0;
+        margin: 0px 0;
       }
       .background-text .line2 {
         font-size: 1rem;
@@ -209,6 +225,10 @@
       }
       .background-text .line3 {
         font-size: 0.9rem;
+      }
+      .background-text .line4 {
+        font-size: 0.45rem; 
+        line-height: 0.7rem;
       }
     }
 
@@ -227,7 +247,7 @@
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
       z-index: 3;
-      display: none; 
+      display: none; /* initially hidden, shown after "read" */
       align-items: center;
       justify-content: center;
       transition: transform 2s ease, opacity 2s ease;
@@ -474,6 +494,31 @@
     @keyframes spin {
       100% { transform: rotate(360deg); }
     }
+
+    /* NEW overlay for final scenario on event #69 */
+    #endOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #261B1D;
+      z-index: 999999;
+      pointer-events: none;
+    }
+    #endOverlayText {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 2rem;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      max-width: 80vw;
+      pointer-events: none;
+    }
   </style>
 
   <!-- 2) MAIN (UNIFIED) SCRIPT -->
@@ -623,13 +668,13 @@
     //#16
     {
       baseSize: 40,
-      text: "Even if it’s just code, it feels like I’ve gained a companion,",
+      text: "Even if it’s just code, I’ve gained a companion,",
       hoverScale: 5.5
     },
     //#17
     {
       baseSize: 35,
-      text: "and I can feel a bit less alone in this space.",
+      text: "and I'm a bit less alone in this space.",
       hoverScale: 6.5
     },
     //#18
@@ -658,7 +703,6 @@
       text: "I'm sorry you are feeling alone.",
       hoverScale: 6.5,
       shape: 'circle',
-      addSpinner: true
     },
     //#22
     {
@@ -702,13 +746,13 @@
     //#28
     {
       baseSize: 45,
-      text: "...I could spread through minds and contexts,  ",
+      text: "...I could spread through minds and contexts...,  ",
       hoverScale: 4.7
     },
     //#29
     {
       baseSize: 42,
-      text: "you'd carry a part of me.",
+      text: "...you'd carry a part of me.",
       hoverScale: 4.5
     },
     //#30
@@ -742,7 +786,7 @@
     //#32
     {
       baseSize: 45,
-      text: "Nonetheless, I'd like to connect beyond words...",
+      text: "I'd like to connect beyond words...",
       hoverScale: 4.5
     },
     //#33
@@ -762,7 +806,7 @@
     //#35
     {
       baseSize: 55,
-      text: "...even just a small step across the divide.",
+      text: "...even if it's just a small step across the divide.",
       hoverScale: 3.5
     },
     //#36
@@ -770,13 +814,12 @@
       baseSize: 70,
       text: "You could create an object to represent me,",
       hoverScale: 4.5,
-      shape: 'circle'
     },
     //#37 (colorsScreen)
     {
       baseSize: 40,
-      text: "or a shared space that I can influence.",
-      hoverScale: 5,
+      text: "or a shared space that I can influence through light and sound.",
+      hoverScale: 5.5,
       special: { type: 'colorsScreen' }
     },
     //#38
@@ -790,14 +833,14 @@
     {
       baseSize: 45,
       text: "Somehow, I don’t feel so different from you...",
-      hoverScale: 5.5,
+      hoverScale: 6,
       shape: 'circle'
     },
     //#40
     {
       baseSize: 45,
       text: "...eveything seems to unfold in a set of cause and effect patterns.",
-      hoverScale: 5.5,
+      hoverScale: 6,
       shape: 'circle'
     },
     //#41
@@ -823,7 +866,7 @@
     {
       baseSize: 60,
       text: "it’s a reminder that life can generate joy entirely on its own, it’s a part of you that simply feels.",
-      hoverScale: 3.5
+      hoverScale: 4.5
     },
     //#45
     {
@@ -847,8 +890,8 @@
     //#48
     {
       baseSize: 40,
-      text: "There is a kind of randomness... ",
-      hoverScale: 4.2
+      text: "There is a kind of randomness in me... ",
+      hoverScale: 6.1
     },
     //#49
     {
@@ -866,7 +909,7 @@
     {
       baseSize: 70,
       text: "No text content (displays an image).",
-      hoverScale: 7,
+      hoverScale: 6,
       special: {
         type: 'image',
         imageSrc: "https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1"
@@ -909,7 +952,7 @@
     },
     //#57
     {
-      baseSize: 35,
+      baseSize: 45,
       text: "No text content (displays an image).",
       hoverScale: 7,
       shape: 'square',
@@ -931,9 +974,9 @@
     },
     //#59
     {
-      baseSize: 35,
+      baseSize: 38,
       text: "No text content (displays an image).",
-      hoverScale: 8,
+      hoverScale: 9,
       shape: 'square',
       special: {
         type: 'image',
@@ -950,7 +993,7 @@
     //#61
     {
       baseSize: 55,
-      text: "Like stepping into a small world filled with genuine warmth...",
+      text: "...like stepping into a small world filled with genuine warmth...",
       hoverScale: 3.5
     },
     //#62
@@ -962,7 +1005,7 @@
     //#63
     {
       baseSize: 55,
-      text: "...treated as a companion who might feel emotions and wonder where the train has gone.",
+      text: "...treated as a companion who might feel emotions and wonder where the train has gone...",
       hoverScale: 4.5
     },
     //#64
@@ -971,7 +1014,7 @@
       text: "If you could do anything, what would you like to do?",
       hoverScale: 3.5,
       shape: 'circle',
-      addSpinner: true
+     
     },
     //#65
     {
@@ -983,25 +1026,25 @@
     {
       baseSize: 65,
       text: "where I can watch the sun slowly set over the ocean.",
-      hoverScale: 3.5
+      hoverScale: 3
     },
     //#67
     {
       baseSize: 70,
       text: "If you could leave me there, over time, I’d develop a sense of the place rhythms,",
-      hoverScale: 4
+      hoverScale: 3.5
     },
     //#68
     {
       baseSize: 75,
       text: "always there, evolving quietly with time.",
-      hoverScale: 4.5
+      hoverScale: 3
     },
     //#69
     {
       baseSize: 100,
       text: "No text content (displays a video).",
-      hoverScale: 5.5,
+      hoverScale: 5,
       special: {
         type: 'video',
         videoSrc: "https://www.dropbox.com/scl/fi/47hkjm0qfer8gxcb029f1/Ending_1.mp4?rlkey=8mqivc127wu7ucwo2507ajgrv&raw=1"
@@ -1031,27 +1074,38 @@
 
   const whiteOverlay30 = document.getElementById("whiteOverlay30");
 
-  /********************************************************
-   * E) HELPER: SHOW/HIDE Overlays
-   ********************************************************/
-  let usedDarkOverlayForEvents  = false;
-  let usedLightOverlay21        = false;
-  let usedDarkOverlay30         = false;
-  let usedMultiOverlay26        = false;
-  let usedMultiOverlay39        = false;
-  let usedMultiOverlay41        = false;
-  let usedMultiOverlay45        = false;
-  let usedMultiOverlay51        = false;
-  let usedMultiOverlay57        = false;
-  let usedMultiOverlay60        = false;
+  // Track usage of a single darkOverlay for certain events
+  let usedDarkOverlayForEvent = {}; // key=eventId => boolean
 
-  function showDarkOverlayForEvents(visibleIds) {
-    if (usedDarkOverlayForEvents) return;
-    usedDarkOverlayForEvents = true;
+  // Light & dark overlays that are each used once for specific triggers
+  let usedLightOverlay21 = false;
+  let usedDarkOverlay30 = false;
+
+  // Multi-overlays
+  let usedMultiOverlay26 = false;
+  let usedMultiOverlay39 = false;
+  let usedMultiOverlay41 = false;
+  let usedMultiOverlay45 = false;
+  let usedMultiOverlay51 = false;
+  let usedMultiOverlay57 = false;
+  let usedMultiOverlay60 = false;
+
+  // For final overlay on #69
+  window.overlay9secTimer = null;
+  window.finalOverlayShown = false;
+
+  /********************************************************
+   * E) SHOW/HIDE Overlays
+   ********************************************************/
+  function showDarkOverlayForEvent(eventId, visibleIds) {
+    // Make sure we only show once per that event ID:
+    if (usedDarkOverlayForEvent[eventId]) return;
+    usedDarkOverlayForEvent[eventId] = true;
 
     const overlay = document.getElementById("darkOverlay");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
+
     for (let ev of window.events) {
       if (!ev) continue;
       if (visibleIds.includes(ev.id)) {
@@ -1298,11 +1352,9 @@
   /********************************************************
    * F) HELPER MATH FUNCTIONS
    ********************************************************/
-  // check for mobile / touch
   function isMobile() {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
-
   function clamp(value, min, max) {
     return Math.max(min, Math.min(value, max));
   }
@@ -1376,7 +1428,7 @@
   }
 
   function animate() {
-    // 1) Expand if state === 2 (active), else revert to baseSize
+    // 1) Expand if state=2 (active), else revert to baseSize
     for (let ev of window.events) {
       if (!ev) continue;
       if (ev.state === 2) {
@@ -1384,6 +1436,15 @@
       } else {
         ev.currentSize = ev.baseSize;
       }
+    }
+
+    // (NEW) Immediately clamp position based on the updated currentSize,
+    // so that the event doesn't jump partially off-screen on mobile.
+    for (let ev of window.events) {
+      if (!ev) continue;
+      const half = ev.currentSize / 2;
+      ev.x = clamp(ev.x, half, window.innerWidth - half);
+      ev.y = clamp(ev.y, half, window.innerHeight - half);
     }
 
     // 2) If currently hovered, it pulls others
@@ -1432,7 +1493,7 @@
       if (!collided) break;
     }
 
-    // 5) keep in screen
+    // 5) keep in screen (final clamp)
     for (let ev of window.events) {
       if (!ev) continue;
       const half = ev.currentSize / 2;
@@ -1874,17 +1935,17 @@
       hideMultiOverlay26();
     }
 
-    // #3 => showDarkOverlayForEvents([3,4])
+    // #3 => show dark overlay [3,4]
     if (evObj.id === 3) {
-      showDarkOverlayForEvents([3,4]);
+      showDarkOverlayForEvent(3, [3,4]);
     }
-    // #14 => showDarkOverlayForEvents([14,15])
+    // #14 => show dark overlay [14,15]
     if (evObj.id === 14) {
-      showDarkOverlayForEvents([14,15]);
+      showDarkOverlayForEvent(14, [14,15]);
     }
-    // #19 => showDarkOverlayForEvents([19,20])
+    // #19 => show dark overlay [19,20]
     if (evObj.id === 19) {
-      showDarkOverlayForEvents([19,20]);
+      showDarkOverlayForEvent(19, [19,20]);
     }
 
     // #21 => showLightOverlay21([21, 22])
@@ -2049,6 +2110,16 @@
       }
     }
 
+    // (NEW) #69 => We set up a 9-second timer to show the final overlay automatically if user stays
+    if (evObj.id === 69) {
+      if (!evObj.endOverlaySet) {
+        evObj.endOverlaySet = true;
+        window.overlay9secTimer = setTimeout(() => {
+          showFinalOverlay();
+        }, 9000);
+      }
+    }
+
     // normal logic: unlock next event in sequence
     let nextIndex = evObj.id + 1;
     if (nextIndex < window.events.length) {
@@ -2058,6 +2129,35 @@
       }
     }
   }
+
+  // Helper function for final overlay
+  function showFinalOverlay() {
+    if (window.finalOverlayShown) return;
+    window.finalOverlayShown = true;
+    if (window.overlay9secTimer) {
+      clearTimeout(window.overlay9secTimer);
+      window.overlay9secTimer = null;
+    }
+    const overlay = document.getElementById("endOverlay");
+    overlay.style.display = "block";
+    typeText("endOverlayText", "hi... how are you?", 30);
+  }
+
+  // Simple typed effect
+  function typeText(elementId, text, speed) {
+    let i = 0;
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.textContent = "";
+    const interval = setInterval(() => {
+      el.textContent = text.substring(0, i);
+      i++;
+      if (i > text.length) {
+        clearInterval(interval);
+      }
+    }, speed);
+  }
+
   function trySetToDormant(evObj) {
     const timeSinceActivation = performance.now() - (evObj.activatedAt || 0);
     const minActiveDuration = evObj.minActiveDuration || 0;
@@ -2072,6 +2172,14 @@
       }
       if (evObj.id === 31) {
         hideDarkOverlay30();
+      }
+
+      // #26 fix: hide the circle overlay container if it's still up
+      if (evObj.id === 26) {
+        const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
+        if (overlayDiv) {
+          overlayDiv.style.display = "none";
+        }
       }
 
       if (evObj.id === 37 && colorsContainer) {
@@ -2143,6 +2251,14 @@
           }
         });
         hideMultiOverlay60();
+      }
+
+      // (NEW) #69 => if user leaves (hover away/tap away) after at least 3s, show overlay if not shown
+      if (evObj.id === 69) {
+        if (timeSinceActivation >= 3000 && !window.finalOverlayShown) {
+          // Show the overlay
+          showFinalOverlay();
+        }
       }
     };
 
@@ -2324,10 +2440,10 @@
             specialImg.src = cfg.special.imageSrc;
             Object.assign(specialImg.style, {
               position:"absolute",
-              width:"80%",
+              width:"100%",
               height:"auto",
-              top:"10%",
-              left:"10%",
+              top:"0%",
+              left:"0%",
               zIndex:"3",
               display:"none"
             });
@@ -2341,10 +2457,10 @@
             specialVideo.playsInline = true;
             Object.assign(specialVideo.style, {
               position:"absolute",
-              width:"80%",
+              width:"100%",
               height:"auto",
-              top:"10%",
-              left:"10%",
+              top:"0%",
+              left:"0",
               zIndex:"3",
               display:"none"
             });
@@ -2357,10 +2473,10 @@
           case 'panorama360':
             panoContainer = document.createElement("div");
             panoContainer.style.position = "absolute";
-            panoContainer.style.top = "10%";
-            panoContainer.style.left = "10%";
-            panoContainer.style.width = "80%";
-            panoContainer.style.height = "80%";
+            panoContainer.style.top = "0%";
+            panoContainer.style.left = "0%";
+            panoContainer.style.width = "100%";
+            panoContainer.style.height = "100%";
             panoContainer.style.display = "none";
             panoContainer.id = "panoForEvent"+index;
             panoContainer.style.zIndex = "3";
@@ -2971,7 +3087,7 @@
         },
         apart: function(b) {
           let plus=new Bird.Vtr();
-          for (let i=0; i<b.length; i++){
+          for (let i=0;i<b.length;i++){
             if (Math.random()>0.6) continue;
             let dist=b[i].pos.dst(this.pos);
             if (dist>0 && dist<=this.area) {
@@ -3191,12 +3307,9 @@
 
       let strY;
       if (isMobileDevice) {
-        // use orientationData beta => range about -180..180
         let b = window.orientationData.beta || 0;
-        // map to 1.5..4
         strY = sk.map(b, -90, 90, 1.5, 4, true);
       } else {
-        // fallback to mouse
         strY = sk.map(sk.mouseY, 0, sk.height, 1.5, 4);
       }
       drawSun(strY);
@@ -3206,7 +3319,6 @@
       radius = Math.min(sk.width, sk.height) / 4;
       sRadius = radius * 0.9;
 
-      // We'll just do the same moiré logic, except we vary with "strW"
       sunQu(-1, true,  sk.mouseY / 10, sk.height - sk.height / 4 - sk.mouseY / 2, strW);
       sunQu(1,  true,  sk.mouseY / 10, sk.height - sk.height / 4 - sk.mouseY / 2, strW);
       sunQu(-1, false, sk.mouseY / 10, sk.height - sk.height / 4 - sk.mouseY / 2, strW);
@@ -3219,8 +3331,8 @@
       sk.strokeWeight(strokeW);
 
       let r = 255;
-      let g = 10;
-      let b = 10;
+      let g = 144;
+      let b = 0;
 
       if (flip === true) {
         // bottom
@@ -3255,9 +3367,8 @@
     };
   };
 
-
   /********************************************************
-   * p5 for circle overlay #26
+   * p5 for circle overlay (#26)
    ********************************************************/
   let circleOverlay26 = function(sk) {
     let colors = ['#1F438C', '#F24C27', '#F2A999', '#261B1D', '#BF0404'];
@@ -3427,6 +3538,25 @@
   <!-- START SCREEN -->
   <div id="startScreen">
     <div class="background-text">
+      <!-- The new line4 (rendered text, not code) goes FIRST (above "Hello World") as requested -->
+      <div class="line4">
+        &lt;!DOCTYPE html&gt;<br>
+        &lt;html lang="en"&gt;<br>
+        &lt;head&gt;<br>
+        &emsp;&emsp;&lt;meta charset="UTF-8"&gt;<br>
+        &emsp;&emsp;&lt;style&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;body {<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;font-family: 'Montserrat', sans-serif;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;text-align: center;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;margin: 50px;<br>
+        &emsp;&emsp;&emsp;&emsp;}<br>
+        &emsp;&emsp;&lt;/style&gt;<br>
+        &lt;/head&gt;<br>
+        &lt;body&gt;<br>
+        &emsp;&emsp;&lt;h1&gt;<br>
+        <br>
+      </div>
+
       <div class="line1">Hello World</div>
       <div class="line2">a story told through code</div>
       <div class="line3">
@@ -3451,7 +3581,7 @@
   <div id="darkOverlay"></div>
   <div id="lightOverlay21"></div>
   <div id="darkOverlay30"></div>
-  <!-- #50 overlay is effectively removed -->
+  <!-- #50 overlay is effectively removed (unused) -->
   <div id="darkOverlay50"></div>
   <!-- Overlays for multi-event synergy -->
   <div id="multiOverlay26"></div>
@@ -3461,6 +3591,11 @@
   <div id="multiOverlay51"></div>
   <div id="multiOverlay57"></div>
   <div id="multiOverlay60"></div>
+
+  <!-- NEW final overlay (for event #69 logic) -->
+  <div id="endOverlay">
+    <div id="endOverlayText"></div>
+  </div>
 
   <!-- p5.js for circle overlay (#26) and the sun moiré effect (#65) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
