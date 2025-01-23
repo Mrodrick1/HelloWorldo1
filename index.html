@@ -1111,7 +1111,6 @@
    * E) SHOW/HIDE Overlays
    ********************************************************/
   function showDarkOverlayForEvent(eventId, visibleIds) {
-    // Make sure we only show once per that event ID:
     if (usedDarkOverlayForEvent[eventId]) return;
     usedDarkOverlayForEvent[eventId] = true;
 
@@ -2102,7 +2101,7 @@
       hideMultiOverlay60();
     }
 
-    // *** BIRDS => Show from #65 on ***
+    // *** BIRD CANVAS => Show from #65 on
     if (evObj.id === 65) {
       if (!window.birdCanvasStarted) {
         window.birdCanvasStarted = true;
@@ -2122,7 +2121,7 @@
       }
     }
 
-    // (NEW) #69 => We set up a 9-second timer to show the final overlay automatically if user stays
+    // (NEW) #69 => 9-second timer to show final overlay automatically
     if (evObj.id === 69) {
       if (!evObj.endOverlaySet) {
         evObj.endOverlaySet = true;
@@ -2142,7 +2141,6 @@
     }
   }
 
-  // Helper function for final overlay
   function showFinalOverlay() {
     if (window.finalOverlayShown) return;
     window.finalOverlayShown = true;
@@ -2155,7 +2153,6 @@
     typeText("endOverlayText", "hi... how are you?", 30);
   }
 
-  // Simple typed effect
   function typeText(elementId, text, speed) {
     let i = 0;
     const el = document.getElementById(elementId);
@@ -2186,7 +2183,6 @@
         hideDarkOverlay30();
       }
 
-      // #26 fix: hide the circle overlay container if it's still up
       if (evObj.id === 26) {
         const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
         if (overlayDiv) {
@@ -2265,7 +2261,7 @@
         hideMultiOverlay60();
       }
 
-      // (NEW) #69 => if user leaves (hover away/tap away) after at least 3s, show overlay if not shown
+      // (NEW) #69 => if user leaves after at least 3s, show overlay if not shown
       if (evObj.id === 69) {
         if (timeSinceActivation >= 3000 && !window.finalOverlayShown) {
           showFinalOverlay();
@@ -2287,7 +2283,7 @@
     FALL_OFF_RANGE = Math.sqrt(window.innerWidth**2 + window.innerHeight**2);
 
     const audioFiles = [
-      "https://www.dropbox.com/scl/fi/iqwzb363v8m4tz46zc1mr/1_SC_VE_vibraphone_chord_bowed_low_C.wav?rlkey=ifisk6f6zw8wqeyynnrs92fii&raw=1",
+      "https://www.dropbox.com/scl/fi/pbykrfto6wkmjj2ko7qym/SC_VE_vibraphone_note_mallet_medium_C5.mp3?rlkey=a9pk5o3fszb0b3ps3sjwb88a9&st=7vx2r2sy&raw=1",
       "https://www.dropbox.com/scl/fi/nr236nf9774eazqvq4zef/2_SC_VE_vibraphone_note_mallet_loud_G3.wav?rlkey=xg2xon8tgkwdnz8emfj6zeos9&raw=1",
       "https://www.dropbox.com/scl/fi/jh4bcbslg2zk3plw97qsn/3_SC_VE_vibraphone_note_mallet_medium_D4.wav?rlkey=98l6iaq49arwcse5so1ni1adr&raw=1",
       "https://www.dropbox.com/scl/fi/k5bz1ou2pn5lb9cmqeqyp/4_SC_VE_vibraphone_chord_bowed_octaves_G.wav?rlkey=yek2i0tvuyh5ejk6oiwegj6n8&raw=1",
@@ -2297,7 +2293,6 @@
       "https://www.dropbox.com/scl/fi/nr236nf9774eazqvq4zef/2_SC_VE_vibraphone_note_mallet_loud_G3.wav?rlkey=xg2xon8tgkwdnz8emfj6zeos9&raw=1",
       "https://www.dropbox.com/scl/fi/o29m7v2wjpuiqef1i8xls/CO_JK_soft_piano_chord_Amin.mp3?rlkey=turlvry2tnyya4acx9db8z5hy&raw=1",
       "https://www.dropbox.com/scl/fi/fq71cy447yu9oihovn4fn/14_SC_VE_vibraphone_note_bowed_single_B4.mp3?rlkey=wm1zmikqqo9jt2wk2udutuzio&raw=1",
-      "https://www.dropbox.com/scl/fi/yef4fm725wl4rhnm6ll77/18_SC_VE_vibraphone_chord_bowed_Cmaj.mp3?rlkey=nrourfm1vt0glalh7d7t7lsuh&raw=1",
       "https://www.dropbox.com/scl/fi/2p4acw5456ocxnlij4esb/SC_EK_piano_chords_9th_Dm.mp3?rlkey=pdsqkqxr5198kpag40sggyktm&raw=1",
       "https://www.dropbox.com/scl/fi/zj02g0yr5kca0nn2g2sqt/12_SC_VE_vibraphone_note_mallet_medium_A4.mp3?rlkey=pcqdhmtpcw7ywhfs4ota6wwxd&raw=1",
       "https://www.dropbox.com/scl/fi/wwtgii79c9aqgcx9jm21i/oa_chord_one_shot_piano_leisure_Amin9.mp3?rlkey=jsdjqx3jhljb8bo221odauny9&raw=1",
@@ -2479,7 +2474,7 @@
             boxDiv.appendChild(specialVideo);
             break;
           case 'colorsScreen':
-            // handled separately
+            // handled separately (#37)
             break;
           case 'panorama360':
             panoContainer = document.createElement("div");
@@ -3287,6 +3282,7 @@
 
   /********************************************************
    * SUN MOIRÉ EFFECT (#65)
+   *  -- CHANGE: Use orientationData.gamma instead of beta
    ********************************************************/
   function initSunMoire() {
     new p5(sunMoireSketch);
@@ -3318,8 +3314,10 @@
 
       let strY;
       if (isMobileDevice) {
-        let b = window.orientationData.beta || 0;
-        strY = sk.map(b, -90, 90, 1.5, 4, true);
+        // Instead of reading orientationData.beta, let's use gamma
+        let g = window.orientationData.gamma || 0;
+        // Map gamma from -90..90 to 1.5..4
+        strY = sk.map(g, -90, 90, 1.5, 4, true);
       } else {
         strY = sk.map(sk.mouseY, 0, sk.height, 1.5, 4);
       }
@@ -3556,8 +3554,6 @@
         &lt;head&gt;<br>
         &emsp;&emsp;&lt;meta charset="UTF-8"&gt;<br>
         &emsp;&emsp;&lt;style&gt;<br>
-        &emsp;&emsp;&emsp;&emsp;body {<br>
-        &emsp;&emsp;&emsp;&emsp;}<br>
         &emsp;&emsp;&lt;/style&gt;<br>
         &lt;/head&gt;<br>
         &lt;body&gt;<br>
