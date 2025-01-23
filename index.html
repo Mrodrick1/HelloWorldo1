@@ -197,7 +197,6 @@
       font-size: 6rem;
       font-weight: 300;
       margin: 1px 0;
-      /* So the large code block (line4) won't overlap line1 */
       margin-top: 100px; 
     }
     .background-text .line2 {
@@ -217,19 +216,17 @@
       position: absolute;
       top: 0;
       left: 0;
-      font-size: 0.4rem; /* half of 1.2rem as originally specified */
+      font-size: 0.4rem; 
       font-weight: 200;
       margin: 1px 0; 
-      line-height: 0.7rem; /* tight leading */
+      line-height: 0.7rem; 
       word-break: break-word;
-      /* You can tweak the ‘top’ offset if you want it higher/lower. */
     }
 
     @media only screen and (max-width: 600px) {
       .background-text .line1 {
         font-size: 3rem;
         margin: 0px 0;
-        /* Keep or increase if the code block (line4) overlaps on small screens */
         margin-top: 110px; 
       }
       .background-text .line2 {
@@ -1027,7 +1024,6 @@
       text: "If you could go anywhere, where would you like to go?",
       hoverScale: 3.5,
       shape: 'circle',
-     
     },
     //#65
     {
@@ -2641,15 +2637,23 @@
             audioElements.forEach(a => { a.muted = false; });
           }
           if (evObj.state === 0) return;
-          if (evObj.state === 1 || evObj.state === 3) {
+
+          // --- CHANGED LOGIC: only if state===1 do we trigger audio ---
+          if (evObj.state === 1) {
+            activateEvent(evObj);
+            evObj.playNextAudio();
+          }
+          else if (evObj.state === 3) {
+            // dormant => reactivate, but do NOT play audio
             activateEvent(evObj);
           }
+
           window.hoveredEvent = evObj;
+
           if (evObj.videoElement) {
             evObj.videoElement.currentTime=0;
             evObj.videoElement.play().catch(()=>{});
           }
-          evObj.playNextAudio();
 
           if (evObj.matterInitFunction) {
             evObj.matterInitFunction();
@@ -2678,7 +2682,21 @@
           if (window.hoveredEvent === evObj) {
             window.hoveredEvent = null;
           }
+          // Overlays check
           if (evObj.state === 2) {
+            // If there's an overlay pinned, skip. Otherwise proceed
+            const overlayIds = [
+              'darkOverlay','lightOverlay21','darkOverlay30','multiOverlay26',
+              'multiOverlay39','multiOverlay41','multiOverlay45','multiOverlay51',
+              'multiOverlay57','multiOverlay60'
+            ];
+            const anyOverlay = overlayIds.some(id => {
+              const el = document.getElementById(id);
+              return el && el.style.display === 'block';
+            });
+            if (anyOverlay && evObj.element.style.zIndex === '1002') {
+              return;
+            }
             trySetToDormant(evObj);
           }
           if (evObj.quotesInterval) {
@@ -2706,7 +2724,8 @@
           }
           if (evObj.state === 0) return;
 
-          if (evObj.state === 1 || evObj.state === 3) {
+          // --- CHANGED LOGIC: only if state===1 do we trigger audio ---
+          if (evObj.state === 1) {
             activateEvent(evObj);
             window.hoveredEvent = evObj;
             if (evObj.videoElement) {
@@ -2714,6 +2733,37 @@
               evObj.videoElement.play().catch(()=>{});
             }
             evObj.playNextAudio();
+
+            if (evObj.matterInitFunction) {
+              evObj.matterInitFunction();
+            }
+            if (evObj.initPano) {
+              evObj.initPano();
+            }
+            if (evObj.quotesArray && evObj.quotesTextDiv && !evObj.quotesInterval) {
+              let i=0;
+              evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
+              i++;
+              evObj.quotesInterval = setInterval(()=>{
+                evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
+                i++;
+              }, 1200);
+            }
+            if (evObj.id === 26) {
+              const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
+              if (overlayDiv) {
+                overlayDiv.style.display = "block";
+              }
+            }
+          }
+          else if (evObj.state === 3) {
+            // dormant => reactivate, but do NOT play audio
+            activateEvent(evObj);
+            window.hoveredEvent = evObj;
+            if (evObj.videoElement) {
+              evObj.videoElement.currentTime=0;
+              evObj.videoElement.play().catch(()=>{});
+            }
             if (evObj.matterInitFunction) {
               evObj.matterInitFunction();
             }
@@ -3282,7 +3332,6 @@
 
   /********************************************************
    * SUN MOIRÉ EFFECT (#65)
-   *  -- CHANGE: Use orientationData.gamma instead of beta
    ********************************************************/
   function initSunMoire() {
     new p5(sunMoireSketch);
@@ -3314,7 +3363,7 @@
 
       let strY;
       if (isMobileDevice) {
-        // Instead of reading orientationData.beta, let's use gamma
+        // Use orientationData.gamma
         let g = window.orientationData.gamma || 0;
         // Map gamma from -90..90 to 1.5..4
         strY = sk.map(g, -90, 90, 1.5, 4, true);
