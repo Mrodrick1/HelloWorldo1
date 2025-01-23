@@ -183,7 +183,10 @@
       flex-direction: column;
     }
 
+    /* The container around the lines now positioned relative, 
+       so that .line4 can be absolute and no longer push .line1 down. */
     #startScreen .background-text {
+      position: relative;
       text-align: left;
       color: #0D0D0D;
       max-width: 600px;
@@ -194,6 +197,8 @@
       font-size: 6rem;
       font-weight: 300;
       margin: 1px 0;
+      /* So the large code block (line4) won't overlap line1 */
+      margin-top: 150px; 
     }
     .background-text .line2 {
       font-size: 2rem;
@@ -205,19 +210,27 @@
       font-weight: 300;
       margin: 10px 0;
     }
-    /* New line4 styling (50% size of line3 & "tight leading") */
+
+    /* This was the big addition: position absolute so .line4 
+       no longer pushes line1 down in the flex layout. */
     .background-text .line4 {
-      font-size: 0.4rem; /* half of 1.2rem */
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 0.4rem; /* half of 1.2rem as originally specified */
       font-weight: 200;
       margin: 1px 0; 
-      line-height: 0.7rem; /* "tight leading" */
-      word-break: break-word; 
+      line-height: 0.7rem; /* tight leading */
+      word-break: break-word;
+      /* You can tweak the ‘top’ offset if you want it higher/lower. */
     }
 
     @media only screen and (max-width: 600px) {
       .background-text .line1 {
         font-size: 3rem;
         margin: 0px 0;
+        /* Keep or increase if the code block (line4) overlaps on small screens */
+        margin-top: 140px; 
       }
       .background-text .line2 {
         font-size: 1rem;
@@ -1438,8 +1451,7 @@
       }
     }
 
-    // (NEW) Immediately clamp position based on the updated currentSize,
-    // so that the event doesn't jump partially off-screen on mobile.
+    // (NEW) Immediately clamp position based on the updated currentSize
     for (let ev of window.events) {
       if (!ev) continue;
       const half = ev.currentSize / 2;
@@ -2256,7 +2268,6 @@
       // (NEW) #69 => if user leaves (hover away/tap away) after at least 3s, show overlay if not shown
       if (evObj.id === 69) {
         if (timeSinceActivation >= 3000 && !window.finalOverlayShown) {
-          // Show the overlay
           showFinalOverlay();
         }
       }
