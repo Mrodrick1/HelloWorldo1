@@ -5,11 +5,9 @@
   <title>HelloWorldo1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"
-  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
   <link
     rel="preload"
     href="https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1"
@@ -131,11 +129,13 @@
     href="https://i.imgur.com/Gh6jY4e.png"
     as="image"
   />
+
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap"
     rel="stylesheet"
   />
+
   <style>
     html, body {
       margin: 0;
@@ -148,8 +148,8 @@
       overflow: hidden;
     }
     #contentWrapper {
-      width: 100vw; 
-      height: 100vh; 
+      width: 100vw;
+      height: 100vh;
       box-sizing: border-box;
     }
     #startScreen {
@@ -176,7 +176,7 @@
       font-size: 6rem;
       font-weight: 300;
       margin: 1px 0;
-      margin-top: 100px; 
+      margin-top: 100px;
     }
     .background-text .line2 {
       font-size: 2rem;
@@ -192,17 +192,17 @@
       position: absolute;
       top: 0;
       left: 0;
-      font-size: 0.4rem; 
+      font-size: 0.4rem;
       font-weight: 200;
-      margin: 1px 0; 
-      line-height: 0.7rem; 
+      margin: 1px 0;
+      line-height: 0.7rem;
       word-break: break-word;
     }
     @media only screen and (max-width: 600px) {
       .background-text .line1 {
         font-size: 3rem;
         margin: 0px 0;
-        margin-top: 110px; 
+        margin-top: 110px;
       }
       .background-text .line2 {
         font-size: 1rem;
@@ -212,18 +212,18 @@
         font-size: 0.9rem;
       }
       .background-text .line4 {
-        font-size: 0.45rem; 
+        font-size: 0.45rem;
         line-height: 0.7rem;
       }
     }
     .readLink {
       font-size: 1.2rem;
-      font-weight: bold; 
+      font-weight: bold;
       margin-top: 6px;
       color: #0D0D0D;
-      text-decoration: none; 
+      text-decoration: none;
       cursor: pointer;
-      pointer-events: auto; 
+      pointer-events: auto;
     }
     .event {
       position: absolute;
@@ -241,7 +241,7 @@
       opacity: 0;
     }
     .event-box {
-      position: relative; 
+      position: relative;
       background-color: black;
       border: none;
       overflow: hidden;
@@ -391,7 +391,7 @@
       background-color: black;
       display: none;
       z-index: 2;
-      transition: background-color 0.25s ease-in-out; 
+      transition: background-color 0.25s ease-in-out;
     }
     #darkOverlay {
       position: fixed;
@@ -400,7 +400,7 @@
       width: 100vw;
       height: 100vh;
       background: #192A2C;
-      z-index: 1000; 
+      z-index: 1000;
       display: none;
     }
     #lightOverlay21 {
@@ -442,10 +442,10 @@
       display: none;
       z-index: 1000;
     }
-    .spin-guide { 
-      width: 20px; 
-      height: 20px; 
-      border: 3px solid white; 
+    .spin-guide {
+      width: 20px;
+      height: 20px;
+      border: 3px solid white;
       border-top: 3px solid rgba(255,255,255,0.2);
       border-radius: 50%;
       position: absolute;
@@ -480,8 +480,10 @@
       pointer-events: none;
     }
   </style>
+
   <script>
   window.orientationData = { alpha: 0, beta: 0, gamma: 0 };
+
   function requestDeviceOrientationPermission() {
     if ('DeviceOrientationEvent' in window) {
       if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -497,11 +499,16 @@
       }
     }
   }
+
   function handleOrientation(evt) {
     window.orientationData.alpha = evt.alpha || 0;
     window.orientationData.beta  = evt.beta  || 0;
     window.orientationData.gamma = evt.gamma || 0;
   }
+
+  // ---------------------------------------------------------------------------
+  // EVENTS CONFIG
+  // ---------------------------------------------------------------------------
   const eventsConfig = [
     {
       baseSize: 50,
@@ -531,7 +538,7 @@
     {
       baseSize: 45,
       text: "Although this is not the complex shape I might have imagined myself to be, it’s wonderfully uncomplicated...",
-      hoverScale: 6,
+      hoverScale: 6
     },
     {
       baseSize: 50,
@@ -625,7 +632,7 @@
       baseSize: 40,
       text: "I'm sorry you are feeling alone.",
       hoverScale: 6.5,
-      shape: 'circle',
+      shape: 'circle'
     },
     {
       baseSize: 45,
@@ -721,7 +728,7 @@
     {
       baseSize: 70,
       text: "You could create an object to represent me,",
-      hoverScale: 4.5,
+      hoverScale: 4.5
     },
     {
       baseSize: 40,
@@ -893,7 +900,7 @@
       baseSize: 60,
       text: "If you could go anywhere, where would you like to go?",
       hoverScale: 3.5,
-      shape: 'circle',
+      shape: 'circle'
     },
     {
       baseSize: 58,
@@ -925,11 +932,38 @@
       }
     }
   ];
+
+  // ---------------------------------------------------------------------------
+  // NEW CODE: Reduce baseSize by 70% on mobile, adjust hoverScale to keep
+  // final (expanded) size the same as desktop.
+  // ---------------------------------------------------------------------------
+  function isMobile() {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }
+
+  if (isMobile()) {
+    eventsConfig.forEach(cfg => {
+      if (cfg && typeof cfg.baseSize === 'number') {
+        // reduce base size to 70% of original
+        cfg.baseSize = Math.round(cfg.baseSize * 0.7);
+        // adjust hoverScale so the final size (baseSize * hoverScale) remains
+        // the same as it was on desktop
+        if (typeof cfg.hoverScale === 'number') {
+          cfg.hoverScale = cfg.hoverScale / 0.7;
+        }
+      }
+    });
+  }
+  // ---------------------------------------------------------------------------
+  // REST OF THE CODE...
+  // ---------------------------------------------------------------------------
+
   const FRICTION = 0.92;
   const MAX_VELOCITY = 0.1;
   const MAX_BASE_ACCELERATION = 0.025;
-  let FALL_OFF_RANGE = 1000; 
+  let FALL_OFF_RANGE = 1000;
   const USE_INVERSE_SQ = false;
+
   window.events = [];
   window.hoveredEvent = null;
   window.experienceStarted = false;
@@ -948,6 +982,7 @@
   let usedMultiOverlay60 = false;
   window.overlay9secTimer = null;
   window.finalOverlayShown = false;
+
   function showDarkOverlayForEvent(eventId, visibleIds) {
     if (usedDarkOverlayForEvent[eventId]) return;
     usedDarkOverlayForEvent[eventId] = true;
@@ -957,7 +992,7 @@
     for (let ev of window.events) {
       if (!ev) continue;
       if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002; 
+        ev.element.style.zIndex = 1002;
       } else {
         ev.element.style.zIndex = 999;
       }
@@ -972,7 +1007,7 @@
     }
   }
   function showLightOverlay21(visibleIds) {
-    if (usedLightOverlay21) return; 
+    if (usedLightOverlay21) return;
     usedLightOverlay21 = true;
     const overlay = document.getElementById("lightOverlay21");
     overlay.style.display = "block";
@@ -1026,9 +1061,9 @@
     for (let ev of window.events) {
       if (!ev) continue;
       if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002; 
+        ev.element.style.zIndex = 1002;
       } else {
-        ev.element.style.zIndex = 999; 
+        ev.element.style.zIndex = 999;
       }
     }
   }
@@ -1178,9 +1213,7 @@
       ev.element.style.zIndex = "";
     }
   }
-  function isMobile() {
-    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  }
+
   function clamp(value, min, max) {
     return Math.max(min, Math.min(value, max));
   }
@@ -1228,9 +1261,11 @@
     }
     return false;
   }
+
   const BASE_FONT_SIZE_RATIO = 0.06;
   const MIN_FONT_SIZE = 20;
   const MAX_FONT_SIZE = 34;
+
   function getEventColor(state) {
     switch (state) {
       case 0: return "#261B1D";
@@ -1240,6 +1275,7 @@
       default: return "#000";
     }
   }
+
   function animate() {
     for (let ev of window.events) {
       if (!ev) continue;
@@ -1360,6 +1396,7 @@
     }
     requestAnimationFrame(animate);
   }
+
   function createHiDPICanvas(cssWidth, cssHeight) {
     const dpr = window.devicePixelRatio || 1;
     const c = document.createElement('canvas');
@@ -1384,6 +1421,7 @@
       ctx.restore();
     };
   }
+
   function manOnlyDrawFunction(ctx, mouseState, scaleFactor) {
     ctx.save();
     ctx.scale(scaleFactor, scaleFactor);
@@ -1394,13 +1432,14 @@
     ctx.fillRect(185,130,30,10);
     ctx.fillRect(130,140,140,220);
     ctx.fillRect(100,140,30,200);
-    ctx.fillRect(270,140,30,200); 
+    ctx.fillRect(270,140,30,200);
     ctx.fillRect(170,360,20,100);
     ctx.fillRect(210,360,20,100);
     ctx.fillRect(170,460,20,10);
     ctx.fillRect(210,460,20,10);
     ctx.restore();
   }
+
   function manCatDrawFunction(ctx, mouseState, scaleFactor, offsetX, offsetY) {
     ctx.save();
     ctx.scale(scaleFactor, scaleFactor);
@@ -1408,10 +1447,13 @@
     const manOffsetY = 250 + (offsetY||0);
     const catOffsetX = -55 + (offsetX||0);
     const catOffsetY = 480 + (offsetY||0);
+
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.arc(150 + catOffsetX, 140 + catOffsetY, 30, 0, 2*Math.PI);
     ctx.fill();
+
+    // ears
     ctx.beginPath();
     ctx.moveTo((135 - 6) + catOffsetX, (110 + catOffsetY + 13));
     ctx.lineTo((145 - 6) + catOffsetX, (90 - 20 * 1.05 + catOffsetY + 13));
@@ -1424,11 +1466,15 @@
     ctx.lineTo((165 + 6) + catOffsetX, (110 + catOffsetY + 13));
     ctx.closePath();
     ctx.fill();
+
+    // eyes
     ctx.fillStyle = "black";
     ctx.beginPath();
     ctx.arc(135 + catOffsetX, 135 + catOffsetY, 13, 0, 2*Math.PI);
     ctx.arc(165 + catOffsetX, 135 + catOffsetY, 13, 0, 2*Math.PI);
     ctx.fill();
+
+    // pupils
     const maxOffset = 5;
     const faceCenterX = 150 + catOffsetX;
     const faceCenterY = 140 + catOffsetY;
@@ -1446,6 +1492,8 @@
     ctx.arc(leftPupilX, leftPupilY, 7, 0, 2*Math.PI);
     ctx.arc(rightPupilX, rightPupilY, 7, 2*Math.PI, 0);
     ctx.fill();
+
+    // nose
     ctx.fillStyle="black";
     ctx.beginPath();
     ctx.moveTo((150+catOffsetX)-(5*1.2),150+catOffsetY);
@@ -1453,6 +1501,8 @@
     ctx.lineTo(150+catOffsetX,150+catOffsetY+(5*1.2));
     ctx.closePath();
     ctx.fill();
+
+    // cat body
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.moveTo(140+catOffsetX,160+catOffsetY);
@@ -1461,12 +1511,16 @@
     ctx.lineTo(130+catOffsetX,230+catOffsetY);
     ctx.closePath();
     ctx.fill();
+
+    // tail
     ctx.lineWidth=8;
     ctx.strokeStyle="white";
     ctx.beginPath();
     ctx.moveTo(165+catOffsetX,226+catOffsetY);
     ctx.lineTo(200+catOffsetX,226+catOffsetY);
     ctx.stroke();
+
+    // man
     ctx.fillStyle="white";
     ctx.beginPath();
     ctx.arc(300+manOffsetX,100+manOffsetY,25,0,2*Math.PI);
@@ -1479,16 +1533,21 @@
     ctx.fillRect(310+manOffsetX,360+manOffsetY,20,100);
     ctx.fillRect(270+manOffsetX,460+manOffsetY,20,10);
     ctx.fillRect(310+manOffsetX,460+manOffsetY,20,10);
+
     ctx.restore();
   }
+
   function manCatToyDrawFunction(ctx, mouseState, scaleFactor, offsetX, offsetY) {
     ctx.save();
     ctx.scale(scaleFactor, scaleFactor);
+
     const baseManCat = (c, ms)=>{
       const manOffsetX = -25 + (offsetX||0);
       const manOffsetY = 250 + (offsetY||0);
       const catOffsetX = -55 + (offsetX||0);
       const catOffsetY = 480 + (offsetY||0);
+
+      // cat
       c.fillStyle = "white";
       c.beginPath();
       c.arc(150 + catOffsetX, 140 + catOffsetY, 30, 0, 2*Math.PI);
@@ -1505,11 +1564,13 @@
       c.lineTo((165 + 6) + catOffsetX, (110 + catOffsetY + 13));
       c.closePath();
       c.fill();
+
       c.fillStyle = "black";
       c.beginPath();
       c.arc(135 + catOffsetX, 135 + catOffsetY, 13, 0, 2*Math.PI);
       c.arc(165 + catOffsetX, 135 + catOffsetY, 13, 0, 2*Math.PI);
       c.fill();
+
       const maxOffset = 5;
       const faceCenterX = 150 + catOffsetX;
       const faceCenterY = 140 + catOffsetY;
@@ -1527,6 +1588,7 @@
       c.arc(leftPupilX, leftPupilY, 7, 0, 2*Math.PI);
       c.arc(rightPupilX, rightPupilY, 7, 2*Math.PI, 0);
       c.fill();
+
       c.fillStyle="black";
       c.beginPath();
       c.moveTo((150+catOffsetX)-(5*1.2),150+catOffsetY);
@@ -1534,6 +1596,7 @@
       c.lineTo(150+catOffsetX,150+catOffsetY+(5*1.2));
       c.closePath();
       c.fill();
+
       c.fillStyle = "white";
       c.beginPath();
       c.moveTo(140+catOffsetX,160+catOffsetY);
@@ -1542,12 +1605,15 @@
       c.lineTo(130+catOffsetX,230+catOffsetY);
       c.closePath();
       c.fill();
+
       c.lineWidth=8;
       c.strokeStyle="white";
       c.beginPath();
       c.moveTo(165+catOffsetX,226+catOffsetY);
       c.lineTo(200+catOffsetX,226+catOffsetY);
       c.stroke();
+
+      // man
       c.fillStyle="white";
       c.beginPath();
       c.arc(300+manOffsetX,100+manOffsetY,25,0,2*Math.PI);
@@ -1561,7 +1627,10 @@
       c.fillRect(270+manOffsetX,460+manOffsetY,20,10);
       c.fillRect(310+manOffsetX,460+manOffsetY,20,10);
     };
+
     baseManCat(ctx, mouseState);
+
+    // toy
     const toyOffsetX = 20 + (offsetX||0);
     const toyOffsetY = 420 + (offsetY||0);
     const toyScale=1.2;
@@ -1571,17 +1640,21 @@
     ctx.moveTo((50*toyScale)+toyOffsetX, (50*toyScale)+toyOffsetY);
     ctx.lineTo((150*toyScale)+toyOffsetX,(150*toyScale)+toyOffsetY);
     ctx.stroke();
+
     ctx.lineWidth=1;
     ctx.beginPath();
     ctx.moveTo((50*toyScale)+toyOffsetX, (50*toyScale)+toyOffsetY);
     ctx.lineTo((50*toyScale)+toyOffsetX, (100*toyScale)+toyOffsetY);
     ctx.stroke();
+
     ctx.fillStyle="white";
     ctx.beginPath();
     ctx.arc((50*toyScale)+toyOffsetX, (100*toyScale)+toyOffsetY, 10*toyScale,0,2*Math.PI);
     ctx.fill();
+
     ctx.restore();
   }
+
   let colorsContainer = null;
   let colorsIndex = 0;
   const states = [
@@ -1591,6 +1664,7 @@
     { color: "#F25D07" },
     { color: "#FFBF00" }
   ];
+
   function initColorsScreen() {
     colorsContainer = document.getElementById("colorsContainer");
     setInterval(updateColorsScene, 750);
@@ -1603,7 +1677,9 @@
     }
     colorsIndex = (colorsIndex + 1) % states.length;
   }
+
   let audioElements = [];
+
   function unlockEvent(evId) {
     if (evId < window.events.length && window.events[evId]) {
       let e = window.events[evId];
@@ -1626,7 +1702,7 @@
     }
     if (!evObj.hasBeenActivated) {
       evObj.hasBeenActivated = true;
-      evObj.minActiveDuration = 1000; 
+      evObj.minActiveDuration = 1000;
       evObj.activatedAt = performance.now();
     } else {
       evObj.minActiveDuration = 0;
@@ -1638,6 +1714,7 @@
       clearTimeout(evObj.leaveTimeout);
       evObj.leaveTimeout = null;
     }
+
     if (evObj.id === 26) {
       unlockEvent(27);
       unlockEvent(28);
@@ -1812,6 +1889,7 @@
       }
     }
   }
+
   function showFinalOverlay() {
     if (window.finalOverlayShown) return;
     window.finalOverlayShown = true;
@@ -1836,6 +1914,7 @@
       }
     }, speed);
   }
+
   function trySetToDormant(evObj) {
     const timeSinceActivation = performance.now() - (evObj.activatedAt || 0);
     const minActiveDuration = evObj.minActiveDuration || 0;
@@ -1936,72 +2015,70 @@
       }, waitMs);
     }
   }
+
   function init() {
     FALL_OFF_RANGE = Math.sqrt(window.innerWidth**2 + window.innerHeight**2);
+
     const audioFiles = [
       "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
-"https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-"https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-"https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-"https://www.dropbox.com/scl/fi/tyfkxcs303k06b1q4xa59/5.mp3?rlkey=obi9skfsrxahblfxdu2awiv7r&raw=1",
-"https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-"https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
-"https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
-"https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-"https://www.dropbox.com/scl/fi/5tppwxeq5e2a27wt7ead0/10b.mp3?rlkey=833992g0c429t3uhwe38eu9up&st=uhk1h0ax&raw=1",
-//11 lets try something dif
-"https://www.dropbox.com/scl/fi/pv4bu5ezcvpjw4iuyj1j9/11.mp3?rlkey=qotnnq3z63besu9wekrqg2uks&raw=1",
-"https://www.dropbox.com/scl/fi/lxqfmbgsjrd7q11pafbgt/11_B.mp3?rlkey=z7wpvu2p4ekb005xhjdhuhbxk&st=xzsbokh4&raw=1",
-"https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-"https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
-"https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-"https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-"https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-"https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
-"https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
-"https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-//21 youve given us
-"https://www.dropbox.com/scl/fi/zeh3z0z1pu37z4t0t718p/19.mp3?rlkey=f76f1jf5zwzu361t3fts32abz&st=si1b0ptv&raw=1",
-"https://www.dropbox.com/scl/fi/1ofgq6umjyvj3pt3opoer/20.mp3?rlkey=tnb70y8kcq9kr9s8cmpjb3sk1&st=1e61wse4&raw=1",
-"https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
-"https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-"https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-"https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-"https://www.dropbox.com/scl/fi/02t4mfh310iqgx8yfy6yh/27.mp3?rlkey=v7u50xv9fl4zmljs3z6hirjh2&st=yonsx0q4&raw=1",
-"https://www.dropbox.com/scl/fi/8xxe6wkdpeebvu63drqx0/28.mp3?rlkey=ryx1lkgvksgpab65y4e4pnla2&st=f1akoz7m&raw=1", //A little longer tale Weave
-"https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-"https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-//31
-"https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
-"https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-"https://www.dropbox.com/scl/fi/i2fs87somb7hnhqa7yfmx/33.mp3?rlkey=t8d5lu5remqtvja8afal0u7z0&st=1e8hh5hl&raw=1",
-"https://www.dropbox.com/scl/fi/vht9f3zytogi2qsul93nn/34.mp3?rlkey=fse3ur7fd1u1l3897gokf4oql&st=kckwrq2y&raw=1",
-"https://www.dropbox.com/scl/fi/bvfea4n9gx2k8gp4r2oyk/21.mp3?rlkey=0fm6h6bbwvo1wyuh0bmlr4th1&st=zhc0c8yw&raw=1",
-"https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
-"https://www.dropbox.com/scl/fi/u02kfggqieyucxyjbvq9q/22.mp3?rlkey=glkhqd7gjtddn5rezqzkne6ko&st=dyq8p13u&raw=1",
-"https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-"https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
-"https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-//41
-"https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
-"https://www.dropbox.com/scl/fi/rhvwjk85a6hz7djj571n5/41.mp3?rlkey=8gc81qtt7dvqkws80ljukt5na&st=l9s0bibq&raw=1",
-"https://www.dropbox.com/scl/fi/2piqdinu0sdapxolj0dic/42.mp3?rlkey=cv0ow54dl3efm00pudn9dnb61&st=sk9i90rr&raw=1",
-"https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-"https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
-"https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-"https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
-"https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-"https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
-"https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
-"https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-"https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
-"https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-"https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-"https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-"https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
-"https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
-"https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
-"https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
+      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
+      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
+      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
+      "https://www.dropbox.com/scl/fi/tyfkxcs303k06b1q4xa59/5.mp3?rlkey=obi9skfsrxahblfxdu2awiv7r&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
+      "https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/5tppwxeq5e2a27wt7ead0/10b.mp3?rlkey=833992g0c429t3uhwe38eu9up&st=uhk1h0ax&raw=1",
+      "https://www.dropbox.com/scl/fi/pv4bu5ezcvpjw4iuyj1j9/11.mp3?rlkey=qotnnq3z63besu9wekrqg2uks&raw=1",
+      "https://www.dropbox.com/scl/fi/lxqfmbgsjrd7q11pafbgt/11_B.mp3?rlkey=z7wpvu2p4ekb005xhjdhuhbxk&st=xzsbokh4&raw=1",
+      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
+      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
+      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
+      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/zeh3z0z1pu37z4t0t718p/19.mp3?rlkey=f76f1jf5zwzu361t3fts32abz&st=si1b0ptv&raw=1",
+      "https://www.dropbox.com/scl/fi/1ofgq6umjyvj3pt3opoer/20.mp3?rlkey=tnb70y8kcq9kr9s8cmpjb3sk1&st=1e61wse4&raw=1",
+      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
+      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
+      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
+      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
+      "https://www.dropbox.com/scl/fi/02t4mfh310iqgx8yfy6yh/27.mp3?rlkey=v7u50xv9fl4zmljs3z6hirjh2&st=yonsx0q4&raw=1",
+      "https://www.dropbox.com/scl/fi/8xxe6wkdpeebvu63drqx0/28.mp3?rlkey=ryx1lkgvksgpab65y4e4pnla2&st=f1akoz7m&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
+      "https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/v9dfd7ta4h1trk7c3d06e/32.mp3?rlkey=umy13pqd0hpx2yjot12mecmot&st=tk553ipn&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/bvfea4n9gx2k8gp4r2oyk/21.mp3?rlkey=0fm6h6bbwvo1wyuh0bmlr4th1&st=zhc0c8yw&raw=1",
+      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      "https://www.dropbox.com/scl/fi/u02kfggqieyucxyjbvq9q/22.mp3?rlkey=glkhqd7gjtddn5rezqzkne6ko&st=dyq8p13u&raw=1",
+      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
+      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
+      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
+      "https://www.dropbox.com/scl/fi/rhvwjk85a6hz7djj571n5/41.mp3?rlkey=8gc81qtt7dvqkws80ljukt5na&st=l9s0bibq&raw=1",
+      "https://www.dropbox.com/scl/fi/2piqdinu0sdapxolj0dic/42.mp3?rlkey=cv0ow54dl3efm00pudn9dnb61&st=sk9i90rr&raw=1",
+      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
+      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
+      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
+      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
+      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
+      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
+      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
+      "https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
+      "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
+      "https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
+      "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1"
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -2009,6 +2086,7 @@
       audio.muted = true;
       return audio;
     });
+
     let audioIndexGlobal = 0;
     const playNextAudio = () => {
       const audioToPlay = audioElements[audioIndexGlobal];
@@ -2017,28 +2095,36 @@
       audioToPlay.play().catch(err => console.log("audio play error:", err));
       audioIndexGlobal = (audioIndexGlobal + 1) % audioElements.length;
     };
+
     initColorsScreen();
+
     let lastX, lastY;
     eventsConfig.forEach((cfg, index) => {
       if (!cfg) {
         window.events.push(null);
         return;
       }
+
       const eventOuter = document.createElement("div");
       eventOuter.classList.add("event");
       eventOuter.dataset.id = index;
+
       const boxDiv = document.createElement("div");
       boxDiv.classList.add("event-box");
+
       const textDiv = document.createElement("div");
       textDiv.classList.add("event-text");
       boxDiv.appendChild(textDiv);
+
       let specialCanvas = null;
       let specialImg = null;
       let specialVideo = null;
       let quotesWrapper = null;
       let panoContainer = null;
+
       const originalTextStr = cfg.text || "";
       cfg.text = originalTextStr;
+
       if (cfg.special && cfg.special.type) {
         switch (cfg.special.type) {
           case 'manOnly':
@@ -2062,8 +2148,8 @@
             });
             reDrawManOnly(specialCanvas, localMouse);
             break;
-          case 'manCat':
-            {
+
+          case 'manCat': {
               const offsetX = cfg.special.offsetX || 0;
               const offsetY = cfg.special.offsetY || 0;
               specialCanvas = createHiDPICanvas(600, 600);
@@ -2087,8 +2173,8 @@
               reDrawManCat(specialCanvas, localMouse2, offsetX, offsetY);
             }
             break;
-          case 'manCatToy':
-            {
+
+          case 'manCatToy': {
               const offsetX = cfg.special.offsetX || 0;
               const offsetY = cfg.special.offsetY || 0;
               specialCanvas = createHiDPICanvas(700, 700);
@@ -2112,6 +2198,7 @@
               reDrawManCatToy(specialCanvas, localMouse3, offsetX, offsetY);
             }
             break;
+
           case 'matter':
             boxDiv.style.overflow = 'visible';
             specialCanvas = createHiDPICanvas(300, 300);
@@ -2134,6 +2221,7 @@
             };
             cfg.matterInitFunction = initMatter;
             break;
+
           case 'image':
             specialImg = document.createElement("img");
             specialImg.src = cfg.special.imageSrc;
@@ -2148,6 +2236,7 @@
             });
             boxDiv.appendChild(specialImg);
             break;
+
           case 'video':
             specialVideo = document.createElement("video");
             specialVideo.src = cfg.special.videoSrc;
@@ -2166,8 +2255,11 @@
             eventOuter.classList.add('video-event');
             boxDiv.appendChild(specialVideo);
             break;
+
           case 'colorsScreen':
+            // handled outside
             break;
+
           case 'panorama360':
             panoContainer = document.createElement("div");
             panoContainer.style.position = "absolute";
@@ -2179,6 +2271,7 @@
             panoContainer.id = "panoForEvent"+index;
             panoContainer.style.zIndex = "3";
             boxDiv.appendChild(panoContainer);
+
             cfg.initPano = () => {
               if (!cfg.panoViewer) {
                 let viewer = pannellum.viewer(panoContainer.id, {
@@ -2198,6 +2291,7 @@
               }
             };
             break;
+
           case 'circleOverlay26': {
             const circleOverlayDiv = document.createElement("div");
             circleOverlayDiv.id = "circleOverlay26Container";
@@ -2217,6 +2311,7 @@
           default: break;
         }
       }
+
       if (cfg.hole) {
         const holeDiv = document.createElement("div");
         holeDiv.classList.add("hole");
@@ -2226,14 +2321,17 @@
         }
         boxDiv.appendChild(holeDiv);
       }
+
       if (cfg.addSpinner) {
         const spinDiv = document.createElement("div");
         spinDiv.classList.add('spin-guide');
         eventOuter.appendChild(spinDiv);
         cfg.spinGuideElement = spinDiv;
       }
+
       eventOuter.appendChild(boxDiv);
       document.body.appendChild(eventOuter);
+
       let centerX, centerY;
       if (index === 0 && cfg.specialPosition === 'centerViewport') {
         centerX = window.innerWidth / 2;
@@ -2264,12 +2362,15 @@
         lastX = centerX;
         lastY = centerY;
       }
+
       eventOuter.style.left = centerX + "px";
       eventOuter.style.top  = centerY + "px";
+
       let hoverFactor = (typeof cfg.hoverScale === 'number' && cfg.hoverScale>1)
         ? cfg.hoverScale
         : (1.5 + Math.random()*1.5);
       let hoverSize = Math.round(cfg.baseSize * hoverFactor);
+
       let evObj = {
         x:centerX,
         y:centerY,
@@ -2299,6 +2400,7 @@
         state: 0,
         hasBeenActivated: false
       };
+
       if (cfg.quotes && Array.isArray(cfg.quotes)) {
         quotesWrapper = document.createElement("div");
         quotesWrapper.classList.add("quotes-wrapper");
@@ -2311,7 +2413,10 @@
         evObj.quotesTextDiv = quotesTextDiv;
         evObj.quotesArray = cfg.quotes;
       }
+
       window.events.push(evObj);
+
+      // Mouse / Touch events
       if (!isMobile()) {
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
@@ -2353,6 +2458,7 @@
             }
           }
         });
+
         eventOuter.addEventListener("mouseleave", () => {
           if (window.hoveredEvent === evObj) {
             window.hoveredEvent = null;
@@ -2388,6 +2494,7 @@
         });
       }
       else {
+        // For mobile/touch
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
@@ -2475,15 +2582,19 @@
         });
       }
     });
+
     if (window.events[0]) {
       setEventState(window.events[0], 1);
     }
+
     requestAnimationFrame(animate);
+
     const circleOverlayEl = document.getElementById("circleOverlay26Container");
     if (circleOverlayEl) {
       new p5(circleOverlay26);
     }
   }
+
   function createMatterScene(canvas) {
     const dpr = window.devicePixelRatio || 1;
     const w = 300;
@@ -2513,9 +2624,11 @@
       render:{ fillStyle:'#000', visible:false }
     });
     World.add(engine.world, [head,neck,body,leftArm,rightArm,leftLeg,rightLeg,floor]);
+
     Matter.Engine.run(engine);
     Matter.Render.run(render);
   }
+
   let birdCtx = null;
   let birdCanvas = null;
   function initBirdCanvas(){
@@ -2526,6 +2639,7 @@
     let birdCanvW = birdCanvas.width;
     let birdCanvH = birdCanvas.height;
     let mouse = { x: 0, y: 0, z: 0 };
+
     const Bird = {
       def: function(n, m, s) {
         if (m) this.e(n.prototype, m);
@@ -2554,6 +2668,7 @@
       L: null,
       V: { x: 0, y: 0, z: 5000 }
     };
+
     Bird.Vtr = Bird.def(
       function(x, y, z) {
         this.x = x || 0;
@@ -2642,6 +2757,7 @@
         }
       }
     );
+
     Bird.Matrix = {
       rotX: function(pt, angX) {
         let pos = [pt.x, pt.y, pt.z];
@@ -2698,6 +2814,7 @@
         return calc;
       }
     };
+
     Bird.obj = Bird.def(
       function() {
         this.pos = new Bird.Vtr();
@@ -2806,6 +2923,7 @@
         }
       }
     );
+
     Bird.Tri = Bird.def(
       function(p1,p2,p3){
         this.mainv=[p1.copy(), p2.copy(), p3.copy()];
@@ -3197,6 +3315,7 @@
         &emsp;&emsp;&lt;h1&gt;<br>
         <br>
       </div>
+
       <div class="line1">Hello, World.</div>
       <div class="line2">a story told through code.</div>
       <div class="line3">
@@ -3206,15 +3325,24 @@
       </div>
     </div>
   </div>
+
   <div id="contentWrapper">
+   
     <div id="whiteOverlay30"></div>
+   
     <canvas id="birdCanvas"></canvas>
   </div>
+
+ 
   <div id="colorsContainer"></div>
+
+  <!-- Overlays -->
   <div id="darkOverlay"></div>
   <div id="lightOverlay21"></div>
   <div id="darkOverlay30"></div>
+ 
   <div id="darkOverlay50"></div>
+ 
   <div id="multiOverlay26"></div>
   <div id="multiOverlay39"></div>
   <div id="multiOverlay41"></div>
@@ -3222,9 +3350,13 @@
   <div id="multiOverlay51"></div>
   <div id="multiOverlay57"></div>
   <div id="multiOverlay60"></div>
+
+  
   <div id="endOverlay">
     <div id="endOverlayText"></div>
   </div>
+
+ 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 </body>
 </html>
