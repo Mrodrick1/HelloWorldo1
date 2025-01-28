@@ -1580,9 +1580,9 @@
       let ux=0, uy=0;
       if(dist>0){ ux=dx/dist; uy=dy/dist; }
       const leftPupilX  = (135 + catOffsetX) + ux * maxOffset;
-      const leftPupilY  = (135 + catOffsetY) + uy * maxOffset;
+      const leftPupilY  = (135 + catOffsetY) + ux * maxOffset;
       const rightPupilX = (165 + catOffsetX) + ux * maxOffset;
-      const rightPupilY = (135 + catOffsetY) + uy * maxOffset;
+      const rightPupilY = (135 + catOffsetY) + ux * maxOffset;
       c.fillStyle="white";
       c.beginPath();
       c.arc(leftPupilX, leftPupilY, 7, 0, 2*Math.PI);
@@ -1688,12 +1688,16 @@
       }
     }
   }
+
+  // *** CHANGED THIS FUNCTION ***
+  // Now, any event transitioning to *any* state > 0 also moves on top of locked events.
   function setEventState(evObj, newState) {
     evObj.state = newState;
-    if (newState === 1) {
+    if (newState !== 0) {
       evObj.element.style.zIndex = ++globalUnlockedZ;
     }
   }
+
   function activateEvent(evObj) {
     let oldActive = window.events[window.currentActiveIndex];
     if (oldActive && oldActive !== evObj && oldActive.state === 2) {
@@ -2030,6 +2034,7 @@
       "https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
       "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
       "https://www.dropbox.com/scl/fi/5tppwxeq5e2a27wt7ead0/10b.mp3?rlkey=833992g0c429t3uhwe38eu9up&st=uhk1h0ax&raw=1",
+
       "https://www.dropbox.com/scl/fi/pv4bu5ezcvpjw4iuyj1j9/11.mp3?rlkey=qotnnq3z63besu9wekrqg2uks&raw=1",
       "https://www.dropbox.com/scl/fi/lxqfmbgsjrd7q11pafbgt/11_B.mp3?rlkey=z7wpvu2p4ekb005xhjdhuhbxk&st=xzsbokh4&raw=1",
       "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
@@ -2040,6 +2045,7 @@
       "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
       "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
       "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+
       "https://www.dropbox.com/scl/fi/zeh3z0z1pu37z4t0t718p/19.mp3?rlkey=f76f1jf5zwzu361t3fts32abz&st=si1b0ptv&raw=1",
       "https://www.dropbox.com/scl/fi/1ofgq6umjyvj3pt3opoer/20.mp3?rlkey=tnb70y8kcq9kr9s8cmpjb3sk1&st=1e61wse4&raw=1",
       "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
@@ -2050,26 +2056,29 @@
       "https://www.dropbox.com/scl/fi/8xxe6wkdpeebvu63drqx0/28.mp3?rlkey=ryx1lkgvksgpab65y4e4pnla2&st=f1akoz7m&raw=1",
       "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
       "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
+      
       "https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
       "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-      "https://www.dropbox.com/scl/fi/v9dfd7ta4h1trk7c3d06e/32.mp3?rlkey=umy13pqd0hpx2yjot12mecmot&st=tk553ipn&raw=1",
-      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/i2fs87somb7hnhqa7yfmx/33.mp3?rlkey=t8d5lu5remqtvja8afal0u7z0&st=1e8hh5hl&raw=1",
+      "https://www.dropbox.com/scl/fi/vht9f3zytogi2qsul93nn/34.mp3?rlkey=fse3ur7fd1u1l3897gokf4oql&st=kckwrq2y&raw=1",
       "https://www.dropbox.com/scl/fi/bvfea4n9gx2k8gp4r2oyk/21.mp3?rlkey=0fm6h6bbwvo1wyuh0bmlr4th1&st=zhc0c8yw&raw=1",
       "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
       "https://www.dropbox.com/scl/fi/u02kfggqieyucxyjbvq9q/22.mp3?rlkey=glkhqd7gjtddn5rezqzkne6ko&st=dyq8p13u&raw=1",
       "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
       "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
       "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      
       "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
       "https://www.dropbox.com/scl/fi/rhvwjk85a6hz7djj571n5/41.mp3?rlkey=8gc81qtt7dvqkws80ljukt5na&st=l9s0bibq&raw=1",
       "https://www.dropbox.com/scl/fi/2piqdinu0sdapxolj0dic/42.mp3?rlkey=cv0ow54dl3efm00pudn9dnb61&st=sk9i90rr&raw=1",
       "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
+      "https://www.dropbox.com/scl/fi/v1oicm66u58jstxeymers/chaos-1.mp3?rlkey=cijm7jpexi13esnlj1sapcyor&st=n14j1ij4&raw=1",
       "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
+      "https://www.dropbox.com/scl/fi/kmoazowrqmkfmu22l36ug/incredible-1.mp3?rlkey=ybk4tj0f0obdrb4rdr3g23bak&st=89f1cj62&raw=1",
       "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
       "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
       "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      
       "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
       "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
       "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
@@ -2077,8 +2086,8 @@
       "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
       "https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
       "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
-      "https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
-      "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1"
+      "https://www.dropbox.com/scl/fi/lpw1asbch7q3uv4tkkn0h/C_arp-2.mp3?rlkey=ed7lhs13xomksgeq3xoyg1dl8&st=zn5s9ndm&raw=1",
+      "https://www.dropbox.com/scl/fi/sfz90m5pz2m8gnfrhh8bn/AB-_arp-2.mp3?rlkey=9kncuanzp47vz1xghgo07jg2u&st=amzjaumk&raw=1",
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
