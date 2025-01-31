@@ -890,6 +890,34 @@
   window.finalOverlayShown = false;
   window.quotesFullscreenActive = false; // are we in forced fullscreen for quotes?
 
+  /* 
+    NEW UTILITY:
+    Tells us if an event ID corresponds to a "full screen overlay" event 
+    so we skip letting it go dormant on just mouse-out or second tap. 
+    We only hide that overlay when the *next event* is activated.
+  */
+  function isFullscreenOverlayEvent(evId) {
+    // Add all IDs that show a "must be closed by next event" overlay:
+    return [
+      // darkOverlay chain
+      3, 14, 19,
+      // lightOverlay21
+      21,
+      // multiOverlay26 chain
+      26, 27, 28, 29, 30,
+      // colorsContainer
+      37,
+      // multiOverlay39 -> 41 chain
+      39, 40, 41, 42, 43,
+      // multiOverlay45 chain
+      45, 46, 47, 48,
+      // multiOverlay51 chain
+      51, 52,
+      // multiOverlay57 -> 60 chain
+      57, 58, 59, 60, 61, 62, 63, 64
+    ].includes(evId);
+  }
+
   /* Overlay helpers (show/hide) */
   function showDarkOverlayForEvent(eventId, visibleIds) {
     if (usedDarkOverlayForEvent[eventId]) return;
@@ -898,11 +926,7 @@
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
     for (let ev of window.events) {
-      if (ev.state > 0) {
-        // do nothing
-      } else {
-        // locked
-      }
+      if (!ev) continue;
       if (visibleIds.includes(ev.id)) {
         ev.element.style.zIndex = 1002;
       } else {
@@ -1817,7 +1841,6 @@
     }
   }
 
-  // The key fix is that we remove any forced "trySetToDormant" or re-lock on the next event
   function hideQuotesFullscreen(quotesEv) {
     window.quotesFullscreenActive = false;
     hideQuotesOverlay();
@@ -1916,20 +1939,8 @@
       return;
     }
 
-    // ---------------------------
-    // COMMENTED-OUT the block below so that event #32 stays visible
-    // -------------------------------------------------------------
-    //
-    // let quotingEv = window.events.find(
-    //   e => e && e.special && e.special.type === 'quotesTyping' && e.quotesNextEvent === evObj
-    // );
-    // if (quotingEv && window.quotesFullscreenActive) {
-    //   hideQuotesFullscreen(quotingEv);
-    // }
-    // -------------------------------------------------------------
-
     // Possibly the next event is triggered after leaving quotes mode
-    let quotingEv = null; // <== keep variable for consistency, but do nothing
+    let quotingEv = null; // (kept for reference, but not used)
 
     if (evObj.id === 37 && colorsContainer) {
       colorsContainer.style.display = "block";
@@ -2016,11 +2027,6 @@
     }
     if (evObj.id === 60) {
       hideMultiOverlay57();
-      [57,58,59].forEach(id=>{
-        if(window.events[id] && window.events[id].state===2) {
-          setEventState(window.events[id],3);
-        }
-      });
       [60,61,62,63].forEach(id => {
         if (window.events[id] && window.events[id].state !== 2) {
           setEventState(window.events[id], 2);
@@ -2114,8 +2120,10 @@
           overlayDiv.style.display = "none";
         }
       }
-      if (evObj.id === 37 && colorsContainer) {
-        colorsContainer.style.display = "none";
+      if (evObj.id === 37) {
+        if (colorsContainer) {
+          colorsContainer.style.display = "none";
+        }
       }
       if ([27,28,29].includes(evObj.id)) {
         [27,28,29].forEach(id => {
@@ -2201,7 +2209,71 @@
     const audioFiles = [
       "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
       "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1"
+      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
+      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
+      "https://www.dropbox.com/scl/fi/tyfkxcs303k06b1q4xa59/5.mp3?rlkey=obi9skfsrxahblfxdu2awiv7r&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
+      "https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/5tppwxeq5e2a27wt7ead0/10b.mp3?rlkey=833992g0c429t3uhwe38eu9up&st=uhk1h0ax&raw=1",
+
+      "https://www.dropbox.com/scl/fi/pv4bu5ezcvpjw4iuyj1j9/11.mp3?rlkey=qotnnq3z63besu9wekrqg2uks&raw=1",
+      "https://www.dropbox.com/scl/fi/lxqfmbgsjrd7q11pafbgt/11_B.mp3?rlkey=z7wpvu2p4ekb005xhjdhuhbxk&st=xzsbokh4&raw=1",
+      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
+      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
+      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
+      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+
+      "https://www.dropbox.com/scl/fi/zeh3z0z1pu37z4t0t718p/19.mp3?rlkey=f76f1jf5zwzu361t3fts32abz&st=si1b0ptv&raw=1",
+      "https://www.dropbox.com/scl/fi/1ofgq6umjyvj3pt3opoer/20.mp3?rlkey=tnb70y8kcq9kr9s8cmpjb3sk1&st=1e61wse4&raw=1",
+      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
+      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
+      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
+      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
+      "https://www.dropbox.com/scl/fi/02t4mfh310iqgx8yfy6yh/27.mp3?rlkey=v7u50xv9fl4zmljs3z6hirjh2&st=yonsx0q4&raw=1",
+      "https://www.dropbox.com/scl/fi/8xxe6wkdpeebvu63drqx0/28.mp3?rlkey=ryx1lkgvksgpab65y4e4pnla2&st=f1akoz7m&raw=1",
+      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
+      "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
+      
+      "https://www.dropbox.com/scl/fi/mx20fm6q1kmqczzmh610u/Like-to-connect.mp3?rlkey=y9xqntmu6t3kkowuq8crvjjro&st=6dwgr9so&raw=1",
+      "https://www.dropbox.com/scl/fi/5me1zeq4ienw9mooakn0f/Tethered_the_1.mp3?rlkey=1wvueyg9hownyvcobaes5o1ao&st=f21odkfi&raw=1",
+      "https://www.dropbox.com/scl/fi/i2fs87somb7hnhqa7yfmx/33.mp3?rlkey=t8d5lu5remqtvja8afal0u7z0&st=1e8hh5hl&raw=1",
+      "https://www.dropbox.com/scl/fi/vht9f3zytogi2qsul93nn/34.mp3?rlkey=fse3ur7fd1u1l3897gokf4oql&st=kckwrq2y&raw=1",
+      "https://www.dropbox.com/scl/fi/bvfea4n9gx2k8gp4r2oyk/21.mp3?rlkey=0fm6h6bbwvo1wyuh0bmlr4th1&st=zhc0c8yw&raw=1",
+      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      "https://www.dropbox.com/scl/fi/hao18zgosi7dbqskkyhpc/Why_do_you.mp3?rlkey=evfnkuhg0dmc2ghrfxkqnsw1j&st=iq05nam8&raw=1",
+      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
+      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
+      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      
+      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
+      "https://www.dropbox.com/scl/fi/rhvwjk85a6hz7djj571n5/41.mp3?rlkey=8gc81qtt7dvqkws80ljukt5na&st=l9s0bibq&raw=1",
+      "https://www.dropbox.com/scl/fi/2piqdinu0sdapxolj0dic/42.mp3?rlkey=cv0ow54dl3efm00pudn9dnb61&st=sk9i90rr&raw=1",
+      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
+      "https://www.dropbox.com/scl/fi/v1oicm66u58jstxeymers/chaos-1.mp3?rlkey=cijm7jpexi13esnlj1sapcyor&st=n14j1ij4&raw=1",
+      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/kmoazowrqmkfmu22l36ug/incredible-1.mp3?rlkey=ybk4tj0f0obdrb4rdr3g23bak&st=89f1cj62&raw=1",
+      "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
+      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
+      
+      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
+      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
+      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
+      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
+      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
+      "https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
+      "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
+      "https://www.dropbox.com/scl/fi/lpw1asbch7q3uv4tkkn0h/C_arp-2.mp3?rlkey=ed7lhs13xomksgeq3xoyg1dl8&st=zn5s9ndm&raw=1",
+      "https://www.dropbox.com/scl/fi/sfz90m5pz2m8gnfrhh8bn/AB-_arp-2.mp3?rlkey=9kncuanzp47vz1xghgo07jg2u&st=amzjaumk&raw=1",
+
+
+      
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -2548,8 +2620,13 @@
           if (window.hoveredEvent === evObj) {
             window.hoveredEvent = null;
           }
-          // If it's active and NOT a quotesTyping event, we let it go dormant
-          if (evObj.state === 2 && !(evObj.special && evObj.special.type === 'quotesTyping')) {
+          // If it's active and NOT a quotesTyping event, 
+          // AND not a full-screen overlay event, let it go dormant
+          if (
+            evObj.state === 2 
+            && !(evObj.special && evObj.special.type === 'quotesTyping')
+            && !isFullscreenOverlayEvent(evObj.id)
+          ) {
             trySetToDormant(evObj);
           }
         });
@@ -2584,7 +2661,11 @@
           }
           else if (evObj.state === 2) {
             // For quotesTyping, do NOT hide on repeated click
+            // Also do NOT hide if this is a full-screen overlay event
             if (evObj.special && evObj.special.type === 'quotesTyping') return;
+            if (isFullscreenOverlayEvent(evObj.id)) return;
+
+            // Otherwise, it's a normal event, so let it go dormant
             trySetToDormant(evObj);
             if (window.hoveredEvent === evObj) {
               window.hoveredEvent = null;
