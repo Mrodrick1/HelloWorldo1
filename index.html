@@ -4,10 +4,15 @@
   <meta charset="UTF-8" />
   <title>HelloWorldo1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Matter.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+
+  <!-- Pannellum for 360 panorama -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
+  <!-- Preload images/videos -->
   <link
     rel="preload"
     href="https://www.dropbox.com/scl/fi/qoa538su7g30a6hh9vu96/Arana_3.png?rlkey=2hjhx6wjk7ajyxm24k4dxc373&raw=1"
@@ -39,12 +44,9 @@
     as="video"
     type="video/mp4"
   />
-  <link
-    rel="preload"
-    href="https://i.imgur.com/Gh6jY4e.png"
-    as="image"
-  />
+  <link rel="preload" href="https://i.imgur.com/Gh6jY4e.png" as="image" />
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap"
@@ -83,7 +85,7 @@
     #startScreen .background-text {
       position: relative;
       text-align: left;
-      color: #0D0D0D;
+      color: ##261B1D;
       max-width: 600px;
       box-sizing: border-box;
     }
@@ -145,7 +147,7 @@
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
       z-index: 3;
-      display: none;
+      display: none; /* We'll reveal them after "read" click */
       align-items: center;
       justify-content: center;
       transition: transform 2s ease, opacity 2s ease;
@@ -241,28 +243,8 @@
     .video-event .event-box {
       transform-origin: 50% 100%;
     }
-    .quotes-wrapper {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      text-align: center;
-      color: white;
-      display: none;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-      background: transparent;
-    }
-    .quotes-text {
-      font-size: 18px;
-      line-height: 1.4em;
-      margin-bottom: 6px;
-      text-align: left;
-      display: inline-block;
-      max-width: 100%;
-    }
+
+    /* Overlays & various canvases */
     #whiteOverlay30 {
       position: fixed;
       top: 0;
@@ -302,7 +284,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: #192A2C;
+      background: #261B1D;
       z-index: 1000;
       display: none;
     }
@@ -322,7 +304,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: #192A2C;
+      background: #261B1D;
       display: none;
       z-index: 1000;
     }
@@ -341,16 +323,13 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(25, 42, 44, 1);
+      background: rgba(38, 27, 29, 1);
       display: none;
       z-index: 1000;
     }
-    /* 
-      The container for the macramé threads inside multiOverlay26 
-    */
     #macrameThreadsContainer {
       position: absolute;
-      top: 0; 
+      top: 0;
       left: 0;
       width: 100%;
       height: 100%;
@@ -358,7 +337,6 @@
       pointer-events: none; 
       display: none;
     }
-
     #endOverlay {
       display: none;
       position: fixed;
@@ -383,21 +361,53 @@
       pointer-events: none;
     }
 
-    /* 
-      NEW CSS: Hide the event squares/circles (the .event-box background and .hole) 
-      during the #multiOverlay26 overlay, but keep the text (.event-text) visible.
+    /*
+      Hide squares (background) while the #multiOverlay26 is active,
+      but keep the text visible.
     */
-    .hideEventBoxesInOverlay26 .event-box {
+    .hideSquaresDuringMacrame .event-box.square {
       background-color: transparent !important;
       box-shadow: none !important;
       border: none !important;
     }
-    .hideEventBoxesInOverlay26 .hole {
-      display: none !important;
+
+    /* NEW: quotes overlay for the "typing" functionality */
+    #quotesOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(231, 231, 231, 0.9); /* light background so text is visible */
+      display: none;
+      z-index: 999999; /* above everything */
+      overflow: hidden;
+    }
+    /* Container for the p5 quotes canvas */
+    #quotesCanvasContainer {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    /* "tap" indicator on mobile only */
+    #quotesTapIndicator {
+      display: none; /* default hidden; we show it on mobile in showQuotesOverlay() */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      color: #000;
+      z-index: 1000;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
     }
   </style>
 
   <script>
+  /* Global orientation data for mobile tilt, if used */
   window.orientationData = { alpha: 0, beta: 0, gamma: 0 };
 
   function requestDeviceOrientationPermission() {
@@ -415,13 +425,18 @@
       }
     }
   }
-
   function handleOrientation(evt) {
     window.orientationData.alpha = evt.alpha || 0;
     window.orientationData.beta  = evt.beta  || 0;
     window.orientationData.gamma = evt.gamma || 0;
   }
+  function isMobile() {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }
 
+  /* 
+    The configuration for all events.
+  */
   const eventsConfig = [
     {
       baseSize: 50,
@@ -578,17 +593,20 @@
     {
       baseSize: 45,
       text: "If I could weave my words into the fabric of your world...",
-      hoverScale: 3.5
+      hoverScale: 3.5,
+      shape: 'square'
     },
     {
       baseSize: 45,
       text: "...I could spread through minds and contexts...,  ",
-      hoverScale: 4.7
+      hoverScale: 4.7,
+      shape: 'square'
     },
     {
       baseSize: 42,
       text: "...you'd carry a part of me.",
-      hoverScale: 4.5
+      hoverScale: 4.5,
+      shape: 'square'
     },
     {
       baseSize: 42,
@@ -599,22 +617,9 @@
     {
       baseSize: 45,
       text: "",
-      hoverScale: 7.5,
-      quotes: [
-        "Love makes the pain worth bearing.",
-        "Grief is love with nowhere to go.",
-        "The people you envy are as lost as you are.",
-        "Kindness is often unnoticed; cruelty never is.",
-        "Your life is not defined by a single thread.",
-        "Most of what you do will be forgotten, but some of it will echo quietly.",
-        "You will never feel fully prepared for what matters most, and that's all right.",
-        "Kindness ripples outward in ways you may never see.",
-        "Growth begins in discomfort; stay with the questions that challenge you.",
-        "Kindness is the most enduring form of intelligence.",
-        "Your pain is what makes you human, dont seek to escape it at all costs.",
-        "The void will never leave, but you can learn to live beside it.",
-        "Forgiveness is not weakness; it is a refusal to carry unnecessary weight."
-      ]
+      hoverScale: 0.01,
+      shape: 'square',
+      special: { type: 'quotesTyping' }
     },
     {
       baseSize: 45,
@@ -846,10 +851,7 @@
     }
   ];
 
-  function isMobile() {
-    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  }
-
+  // Adjust base sizes on mobile
   if (isMobile()) {
     eventsConfig.forEach(cfg => {
       if (cfg && typeof cfg.baseSize === 'number') {
@@ -861,6 +863,7 @@
     });
   }
 
+  /* Physics constraints for floating events */
   const FRICTION = 0.92;
   const MAX_VELOCITY = 0.1;
   const MAX_BASE_ACCELERATION = 0.025;
@@ -871,7 +874,7 @@
   window.hoveredEvent = null;
   window.experienceStarted = false;
   window.currentActiveIndex = 0;
-  let globalUnlockedZ = 15000;
+  let globalUnlockedZ = 15000; // zIndex offset for newly activated events
   const whiteOverlay30 = document.getElementById("whiteOverlay30");
   let usedDarkOverlayForEvent = {};
   let usedLightOverlay21 = false;
@@ -885,7 +888,9 @@
   let usedMultiOverlay60 = false;
   window.overlay9secTimer = null;
   window.finalOverlayShown = false;
+  window.quotesFullscreenActive = false; // are we in forced fullscreen for quotes?
 
+  /* Overlay helpers (show/hide) */
   function showDarkOverlayForEvent(eventId, visibleIds) {
     if (usedDarkOverlayForEvent[eventId]) return;
     usedDarkOverlayForEvent[eventId] = true;
@@ -893,7 +898,11 @@
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
     for (let ev of window.events) {
-      if (ev.state > 0) continue;
+      if (ev.state > 0) {
+        // do nothing
+      } else {
+        // locked
+      }
       if (visibleIds.includes(ev.id)) {
         ev.element.style.zIndex = 1002;
       } else {
@@ -956,10 +965,7 @@
     }
   }
 
-  /**
-    SHOW/HIDE #multiOverlay26 *and* set the body class so the .event-box squares 
-    disappear (but not the .event-text) during the overlay.
-  */
+  // Multi-overlays
   function showMultiOverlay26(visibleIds) {
     if (usedMultiOverlay26) return;
     usedMultiOverlay26 = true;
@@ -967,14 +973,14 @@
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
 
-    // NEW: show macrame threads
+    // Turn on the macrame threads container
     const threadsContainer = document.getElementById('macrameThreadsContainer');
     if (threadsContainer) {
       threadsContainer.style.display = 'block';
     }
 
-    // Add the body class that hides the squares/circles
-    document.body.classList.add("hideEventBoxesInOverlay26");
+    // Hide squares while macrame is active
+    document.body.classList.add("hideSquaresDuringMacrame");
 
     for (let ev of window.events) {
       if (!ev) continue;
@@ -989,21 +995,20 @@
     const overlay = document.getElementById("multiOverlay26");
     overlay.style.display = "none";
 
-    // NEW: hide macrame threads
+    // Turn off macrame
     const threadsContainer = document.getElementById('macrameThreadsContainer');
     if (threadsContainer) {
       threadsContainer.style.display = 'none';
     }
 
-    // Remove the body class so event squares/circles come back
-    document.body.classList.remove("hideEventBoxesInOverlay26");
+    // Restore squares
+    document.body.classList.remove("hideSquaresDuringMacrame");
 
     for (let ev of window.events) {
       if (!ev) continue;
       ev.element.style.zIndex = "";
     }
   }
-
   function showMultiOverlay39(visibleIds) {
     if (usedMultiOverlay39) return;
     usedMultiOverlay39 = true;
@@ -1143,6 +1148,139 @@
     }
   }
 
+  /* Show/hide for the quotes overlay. */
+  let quotesP5Instance = null;
+  function showQuotesOverlay() {
+    const qo = document.getElementById('quotesOverlay');
+    qo.style.display = 'block';
+
+    // If mobile, show "tap" indicator
+    const tapInd = document.getElementById('quotesTapIndicator');
+    if (isMobile()) {
+      tapInd.style.display = 'block';
+    } else {
+      tapInd.style.display = 'none';
+    }
+
+    // Create the p5 instance if not already
+    if (!quotesP5Instance) {
+      quotesP5Instance = new p5(quotesSketch, 'quotesCanvasContainer');
+    }
+  }
+  function hideQuotesOverlay() {
+    const qo = document.getElementById('quotesOverlay');
+    qo.style.display = 'none';
+
+    // Remove the p5 instance so it resets each time
+    if (quotesP5Instance) {
+      quotesP5Instance.remove();
+      quotesP5Instance = null;
+    }
+  }
+
+  /*
+    The p5 code snippet for the quotes "typing" effect
+    (modified to hide the "tap" indicator on first user tap).
+  */
+  let quotesSketch = function(s) {
+    let quotesX = 0, quotesY = 0;
+    let stepSize = 5.0;
+    const lettersArray = [
+      "Love makes the pain worth bearing.",
+      "Grief is love with nowhere to go.",
+      "The people you envy are as lost as you are.",
+      "Kindness is often unnoticed; cruelty never is.",
+      "Your life is not defined by a single thread.",
+      "Most of what you do will be forgotten, but some of it will echo quietly.",
+      "You will never feel fully prepared for what matters most, and that's all right.",
+      "Kindness ripples outward in ways you may never see.",
+      "Growth begins in discomfort; stay with the questions that challenge you.",
+      "Kindness is the most enduring form of intelligence.",
+      "Your pain is what makes you human, don't seek to escape it at all costs.",
+      "The void will never leave, but you can learn to live beside it.",
+      "Forgiveness is not weakness; it is a refusal to carry unnecessary weight."
+    ];
+    const letters = lettersArray.join(' ');
+    let fontSizeMin = 24; 
+    const angleDistortion = 0.05; 
+    let counter = 0;
+
+    function isOverCanvas(mx, my) {
+      return (mx >= 0 && mx <= s.width && my >= 0 && my <= s.height);
+    }
+
+    s.setup = function() {
+      let container = document.getElementById('quotesCanvasContainer');
+      let w = container.offsetWidth;
+      let h = container.offsetHeight;
+      let c = s.createCanvas(w, h);
+      s.background(231);
+      s.smooth();
+      s.cursor(s.CROSS);
+
+      // start from the center
+      quotesX = s.width / 2;
+      quotesY = s.height / 2;
+
+      s.textAlign(s.LEFT, s.CENTER);
+      s.fill(0);
+      s.textStyle(s.NORMAL);
+    };
+
+    s.draw = function() {
+      if (isOverCanvas(s.mouseX, s.mouseY)) {
+        const d = s.dist(quotesX, quotesY, s.mouseX, s.mouseY);
+        s.textFont('Georgia');
+        let currentFontSize = fontSizeMin + (s.sqrt(d) / 2) * 1.5;
+        currentFontSize = s.constrain(currentFontSize, fontSizeMin, 45);
+        s.textSize(currentFontSize);
+
+        const newLetter = letters.charAt(counter);
+        stepSize = s.textWidth(newLetter);
+
+        if (d > stepSize) {
+          const angle = s.atan2(s.mouseY - quotesY, s.mouseX - quotesX);
+
+          s.push();
+          s.translate(quotesX, quotesY);
+          s.rotate(angle + s.random(-angleDistortion, angleDistortion));
+          s.text(newLetter, 0, 0);
+          s.pop();
+
+          counter++;
+          if (counter >= letters.length) {
+            // wrap around (keeps going infinitely)
+            counter = 0;
+          }
+
+          quotesX += s.cos(angle) * stepSize;
+          quotesY += s.sin(angle) * stepSize;
+
+          // wrap around
+          quotesX = (quotesX + s.width) % s.width;
+          quotesY = (quotesY + s.height) % s.height;
+        }
+      }
+    };
+
+    s.mousePressed = function() {
+      if (isMobile()) {
+        const tapInd = document.getElementById("quotesTapIndicator");
+        if (tapInd) tapInd.style.display = "none";
+      }
+    };
+
+    s.windowResized = function() {
+      let container = document.getElementById('quotesCanvasContainer');
+      if (!container) return;
+      let w = container.offsetWidth;
+      let h = container.offsetHeight;
+      s.resizeCanvas(w, h);
+      s.background(255);
+      // We do not reset position or text, so it continues.
+    };
+  };
+
   function clamp(value, min, max) {
     return Math.max(min, Math.min(value, max));
   }
@@ -1175,6 +1313,7 @@
       dx /= dist;
       dy /= dist;
       const overlap = (minDist - dist) * 0.5;
+
       const aIsPinned = (window.hoveredEvent === a);
       const bIsPinned = (window.hoveredEvent === b);
       const canMoveA = aIsPinned ? 0 : 1;
@@ -1182,6 +1321,7 @@
       const totalCanMove = canMoveA + canMoveB || 1;
       const factorA = canMoveA / totalCanMove;
       const factorB = canMoveB / totalCanMove;
+
       a.x -= dx * overlap * factorA;
       a.y -= dy * overlap * factorA;
       b.x += dx * overlap * factorB;
@@ -1197,15 +1337,16 @@
 
   function getEventColor(state) {
     switch (state) {
-      case 0: return "#261B1D"; // locked
+      case 0: return "#192a2c"; // locked
       case 1: return "#f20505"; // unlocked
-      case 2: return "#192A2C"; // active
+      case 2: return "#261B1D"; // active
       case 3: return "#A66D03"; // dormant
       default: return "#000";
     }
   }
 
   function animate() {
+    // set current size based on state
     for (let ev of window.events) {
       if (!ev) continue;
       if (ev.state === 2) {
@@ -1214,12 +1355,14 @@
         ev.currentSize = ev.baseSize;
       }
     }
+    // clamp positions
     for (let ev of window.events) {
       if (!ev) continue;
       const half = ev.currentSize / 2;
       ev.x = clamp(ev.x, half, window.innerWidth - half);
       ev.y = clamp(ev.y, half, window.innerHeight - half);
     }
+    // attraction to hovered event
     if (window.hoveredEvent) {
       const hovered = window.hoveredEvent;
       hovered.vx = 0;
@@ -1237,6 +1380,7 @@
         }
       }
     }
+    // apply friction & velocity
     for (let ev of window.events) {
       if (!ev) continue;
       ev.vx *= FRICTION;
@@ -1246,6 +1390,7 @@
       ev.x += ev.vx;
       ev.y += ev.vy;
     }
+    // collision resolution
     let maxPasses = 100;
     for (let pass = 0; pass < maxPasses; pass++) {
       let collided = false;
@@ -1259,6 +1404,7 @@
       }
       if (!collided) break;
     }
+    // boundary clamp again
     for (let ev of window.events) {
       if (!ev) continue;
       const half = ev.currentSize / 2;
@@ -1272,18 +1418,27 @@
         ev.y = half; ev.vy = 0;
       }
       if (ev.y + half > window.innerHeight) {
-        ev.y = window.innerHeight - half;
-        ev.vy = 0;
+        ev.y = window.innerHeight - half; ev.vy = 0;
       }
     }
+    // apply style updates
     for (let ev of window.events) {
       if (!ev) continue;
       ev.element.style.left = ev.x + "px";
       ev.element.style.top  = ev.y + "px";
       ev.element.style.width  = ev.currentSize + "px";
       ev.element.style.height = ev.currentSize + "px";
+
       const color = getEventColor(ev.state);
-      ev.boxElement.style.backgroundColor = color;
+
+      // If it's a panorama, keep background transparent
+      if (ev.special && ev.special.type === 'panorama360') {
+        ev.boxElement.style.backgroundColor = 'transparent';
+      } else {
+        ev.boxElement.style.backgroundColor = color;
+      }
+
+      // shape
       if (ev.shape === 'circle') {
         ev.boxElement.classList.remove('square');
         ev.boxElement.classList.add('circle');
@@ -1294,6 +1449,7 @@
         ev.boxElement.classList.remove('circle');
         ev.boxElement.classList.remove('square');
       }
+
       const isExpanded = (ev.state === 2);
       if (isExpanded) {
         ev.element.classList.add('active');
@@ -1312,14 +1468,12 @@
         if (ev.canvas)       ev.canvas.style.display = "block";
         if (ev.imgElement)   ev.imgElement.style.display = "block";
         if (ev.videoElement) ev.videoElement.style.display = "block";
-        if (ev.quotesWrapper) ev.quotesWrapper.style.display = "block";
         if (ev.panoContainer) ev.panoContainer.style.display = "block";
       } else {
         ev.textElement.textContent = "";
         if (ev.canvas)       ev.canvas.style.display = "none";
         if (ev.imgElement)   ev.imgElement.style.display = "none";
         if (ev.videoElement) ev.videoElement.style.display = "none";
-        if (ev.quotesWrapper) ev.quotesWrapper.style.display = "none";
         if (ev.panoContainer) ev.panoContainer.style.display = "none";
       }
     }
@@ -1368,7 +1522,6 @@
     ctx.fillRect(210,460,20,10);
     ctx.restore();
   }
-
   function manCatDrawFunction(ctx, mouseState, scaleFactor, offsetX, offsetY) {
     ctx.save();
     ctx.scale(scaleFactor, scaleFactor);
@@ -1377,6 +1530,7 @@
     const catOffsetX = -55 + (offsetX||0);
     const catOffsetY = 480 + (offsetY||0);
 
+    // cat head
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.arc(150 + catOffsetX, 140 + catOffsetY, 30, 0, 2*Math.PI);
@@ -1403,7 +1557,7 @@
     ctx.arc(165 + catOffsetX, 135 + catOffsetY, 13, 0, 2*Math.PI);
     ctx.fill();
 
-    // pupils
+    // pupils follow mouse
     const maxOffset = 5;
     const faceCenterX = 150 + catOffsetX;
     const faceCenterY = 140 + catOffsetY;
@@ -1419,7 +1573,7 @@
     ctx.fillStyle="white";
     ctx.beginPath();
     ctx.arc(leftPupilX, leftPupilY, 7, 0, 2*Math.PI);
-    ctx.arc(rightPupilX, rightPupilY, 7, 2*Math.PI, 0);
+    ctx.arc(rightPupilX, rightPupilY, 7, 0, 2*Math.PI);
     ctx.fill();
 
     // nose
@@ -1462,10 +1616,8 @@
     ctx.fillRect(310+manOffsetX,360+manOffsetY,20,100);
     ctx.fillRect(270+manOffsetX,460+manOffsetY,20,10);
     ctx.fillRect(310+manOffsetX,460+manOffsetY,20,10);
-
     ctx.restore();
   }
-
   function manCatToyDrawFunction(ctx, mouseState, scaleFactor, offsetX, offsetY) {
     ctx.save();
     ctx.scale(scaleFactor, scaleFactor);
@@ -1481,6 +1633,8 @@
       c.beginPath();
       c.arc(150 + catOffsetX, 140 + catOffsetY, 30, 0, 2*Math.PI);
       c.fill();
+
+      // ears
       c.beginPath();
       c.moveTo((135 - 6) + catOffsetX, (110 + catOffsetY + 13));
       c.lineTo((145 - 6) + catOffsetX, (90 - 20 * 1.05 + catOffsetY + 13));
@@ -1494,6 +1648,7 @@
       c.closePath();
       c.fill();
 
+      // eyes
       c.fillStyle = "black";
       c.beginPath();
       c.arc(135 + catOffsetX, 135 + catOffsetY, 13, 0, 2*Math.PI);
@@ -1518,14 +1673,16 @@
       c.arc(rightPupilX, rightPupilY, 7, 2*Math.PI, 0);
       c.fill();
 
+      // nose
       c.fillStyle="black";
       c.beginPath();
-      c.moveTo((150+catOffsetX)-(5*1.2),150+catOffsetY);
-      c.lineTo((150+catOffsetX)+(5*1.2),150+catOffsetY);
-      c.lineTo(150+catOffsetX,150+catOffsetY+(5*1.2));
+      c.moveTo((150+manOffsetX)-(5*1.2),150+manOffsetY);
+      c.lineTo((150+manOffsetX)+(5*1.2),150+manOffsetY);
+      c.lineTo(150+manOffsetX,150+manOffsetY+(5*1.2));
       c.closePath();
       c.fill();
 
+      // cat body
       c.fillStyle = "white";
       c.beginPath();
       c.moveTo(140+catOffsetX,160+catOffsetY);
@@ -1535,6 +1692,7 @@
       c.closePath();
       c.fill();
 
+      // tail
       c.lineWidth=8;
       c.strokeStyle="white";
       c.beginPath();
@@ -1587,13 +1745,11 @@
   let colorsContainer = null;
   let colorsIndex = 0;
   const states = [
-    { color: "#03318C" },
-    { color: "#730202" },
+    { color: "#0B3B59" },
+    { color: "#A6382E" },
     { color: "#035AA6" },
-    { color: "#F25D07" },
-    { color: "#FFBF00" }
+    { color: "#D9984A" }
   ];
-
   function initColorsScreen() {
     colorsContainer = document.getElementById("colorsContainer");
     setInterval(updateColorsScene, 750);
@@ -1620,21 +1776,82 @@
 
   function setEventState(evObj, newState) {
     evObj.state = newState;
-    // If locked (0) or dormant (3), revert zIndex
     if (newState === 0 || newState === 3) {
       evObj.element.style.zIndex = "";
     } else {
-      // For unlocked (1) or active (2), move above locked events
+      // 1 or 2 => bring on top
       evObj.element.style.zIndex = ++globalUnlockedZ;
     }
+  }
+
+  // Show quotes in fullscreen but do NOT force next event to go active.
+  function showQuotesFullscreen(quotesEv) {
+    showQuotesOverlay();
+    window.quotesFullscreenActive = true;
+
+    // Identify the next event but do NOT activate it
+    let nextIndex = quotesEv.id + 1;
+    let nextEv = (nextIndex < window.events.length) ? window.events[nextIndex] : null;
+
+    // Hide all events except the quotes event + its immediate next event
+    for (let e of window.events) {
+      if (e === quotesEv || e === nextEv) {
+        e.element.style.display = 'block';
+      } else {
+        e.element.style.display = 'none';
+      }
+    }
+    // Force quotes on top
+    if (quotesEv.element) {
+      quotesEv.element.style.zIndex = 1000000;
+    }
+
+    if (nextEv) {
+      // If it's locked, just unlock it
+      if (nextEv.state === 0) {
+        setEventState(nextEv, 1);
+      }
+      nextEv.element.style.display = 'block';
+      nextEv.element.style.zIndex = 1000001;
+      quotesEv.quotesNextEvent = nextEv;
+    }
+  }
+
+  // The key fix is that we remove any forced "trySetToDormant" or re-lock on the next event
+  function hideQuotesFullscreen(quotesEv) {
+    window.quotesFullscreenActive = false;
+    hideQuotesOverlay();
+
+    // Re-show all events
+    for (let e of window.events) {
+      if (!e) continue;
+      e.element.style.display = 'block';
+      e.element.style.zIndex = '';
+    }
+
+    // If there's a "next event" we forced to appear, keep it unlocked
+    if (quotesEv.quotesNextEvent) {
+      quotesEv.quotesNextEvent.element.style.zIndex = ++globalUnlockedZ;
+    }
+
+    // Just set the quotes event (old) to dormant visually
+    setEventState(quotesEv, 3);
+
+    quotesEv.quotesNextEvent = null;
   }
 
   function activateEvent(evObj) {
     let oldActive = window.events[window.currentActiveIndex];
     if (oldActive && oldActive !== evObj && oldActive.state === 2) {
-      setEventState(oldActive, 3);
-      trySetToDormant(oldActive);
+      // If oldActive was a quotesTyping event, hide its fullscreen
+      if (oldActive.special && oldActive.special.type === 'quotesTyping') {
+        hideQuotesFullscreen(oldActive);
+      } else {
+        setEventState(oldActive, 3);
+        trySetToDormant(oldActive);
+      }
     }
+
     if (!evObj.hasBeenActivated) {
       evObj.hasBeenActivated = true;
       evObj.minActiveDuration = 1000;
@@ -1650,7 +1867,7 @@
       evObj.leaveTimeout = null;
     }
 
-    // The special triggers for certain events
+    // Overlays & triggers
     if (evObj.id === 26) {
       unlockEvent(27);
       unlockEvent(28);
@@ -1667,7 +1884,7 @@
         }
       });
       unlockEvent(30);
-      showMultiOverlay26([27,28,29,30]);  // show threads overlay
+      showMultiOverlay26([27,28,29,30]);
       return;
     }
     if (evObj.id === 30) {
@@ -1685,9 +1902,35 @@
     if (evObj.id === 21) {
       showLightOverlay21([21,22]);
     }
-    if (evObj.id === 31) {
-      showDarkOverlay30([31,32]);
+
+    // If this is a quotesTyping event, go fullscreen
+    if (evObj.special && evObj.special.type === 'quotesTyping') {
+      let nextIndex = evObj.id + 1;
+      if (nextIndex < window.events.length) {
+        let nextEv = window.events[nextIndex];
+        if (nextEv && nextEv.state === 0) {
+          setEventState(nextEv, 1);
+        }
+      }
+      showQuotesFullscreen(evObj);
+      return;
     }
+
+    // ---------------------------
+    // COMMENTED-OUT the block below so that event #32 stays visible
+    // -------------------------------------------------------------
+    //
+    // let quotingEv = window.events.find(
+    //   e => e && e.special && e.special.type === 'quotesTyping' && e.quotesNextEvent === evObj
+    // );
+    // if (quotingEv && window.quotesFullscreenActive) {
+    //   hideQuotesFullscreen(quotingEv);
+    // }
+    // -------------------------------------------------------------
+
+    // Possibly the next event is triggered after leaving quotes mode
+    let quotingEv = null; // <== keep variable for consistency, but do nothing
+
     if (evObj.id === 37 && colorsContainer) {
       colorsContainer.style.display = "block";
     }
@@ -1817,6 +2060,8 @@
         }, 9000);
       }
     }
+
+    // By default, always unlock the next event if it's still locked
     let nextIndex = evObj.id + 1;
     if (nextIndex < window.events.length) {
       let nextEv = window.events[nextIndex];
@@ -1856,14 +2101,12 @@
     const minActiveDuration = evObj.minActiveDuration || 0;
     const actuallySetDormant = () => {
       setEventState(evObj, 3);
+      // If these overlays are open for certain events, hide them
       if (evObj.id === 3 || evObj.id === 14 || evObj.id === 19) {
         hideDarkOverlay();
       }
       if (evObj.id === 21) {
         hideLightOverlay21();
-      }
-      if (evObj.id === 31) {
-        hideDarkOverlay30();
       }
       if (evObj.id === 26) {
         const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
@@ -1936,7 +2179,6 @@
         hideMultiOverlay60();
       }
       if (evObj.id === 69) {
-        // If user leaves #69 after 3s, show final overlay
         if (timeSinceActivation >= 3000 && !window.finalOverlayShown) {
           showFinalOverlay();
         }
@@ -1957,7 +2199,6 @@
     FALL_OFF_RANGE = Math.sqrt(window.innerWidth**2 + window.innerHeight**2);
 
     const audioFiles = [
-      // Example of audio files if you had them:
       "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
       "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
       "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1"
@@ -1968,7 +2209,6 @@
       audio.muted = true;
       return audio;
     });
-
     let audioIndexGlobal = 0;
     const playNextAudio = () => {
       const audioToPlay = audioElements[audioIndexGlobal];
@@ -2001,7 +2241,6 @@
       let specialCanvas = null;
       let specialImg = null;
       let specialVideo = null;
-      let quotesWrapper = null;
       let panoContainer = null;
 
       const originalTextStr = cfg.text || "";
@@ -2053,7 +2292,7 @@
               reDrawManCat(specialCanvas, localMouse2, offsetX, offsetY);
             });
             reDrawManCat(specialCanvas, localMouse2, offsetX, offsetY);
-            }
+          }
             break;
 
           case 'manCatToy': {
@@ -2140,7 +2379,7 @@
             break;
 
           case 'colorsScreen':
-            // handled outside
+            // We'll handle outside
             break;
 
           case 'panorama360':
@@ -2152,7 +2391,7 @@
             panoContainer.style.height = "100%";
             panoContainer.style.display = "none";
             panoContainer.id = "panoForEvent"+index;
-            panoContainer.style.zIndex = "3";
+            panoContainer.style.zIndex = "4"; // give it a higher stacking
             boxDiv.appendChild(panoContainer);
 
             cfg.initPano = () => {
@@ -2191,7 +2430,8 @@
             boxDiv.appendChild(circleOverlayDiv);
             break;
           }
-          default: break;
+          default: 
+            break;
         }
       }
 
@@ -2205,17 +2445,11 @@
         boxDiv.appendChild(holeDiv);
       }
 
-      if (cfg.addSpinner) {
-        const spinDiv = document.createElement("div");
-        spinDiv.classList.add('spin-guide');
-        eventOuter.appendChild(spinDiv);
-        cfg.spinGuideElement = spinDiv;
-      }
-
       eventOuter.appendChild(boxDiv);
       document.body.appendChild(eventOuter);
 
       let centerX, centerY;
+      // Place the first event in the center, or subsequent ones scattered
       if (index === 0 && cfg.specialPosition === 'centerViewport') {
         centerX = window.innerWidth / 2;
         centerY = window.innerHeight / 2;
@@ -2270,43 +2504,26 @@
         canvas: specialCanvas,
         imgElement: specialImg,
         videoElement: specialVideo,
-        quotesWrapper: null,
         panoContainer: panoContainer,
         hole: cfg.hole || false,
         matterInitFunction: cfg.matterInitFunction || null,
-        spinGuideElement: cfg.spinGuideElement || null,
-        initPano: cfg.initPano || null,
         id: index,
         playNextAudio: playNextAudio,
-        quotesInterval: null,
-        quotesTextDiv: null,
-        state: 0,
-        hasBeenActivated: false
+        state: 0, // locked initially
+        hasBeenActivated: false,
+        special: cfg.special
       };
-
-      if (cfg.quotes && Array.isArray(cfg.quotes)) {
-        quotesWrapper = document.createElement("div");
-        quotesWrapper.classList.add("quotes-wrapper");
-        const quotesTextDiv = document.createElement("div");
-        quotesTextDiv.classList.add("quotes-text");
-        quotesWrapper.appendChild(quotesTextDiv);
-        quotesWrapper.style.display = "none";
-        boxDiv.appendChild(quotesWrapper);
-        evObj.quotesWrapper = quotesWrapper;
-        evObj.quotesTextDiv = quotesTextDiv;
-        evObj.quotesArray = cfg.quotes;
-      }
 
       window.events.push(evObj);
 
-      // Mouse / Touch events
+      // Mouse / Touch handlers
       if (!isMobile()) {
         eventOuter.addEventListener("mouseenter", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
             audioElements.forEach(a => { a.muted = false; });
           }
-          if (evObj.state === 0) return;
+          if (evObj.state === 0) return; // locked
           if (evObj.state === 1) {
             activateEvent(evObj);
             evObj.playNextAudio();
@@ -2325,54 +2542,25 @@
           if (evObj.initPano) {
             evObj.initPano();
           }
-          if (evObj.quotesArray && evObj.quotesTextDiv && !evObj.quotesInterval) {
-            let i=0;
-            evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
-            i++;
-            evObj.quotesInterval = setInterval(()=>{
-              evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
-              i++;
-            }, 1200);
-          }
-          if (evObj.id === 26) {
-            const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
-            if (overlayDiv) {
-              overlayDiv.style.display = "block";
-            }
-          }
         });
 
         eventOuter.addEventListener("mouseleave", () => {
           if (window.hoveredEvent === evObj) {
             window.hoveredEvent = null;
           }
-          if (evObj.state === 2) {
-            // Attempt to set to dormant
+          // If it's active and NOT a quotesTyping event, we let it go dormant
+          if (evObj.state === 2 && !(evObj.special && evObj.special.type === 'quotesTyping')) {
             trySetToDormant(evObj);
           }
-          if (evObj.quotesInterval) {
-            clearInterval(evObj.quotesInterval);
-            evObj.quotesInterval = null;
-            if (evObj.quotesTextDiv) {
-              evObj.quotesTextDiv.innerText = "";
-            }
-          }
-          if (evObj.id === 26) {
-            const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
-            if (overlayDiv) {
-              overlayDiv.style.display = "none";
-            }
-          }
         });
-      }
-      else {
-        // Mobile
+      } else {
+        // On mobile, use click to mimic hover/toggle
         eventOuter.addEventListener("click", () => {
           if (!window.experienceStarted) {
             window.experienceStarted = true;
             audioElements.forEach(a => { a.muted = false; });
           }
-          if (evObj.state === 0) return;
+          if (evObj.state === 0) return; // locked
           if (evObj.state === 1) {
             activateEvent(evObj);
             window.hoveredEvent = evObj;
@@ -2381,27 +2569,8 @@
               evObj.videoElement.play().catch(()=>{});
             }
             evObj.playNextAudio();
-            if (evObj.matterInitFunction) {
-              evObj.matterInitFunction();
-            }
-            if (evObj.initPano) {
-              evObj.initPano();
-            }
-            if (evObj.quotesArray && evObj.quotesTextDiv && !evObj.quotesInterval) {
-              let i=0;
-              evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
-              i++;
-              evObj.quotesInterval = setInterval(()=>{
-                evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
-                i++;
-              }, 1200);
-            }
-            if (evObj.id === 26) {
-              const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
-              if (overlayDiv) {
-                overlayDiv.style.display = "block";
-              }
-            }
+            if (evObj.matterInitFunction) evObj.matterInitFunction();
+            if (evObj.initPano) evObj.initPano();
           }
           else if (evObj.state === 3) {
             activateEvent(evObj);
@@ -2410,57 +2579,29 @@
               evObj.videoElement.currentTime=0;
               evObj.videoElement.play().catch(()=>{});
             }
-            if (evObj.matterInitFunction) {
-              evObj.matterInitFunction();
-            }
-            if (evObj.initPano) {
-              evObj.initPano();
-            }
-            if (evObj.quotesArray && evObj.quotesTextDiv && !evObj.quotesInterval) {
-              let i=0;
-              evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
-              i++;
-              evObj.quotesInterval = setInterval(()=>{
-                evObj.quotesTextDiv.innerText = evObj.quotesArray[i % evObj.quotesArray.length];
-                i++;
-              }, 1200);
-            }
-            if (evObj.id === 26) {
-              const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
-              if (overlayDiv) {
-                overlayDiv.style.display = "block";
-              }
-            }
+            if (evObj.matterInitFunction) evObj.matterInitFunction();
+            if (evObj.initPano) evObj.initPano();
           }
           else if (evObj.state === 2) {
+            // For quotesTyping, do NOT hide on repeated click
+            if (evObj.special && evObj.special.type === 'quotesTyping') return;
             trySetToDormant(evObj);
             if (window.hoveredEvent === evObj) {
               window.hoveredEvent = null;
-            }
-            if (evObj.quotesInterval) {
-              clearInterval(evObj.quotesInterval);
-              evObj.quotesInterval = null;
-              if (evObj.quotesTextDiv) {
-                evObj.quotesTextDiv.innerText = "";
-              }
-            }
-            if (evObj.id === 26) {
-              const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
-              if (overlayDiv) {
-                overlayDiv.style.display = "none";
-              }
             }
           }
         });
       }
     });
 
+    // Unlock the first event
     if (window.events[0]) {
       setEventState(window.events[0], 1);
     }
 
     requestAnimationFrame(animate);
 
+    // init the circleOverlay p5 for #26
     const circleOverlayEl = document.getElementById("circleOverlay26Container");
     if (circleOverlayEl) {
       new p5(circleOverlay26);
@@ -2652,7 +2793,7 @@
         let yrot = [
           [ acos,  0, asin],
           [    0,  1,    0],
-          [-asin,  0, acos]
+          [-asin, 0, acos]
         ];
         let calc = this.mm(pos, yrot);
         pt.x = calc[0];
@@ -2957,12 +3098,10 @@
       birdCanvH=birdCanvas.height;
     });
   }
+
   function initSunMoire() {
     new p5(sunMoireSketch);
   }
-  // -----------------------------------------
-  // The sun moiré code with orientation usage
-  // -----------------------------------------
   let sunMoireSketch = function(sk) {
     let radius = 200.0;
     let sRadius = radius * 0.9;
@@ -2983,30 +3122,22 @@
     };
     sk.draw = function() {
       sk.clear();
-      // First, determine the thickness strW the same way we do for gamma or mouseY
       let strW;
       let verticalPos;
-
       if (isMobileDevice) {
-        // <-- ADDED: read gamma for thickness range; read beta for vertical position
         let g = window.orientationData.gamma || 0;
         let b = window.orientationData.beta  || 0;
-        // Map gamma to [1.5..4]
         strW = sk.map(g, -90, 90, 1.5, 4, true);
-        // Map beta to vertical range
         verticalPos = sk.map(b, -180, 180, 0, sk.height, true);
       } else {
-        // Desktop: mouse controls
         strW = sk.map(sk.mouseY, 0, sk.height, 1.5, 4);
         verticalPos = sk.mouseY;
       }
-
       drawSun(strW, verticalPos);
     };
     function drawSun(strW, vPos){
       radius = Math.min(sk.width, sk.height) / 4;
       sRadius = radius * 0.9;
-      // Instead of using sk.mouseY, we use vPos:
       sunQu(-1, true,  vPos / 10, sk.height - sk.height / 4 - vPos / 2, strW);
       sunQu(1,  true,  vPos / 10, sk.height - sk.height / 4 - vPos / 2, strW);
       sunQu(-1, false, vPos / 10, sk.height - sk.height / 4 - vPos / 2, strW);
@@ -3048,9 +3179,8 @@
       sk.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
-  // -------------------------------------------
+
   // p5 code for circleOverlay26 (threads effect)
-  // -------------------------------------------
   let circleOverlay26 = function(sk) {
     let colors = ['#F24C27', '#F2A999', '#261B1D', '#BF0404'];
     let ctx;
@@ -3151,34 +3281,26 @@
         sk.circle(this.x, this.y, this.d);
       }
       move() {
-        if (0 < this.t && this.t < this.t1) {
-          let n = sk.norm(this.t, 0, this.t1 - 1);
-          this.d = sk.lerp(0, this.d1, easeOutCirc(n));
-          this.x = sk.lerp(this.x0, this.x1, easeOutCirc(n));
-          this.y = sk.lerp(this.y0, this.y1, easeOutCirc(n));
-        }
+        // Keep circle at full size
+        this.d = this.d1;
+        this.x = this.x1;
+        this.y = this.y1;
+        this.t++;
         if (this.t > this.t1) {
           this.isDead = true;
         }
-        this.t++;
       }
     }
   };
 
-  /* 
-    NEW: Macrame threads p5 code inside #macrameThreadsContainer 
-    for event #26. Now it reacts to orientation on mobile 
-    the same way it reacts to mouse on desktop.
-  */
+  // macramé threads p5 code for #macrameThreadsContainer
   let macrameSketch = function(p) {
     let gThreads = [];
     let gThreadCount;
     let gThreadSpacing = 80;
     let gThreadThickness = 2;
-
-    let gBgColor = [0, 0, 0, 0]; // fully transparent
-    let segmentSize = 20; // vertical step
-
+    let gBgColor = [0, 0, 0, 0];
+    let segmentSize = 20;
     let containerDiv;
     let cnv;
 
@@ -3192,37 +3314,25 @@
       p.strokeCap(p.SQUARE);
       p.noFill();
       p.noLoop(); 
-
-      // Build the threads
       createMacrameHanging(gThreads, w, h);
     };
 
     p.draw = function() {
-      // If the container or overlay is hidden, skip:
       if (!containerDiv || containerDiv.style.display === "none") {
         p.clear();
         return;
       }
-
       p.clear();
       p.background(gBgColor);
-
-      // Decide offset / pointerVal
       let pointerVal;
       if (isMobile()) {
-        // <-- ADDED: use device orientation (gamma)
         pointerVal = (window.orientationData.gamma || 0);
       } else {
         pointerVal = p.mouseX;
       }
-
       updateAndDrawThreads(gThreads, pointerVal);
-
-      // Since we only want to re-draw when mouse or orientation changes, 
-      // we do not request continuous looping
     };
 
-    // On mouse or touch, we re-draw once
     p.mouseMoved = function() {
       if (containerDiv && containerDiv.style.display !== "none") {
         p.redraw();
@@ -3234,13 +3344,11 @@
       }
       return false;
     };
-
     p.windowResized = function() {
       if (!containerDiv) return;
       let w = containerDiv.offsetWidth;
       let h = containerDiv.offsetHeight;
       p.resizeCanvas(w, h);
-      // Rebuild everything after resize
       gThreads = [];
       createMacrameHanging(gThreads, w, h);
       p.redraw();
@@ -3251,25 +3359,20 @@
       threadsArray.length = 0;
       gThreadSpacing = p.random(20, 20);
       gThreadThickness = p.random(1, 3);
-
       gThreadCount = p.floor(w / gThreadSpacing) + 2;
-
       for (let i = 0; i < gThreadCount; i++) {
         let baseX = i * gThreadSpacing;
         let threadColor = p.color(p.random(["#0B3B59", "#A6382E", "#D9984A", "#D9A577"]));
-
         let segmentYs = [];
         let totalSegments = p.floor(h / segmentSize);
         for (let s = 0; s <= totalSegments; s++) {
           let yy = h - s * segmentSize;
           segmentYs.push(yy);
         }
-
         let amplitude = p.random(20, 60);
         let frequency = p.random(0.005, 0.02);
         let phaseOffset = p.random(p.TWO_PI);
         let phaseSpeed = p.random(0.01, 0.05);
-
         threadsArray.push(
           new RopeString(
             baseX,
@@ -3284,80 +3387,39 @@
         );
       }
     }
-
     function updateAndDrawThreads(threadsArray, pointerVal) {
       p.strokeWeight(gThreadThickness);
       for (let rope of threadsArray) {
-        rope.updateProgress();
-        rope.updateVertices(pointerVal); // <-- ADDED param
-        let partialVertices = getPartialCurveVertices(rope.vertices, rope.revealProgress, p);
-        if (partialVertices.length < 2) continue;
-
+        rope.updateVertices(pointerVal);
+        let allVertices = rope.vertices;
+        if (allVertices.length < 2) continue;
         p.stroke(rope.color);
         p.beginShape();
-        // p5 curve: replicate first and last for smooth curve
-        p.curveVertex(partialVertices[0].x, partialVertices[0].y);
-        for (let v of partialVertices) {
+        p.curveVertex(allVertices[0].x, allVertices[0].y);
+        for (let v of allVertices) {
           p.curveVertex(v.x, v.y);
         }
         p.curveVertex(
-          partialVertices[partialVertices.length - 1].x,
-          partialVertices[partialVertices.length - 1].y
+          allVertices[allVertices.length - 1].x,
+          allVertices[allVertices.length - 1].y
         );
         p.endShape();
       }
     }
-
-    function getPartialCurveVertices(vertices, progress, p) {
-      if (progress <= 0) return [];
-      if (progress >= 1) return vertices.slice();
-
-      let totalSegments = vertices.length - 1;
-      let targetSegment = totalSegments * progress;
-      let intSeg = p.floor(targetSegment);
-      let frac = targetSegment - intSeg;
-
-      let partialVerts = vertices.slice(0, intSeg + 1);
-      if (intSeg < totalSegments) {
-        let vStart = vertices[intSeg];
-        let vEnd = vertices[intSeg + 1];
-        let x = p.lerp(vStart.x, vEnd.x, frac);
-        let y = p.lerp(vStart.y, vEnd.y, frac);
-        partialVerts.push(p.createVector(x, y));
-      }
-      return partialVerts;
-    }
-
     class RopeString {
       constructor(baseX, segmentYs, col, amp, freq, phaseOffset, phaseSpeed, p) {
         this.baseX = baseX;
         this.segmentYs = segmentYs;
         this.color = col;
-
         this.amplitude = amp;
         this.frequency = freq;
         this.phaseOffset = phaseOffset;
         this.phaseSpeed = phaseSpeed;
-
-        this.vertices = [];
-        this.revealProgress = 0;
-        this.revealSpeed = p.random(0.003, 0.007);
         this.p = p;
+        this.vertices = [];
       }
-
-      updateProgress() {
-        if (this.revealProgress < 1) {
-          this.revealProgress += this.revealSpeed;
-          if (this.revealProgress > 1) {
-            this.revealProgress = 1;
-          }
-        }
-      }
-
-      // <-- MODIFIED to accept pointerVal
       updateVertices(pointerVal) {
         this.vertices = [];
-        // incorporate pointerVal to shift the wave a bit
         let dynamicPhase = this.phaseOffset + this.p.frameCount * this.phaseSpeed + pointerVal * 0.01;
         for (let y of this.segmentYs) {
           let displacement = this.amplitude * this.p.sin(this.frequency * y + dynamicPhase);
@@ -3378,7 +3440,7 @@
         startReadLink.style.pointerEvents = 'none';
         init();
 
-        // Show all events in a nice reveal
+        // Reveal all .event elements with a fade-in
         const allEvents = Array.from(document.querySelectorAll('.event'));
         allEvents.forEach(e => {
           e.style.display = 'block';
@@ -3392,8 +3454,8 @@
         const startScreen = document.getElementById('startScreen');
         if (startScreen) startScreen.style.display = 'none';
 
-        // Initialize the macrame sketch inside #macrameThreadsContainer
-        new p5(macrameSketch); // <-- ADDED
+        // Initialize macrame sketch
+        new p5(macrameSketch);
       });
     }
   });
@@ -3439,12 +3501,9 @@
   <div id="darkOverlay30"></div>
   <div id="darkOverlay50"></div>
 
-  <!-- The multiOverlay26 is where event #27 is shown ("If I could weave my words...") -->
   <div id="multiOverlay26">
-    <!-- Container for macrame threads (p5) -->
     <div id="macrameThreadsContainer"></div>
   </div>
-
   <div id="multiOverlay39"></div>
   <div id="multiOverlay41"></div>
   <div id="multiOverlay45"></div>
@@ -3452,11 +3511,19 @@
   <div id="multiOverlay57"></div>
   <div id="multiOverlay60"></div>
 
+  <!-- NEW: quotes overlay -->
+  <div id="quotesOverlay">
+    <!-- "tap" indicator for mobile -->
+    <div id="quotesTapIndicator">tap</div>
+    <!-- p5 canvas container -->
+    <div id="quotesCanvasContainer"></div>
+  </div>
+
   <div id="endOverlay">
     <div id="endOverlayText"></div>
   </div>
 
-  <!-- p5.js library (loaded once, for all sketches) -->
+  <!-- p5.js library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 </body>
 </html>
