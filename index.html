@@ -926,10 +926,14 @@
   function hideDarkOverlay() {
     const overlay = document.getElementById("darkOverlay");
     overlay.style.display = "none";
-    // Reset all event z-index
+    // RESTORE z-index according to state
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -944,9 +948,14 @@
   function hideLightOverlay21() {
     const overlay = document.getElementById("lightOverlay21");
     overlay.style.display = "none";
+    // RESTORE z-index according to state
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -963,7 +972,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1000,7 +1013,11 @@
 
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1017,7 +1034,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1034,7 +1055,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1051,7 +1076,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1068,7 +1097,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1085,7 +1118,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1102,7 +1139,11 @@
     overlay.style.display = "none";
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.zIndex = "";
+      if (ev.state === 1 || ev.state === 2) {
+        ev.element.style.zIndex = 9999999;
+      } else {
+        ev.element.style.zIndex = "";
+      }
     }
   }
 
@@ -1384,7 +1425,11 @@
       ev.element.style.width  = ev.currentSize + "px";
       ev.element.style.height = ev.currentSize + "px";
 
-      const color = getEventColor(ev.state);
+      let color = getEventColor(ev.state);
+      // Hide the quotesTyping base square if it's active:
+      if (ev.special && ev.special.type === 'quotesTyping' && ev.state === 2) {
+        color = "transparent";
+      }
       ev.boxElement.style.backgroundColor = color;
 
       // shape
@@ -1723,19 +1768,13 @@
     }
   }
 
-  // ----------------------------------------------------------------------
-  // IMPORTANT CHANGE BELOW:
-  // Instead of incrementing z-index, we force unlocked/active events to
-  // a very high z-index so they are ALWAYS on top.
-  // ----------------------------------------------------------------------
   function setEventState(evObj, newState) {
     evObj.state = newState;
     if (newState === 0 || newState === 3) {
       evObj.element.style.zIndex = "";
     } else {
       // state=1 or 2 => always top
-      evObj.element.style.zIndex = 9999999; 
-      // (Old line was: evObj.element.style.zIndex = ++globalUnlockedZ;)
+      evObj.element.style.zIndex = 9999999;
     }
   }
 
@@ -2034,7 +2073,6 @@
   }
 
   function trySetToDormant(evObj) {
-    // Once we do want to push to dormant if certain overlays are done:
     const timeSinceActivation = performance.now() - (evObj.activatedAt || 0);
     const minActiveDuration = evObj.minActiveDuration || 0;
     const actuallySetDormant = () => {
@@ -2101,13 +2139,14 @@
           hideMultiOverlay51();
         }
       }
+      // FIX FOR (57,58,59) so images disappear properly:
       if ([57,58,59].includes(evObj.id)) {
-        const s57 = window.events[57]?.state;
-        const s58 = window.events[58]?.state;
-        const s59 = window.events[59]?.state;
-        if (s57 !== 2 && s58 !== 2 && s59 !== 2) {
-          hideMultiOverlay57();
-        }
+        [57,58,59].forEach(id => {
+          if (window.events[id] && window.events[id].state === 2) {
+            setEventState(window.events[id], 3);
+          }
+        });
+        hideMultiOverlay57();
       }
       if ([60,61,62,63,64].includes(evObj.id)) {
         [60,61,62,63,64].forEach(id=>{
@@ -2202,6 +2241,7 @@
       "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
       "https://www.dropbox.com/scl/fi/lpw1asbch7q3uv4tkkn0h/C_arp-2.mp3?rlkey=ed7lhs13xomksgeq3xoyg1dl8&st=zn5s9ndm&raw=1",
       "https://www.dropbox.com/scl/fi/sfz90m5pz2m8gnfrhh8bn/AB-_arp-2.mp3?rlkey=9kncuanzp47vz1xghgo07jg2u&st=amzjaumk&raw=1",
+      // ... Add more audio if needed
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -2412,6 +2452,12 @@
                 });
                 cfg.panoViewer = viewer;
               }
+              // Force a resize after the container is visible:
+              setTimeout(() => {
+                if (cfg.panoViewer) {
+                  cfg.panoViewer.resize();
+                }
+              }, 200);
             };
             break;
 
@@ -3410,11 +3456,6 @@
       }
     }
   };
-
-  function isFullscreenOverlayEvent(evId) {
-    // You can define additional IDs that are "fullscreen" or special overlays if needed
-    return false;
-  }
 
   document.addEventListener("DOMContentLoaded", () => {
     const startReadLink = document.getElementById('startReadLink');
