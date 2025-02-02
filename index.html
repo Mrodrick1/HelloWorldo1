@@ -758,6 +758,7 @@
       baseSize: 55,
       text: "",
       hoverScale: 9.5,
+      shape: 'square',
       special: {
         type: 'panorama360',
         panoramaSrc: "https://i.imgur.com/Gh6jY4e.png"
@@ -890,72 +891,55 @@
   window.finalOverlayShown = false;
   window.quotesFullscreenActive = false; // are we in forced fullscreen for quotes?
 
-  /* 
-    NEW UTILITY:
-    Tells us if an event ID corresponds to a "full screen overlay" event 
-    so we skip letting it go dormant on just mouse-out or second tap. 
-    We only hide that overlay when the *next event* is activated.
+  /*
+    We want events that are active (state=2) to be on top. Overlays also
+    set z-indices for background events. 
   */
-  function isFullscreenOverlayEvent(evId) {
-    // Add all IDs that show a "must be closed by next event" overlay:
-    return [
-      // darkOverlay chain
-      3, 14, 19,
-      // lightOverlay21
-      21,
-      // multiOverlay26 chain
-      26, 27, 28, 29, 30,
-      // colorsContainer
-      37,
-      // multiOverlay39 -> 41 chain
-      39, 40, 41, 42, 43,
-      // multiOverlay45 chain
-      45, 46, 47, 48,
-      // multiOverlay51 chain
-      51, 52,
-      // multiOverlay57 -> 60 chain
-      57, 58, 59, 60, 61, 62, 63, 64
-    ].includes(evId);
+  function setOverlayZIndices(visibleIds, overlayZ = 1002, backgroundZ = 999) {
+    for (let ev of window.events) {
+      if (!ev) continue;
+      let currentZ = parseInt(ev.element.style.zIndex) || 0;
+      // If event is locked (0) or dormant (3), we allow overlay logic
+      if (ev.state === 0 || ev.state === 3) {
+        if (visibleIds.includes(ev.id)) {
+          ev.element.style.zIndex = Math.max(currentZ, overlayZ);
+        } else {
+          if (currentZ < overlayZ) {
+            ev.element.style.zIndex = backgroundZ;
+          }
+        }
+      } else {
+        // state=1 or 2 => always top
+        ev.element.style.zIndex = 9999999;
+      }
+    }
   }
 
-  /* Overlay helpers (show/hide) */
   function showDarkOverlayForEvent(eventId, visibleIds) {
     if (usedDarkOverlayForEvent[eventId]) return;
     usedDarkOverlayForEvent[eventId] = true;
     const overlay = document.getElementById("darkOverlay");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideDarkOverlay() {
     const overlay = document.getElementById("darkOverlay");
     overlay.style.display = "none";
+    // Reset all event z-index
     for (let ev of window.events) {
       if (!ev) continue;
       ev.element.style.zIndex = "";
     }
   }
+
   function showLightOverlay21(visibleIds) {
     if (usedLightOverlay21) return;
     usedLightOverlay21 = true;
     const overlay = document.getElementById("lightOverlay21");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideLightOverlay21() {
     const overlay = document.getElementById("lightOverlay21");
@@ -965,20 +949,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showDarkOverlay30(visibleIds) {
     if (usedDarkOverlay30) return;
     usedDarkOverlay30 = true;
     const overlay = document.getElementById("darkOverlay30");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideDarkOverlay30() {
     const overlay = document.getElementById("darkOverlay30");
@@ -989,7 +967,6 @@
     }
   }
 
-  // Multi-overlays
   function showMultiOverlay26(visibleIds) {
     if (usedMultiOverlay26) return;
     usedMultiOverlay26 = true;
@@ -1006,14 +983,7 @@
     // Hide squares while macrame is active
     document.body.classList.add("hideSquaresDuringMacrame");
 
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay26() {
     const overlay = document.getElementById("multiOverlay26");
@@ -1033,20 +1003,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showMultiOverlay39(visibleIds) {
     if (usedMultiOverlay39) return;
     usedMultiOverlay39 = true;
     const overlay = document.getElementById("multiOverlay39");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay39() {
     const overlay = document.getElementById("multiOverlay39");
@@ -1056,20 +1020,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showMultiOverlay41(visibleIds) {
     if (usedMultiOverlay41) return;
     usedMultiOverlay41 = true;
     const overlay = document.getElementById("multiOverlay41");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay41() {
     const overlay = document.getElementById("multiOverlay41");
@@ -1079,20 +1037,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showMultiOverlay45(visibleIds) {
     if (usedMultiOverlay45) return;
     usedMultiOverlay45 = true;
     const overlay = document.getElementById("multiOverlay45");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay45() {
     const overlay = document.getElementById("multiOverlay45");
@@ -1102,20 +1054,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showMultiOverlay51(visibleIds) {
     if (usedMultiOverlay51) return;
     usedMultiOverlay51 = true;
     const overlay = document.getElementById("multiOverlay51");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay51() {
     const overlay = document.getElementById("multiOverlay51");
@@ -1125,20 +1071,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showMultiOverlay57(visibleIds) {
     if (usedMultiOverlay57) return;
     usedMultiOverlay57 = true;
     const overlay = document.getElementById("multiOverlay57");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay57() {
     const overlay = document.getElementById("multiOverlay57");
@@ -1148,20 +1088,14 @@
       ev.element.style.zIndex = "";
     }
   }
+
   function showMultiOverlay60(visibleIds) {
     if (usedMultiOverlay60) return;
     usedMultiOverlay60 = true;
     const overlay = document.getElementById("multiOverlay60");
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (visibleIds.includes(ev.id)) {
-        ev.element.style.zIndex = 1002;
-      } else {
-        ev.element.style.zIndex = 999;
-      }
-    }
+    setOverlayZIndices(visibleIds, 1002, 999);
   }
   function hideMultiOverlay60() {
     const overlay = document.getElementById("multiOverlay60");
@@ -1203,8 +1137,7 @@
   }
 
   /*
-    The p5 code snippet for the quotes "typing" effect
-    (modified to hide the "tap" indicator on first user tap).
+    p5 code snippet for the quotes "typing" effect
   */
   let quotesSketch = function(s) {
     let quotesX = 0, quotesY = 0;
@@ -1273,8 +1206,7 @@
 
           counter++;
           if (counter >= letters.length) {
-            // wrap around (keeps going infinitely)
-            counter = 0;
+            counter = 0; 
           }
 
           quotesX += s.cos(angle) * stepSize;
@@ -1301,7 +1233,6 @@
       let h = container.offsetHeight;
       s.resizeCanvas(w, h);
       s.background(255);
-      // We do not reset position or text, so it continues.
     };
   };
 
@@ -1415,7 +1346,7 @@
       ev.y += ev.vy;
     }
     // collision resolution
-    let maxPasses = 100;
+    let maxPasses = 50;
     for (let pass = 0; pass < maxPasses; pass++) {
       let collided = false;
       for (let i = 0; i < window.events.length; i++) {
@@ -1454,13 +1385,7 @@
       ev.element.style.height = ev.currentSize + "px";
 
       const color = getEventColor(ev.state);
-
-      // If it's a panorama, keep background transparent
-      if (ev.special && ev.special.type === 'panorama360') {
-        ev.boxElement.style.backgroundColor = 'transparent';
-      } else {
-        ev.boxElement.style.backgroundColor = color;
-      }
+      ev.boxElement.style.backgroundColor = color;
 
       // shape
       if (ev.shape === 'circle') {
@@ -1808,16 +1733,15 @@
     }
   }
 
-  // Show quotes in fullscreen but do NOT force next event to go active.
   function showQuotesFullscreen(quotesEv) {
     showQuotesOverlay();
     window.quotesFullscreenActive = true;
 
-    // Identify the next event but do NOT activate it
+    // Identify the next event but do NOT activate it yet
     let nextIndex = quotesEv.id + 1;
     let nextEv = (nextIndex < window.events.length) ? window.events[nextIndex] : null;
 
-    // Hide all events except the quotes event + its immediate next event
+    // Hide all other events except quotesEv + nextEv
     for (let e of window.events) {
       if (e === quotesEv || e === nextEv) {
         e.element.style.display = 'block';
@@ -1831,7 +1755,7 @@
     }
 
     if (nextEv) {
-      // If it's locked, just unlock it
+      // If it's locked, unlock it
       if (nextEv.state === 0) {
         setEventState(nextEv, 1);
       }
@@ -1851,13 +1775,11 @@
       e.element.style.display = 'block';
       e.element.style.zIndex = '';
     }
-
-    // If there's a "next event" we forced to appear, keep it unlocked
+    // Keep the next event unlocked
     if (quotesEv.quotesNextEvent) {
       quotesEv.quotesNextEvent.element.style.zIndex = ++globalUnlockedZ;
     }
-
-    // Just set the quotes event (old) to dormant visually
+    // Mark the quotes event as dormant
     setEventState(quotesEv, 3);
 
     quotesEv.quotesNextEvent = null;
@@ -1884,6 +1806,12 @@
       evObj.activatedAt = performance.now();
     }
     setEventState(evObj, 2);
+
+    // *** Only now, once the event is set to active, we init the panorama if present ***
+    if (evObj.initPano) {
+      evObj.initPano();
+    }
+
     window.currentActiveIndex = evObj.id;
     if (evObj.leaveTimeout) {
       clearTimeout(evObj.leaveTimeout);
@@ -1926,7 +1854,7 @@
       showLightOverlay21([21,22]);
     }
 
-    // If this is a quotesTyping event, go fullscreen
+    // If this is a quotesTyping event, go fullscreen:
     if (evObj.special && evObj.special.type === 'quotesTyping') {
       let nextIndex = evObj.id + 1;
       if (nextIndex < window.events.length) {
@@ -1938,9 +1866,6 @@
       showQuotesFullscreen(evObj);
       return;
     }
-
-    // Possibly the next event is triggered after leaving quotes mode
-    let quotingEv = null; // (kept for reference, but not used)
 
     if (evObj.id === 37 && colorsContainer) {
       colorsContainer.style.display = "block";
@@ -2067,7 +1992,7 @@
       }
     }
 
-    // By default, always unlock the next event if it's still locked
+    // Always unlock the *next* event if locked
     let nextIndex = evObj.id + 1;
     if (nextIndex < window.events.length) {
       let nextEv = window.events[nextIndex];
@@ -2103,11 +2028,11 @@
   }
 
   function trySetToDormant(evObj) {
+    // Once we do want to push to dormant if certain overlays are done:
     const timeSinceActivation = performance.now() - (evObj.activatedAt || 0);
     const minActiveDuration = evObj.minActiveDuration || 0;
     const actuallySetDormant = () => {
       setEventState(evObj, 3);
-      // If these overlays are open for certain events, hide them
       if (evObj.id === 3 || evObj.id === 14 || evObj.id === 19) {
         hideDarkOverlay();
       }
@@ -2271,9 +2196,6 @@
       "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
       "https://www.dropbox.com/scl/fi/lpw1asbch7q3uv4tkkn0h/C_arp-2.mp3?rlkey=ed7lhs13xomksgeq3xoyg1dl8&st=zn5s9ndm&raw=1",
       "https://www.dropbox.com/scl/fi/sfz90m5pz2m8gnfrhh8bn/AB-_arp-2.mp3?rlkey=9kncuanzp47vz1xghgo07jg2u&st=amzjaumk&raw=1",
-
-
-      
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -2283,6 +2205,7 @@
     });
     let audioIndexGlobal = 0;
     const playNextAudio = () => {
+      if (audioElements.length === 0) return;
       const audioToPlay = audioElements[audioIndexGlobal];
       audioToPlay.muted = false;
       audioToPlay.currentTime = 0;
@@ -2451,7 +2374,7 @@
             break;
 
           case 'colorsScreen':
-            // We'll handle outside
+            // handled externally
             break;
 
           case 'panorama360':
@@ -2463,7 +2386,7 @@
             panoContainer.style.height = "100%";
             panoContainer.style.display = "none";
             panoContainer.id = "panoForEvent"+index;
-            panoContainer.style.zIndex = "4"; // give it a higher stacking
+            panoContainer.style.zIndex = "4";
             boxDiv.appendChild(panoContainer);
 
             cfg.initPano = () => {
@@ -2521,7 +2444,6 @@
       document.body.appendChild(eventOuter);
 
       let centerX, centerY;
-      // Place the first event in the center, or subsequent ones scattered
       if (index === 0 && cfg.specialPosition === 'centerViewport') {
         centerX = window.innerWidth / 2;
         centerY = window.innerHeight / 2;
@@ -2599,37 +2521,24 @@
           if (evObj.state === 1) {
             activateEvent(evObj);
             evObj.playNextAudio();
+            if (evObj.videoElement) {
+              evObj.videoElement.currentTime=0;
+              evObj.videoElement.play().catch(()=>{});
+            }
+            if (evObj.matterInitFunction) evObj.matterInitFunction();
+            // *** Panorama now loads on activation, so we remove initPano call here ***
           }
           else if (evObj.state === 3) {
             activateEvent(evObj);
+            if (evObj.videoElement) {
+              evObj.videoElement.currentTime=0;
+              evObj.videoElement.play().catch(()=>{});
+            }
+            if (evObj.matterInitFunction) evObj.matterInitFunction();
           }
           window.hoveredEvent = evObj;
-          if (evObj.videoElement) {
-            evObj.videoElement.currentTime=0;
-            evObj.videoElement.play().catch(()=>{});
-          }
-          if (evObj.matterInitFunction) {
-            evObj.matterInitFunction();
-          }
-          if (evObj.initPano) {
-            evObj.initPano();
-          }
         });
 
-        eventOuter.addEventListener("mouseleave", () => {
-          if (window.hoveredEvent === evObj) {
-            window.hoveredEvent = null;
-          }
-          // If it's active and NOT a quotesTyping event, 
-          // AND not a full-screen overlay event, let it go dormant
-          if (
-            evObj.state === 2 
-            && !(evObj.special && evObj.special.type === 'quotesTyping')
-            && !isFullscreenOverlayEvent(evObj.id)
-          ) {
-            trySetToDormant(evObj);
-          }
-        });
       } else {
         // On mobile, use click to mimic hover/toggle
         eventOuter.addEventListener("click", () => {
@@ -2647,7 +2556,7 @@
             }
             evObj.playNextAudio();
             if (evObj.matterInitFunction) evObj.matterInitFunction();
-            if (evObj.initPano) evObj.initPano();
+            // *** Panorama now loads on activation, so we remove initPano call here ***
           }
           else if (evObj.state === 3) {
             activateEvent(evObj);
@@ -2657,19 +2566,6 @@
               evObj.videoElement.play().catch(()=>{});
             }
             if (evObj.matterInitFunction) evObj.matterInitFunction();
-            if (evObj.initPano) evObj.initPano();
-          }
-          else if (evObj.state === 2) {
-            // For quotesTyping, do NOT hide on repeated click
-            // Also do NOT hide if this is a full-screen overlay event
-            if (evObj.special && evObj.special.type === 'quotesTyping') return;
-            if (isFullscreenOverlayEvent(evObj.id)) return;
-
-            // Otherwise, it's a normal event, so let it go dormant
-            trySetToDormant(evObj);
-            if (window.hoveredEvent === evObj) {
-              window.hoveredEvent = null;
-            }
           }
         });
       }
@@ -2888,7 +2784,7 @@
         let zrot = [
           [acos,  asin, 0],
           [-asin, acos, 0],
-          [0,         0, 1]
+          [0,     0,    1]
         ];
         let calc = this.mm(pos, zrot);
         pt.x = calc[0];
@@ -3362,7 +3258,7 @@
         sk.circle(this.x, this.y, this.d);
       }
       move() {
-        // Keep circle at full size
+        // We keep the circle at full size:
         this.d = this.d1;
         this.x = this.x1;
         this.y = this.y1;
@@ -3374,7 +3270,7 @@
     }
   };
 
-  // macramé threads p5 code for #macrameThreadsContainer
+  // macramé threads p5 code
   let macrameSketch = function(p) {
     let gThreads = [];
     let gThreadCount;
@@ -3510,6 +3406,11 @@
       }
     }
   };
+
+  function isFullscreenOverlayEvent(evId) {
+    // You can define additional IDs that are "fullscreen" or special overlays if needed
+    return false;
+  }
 
   document.addEventListener("DOMContentLoaded", () => {
     const startReadLink = document.getElementById('startReadLink');
