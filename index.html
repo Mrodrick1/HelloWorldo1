@@ -1723,13 +1723,19 @@
     }
   }
 
+  // ----------------------------------------------------------------------
+  // IMPORTANT CHANGE BELOW:
+  // Instead of incrementing z-index, we force unlocked/active events to
+  // a very high z-index so they are ALWAYS on top.
+  // ----------------------------------------------------------------------
   function setEventState(evObj, newState) {
     evObj.state = newState;
     if (newState === 0 || newState === 3) {
       evObj.element.style.zIndex = "";
     } else {
-      // 1 or 2 => bring on top
-      evObj.element.style.zIndex = ++globalUnlockedZ;
+      // state=1 or 2 => always top
+      evObj.element.style.zIndex = 9999999; 
+      // (Old line was: evObj.element.style.zIndex = ++globalUnlockedZ;)
     }
   }
 
@@ -1777,7 +1783,7 @@
     }
     // Keep the next event unlocked
     if (quotesEv.quotesNextEvent) {
-      quotesEv.quotesNextEvent.element.style.zIndex = ++globalUnlockedZ;
+      quotesEv.quotesNextEvent.element.style.zIndex = 9999999; // ensure top
     }
     // Mark the quotes event as dormant
     setEventState(quotesEv, 3);
@@ -2526,7 +2532,6 @@
               evObj.videoElement.play().catch(()=>{});
             }
             if (evObj.matterInitFunction) evObj.matterInitFunction();
-            // *** Panorama now loads on activation, so we remove initPano call here ***
           }
           else if (evObj.state === 3) {
             activateEvent(evObj);
@@ -2556,7 +2561,6 @@
             }
             evObj.playNextAudio();
             if (evObj.matterInitFunction) evObj.matterInitFunction();
-            // *** Panorama now loads on activation, so we remove initPano call here ***
           }
           else if (evObj.state === 3) {
             activateEvent(evObj);
