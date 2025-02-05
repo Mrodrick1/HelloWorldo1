@@ -85,7 +85,7 @@
     #startScreen .background-text {
       position: relative;
       text-align: left;
-      color: ##261B1D;
+      color: #261B1D;
       max-width: 600px;
       box-sizing: border-box;
     }
@@ -427,6 +427,7 @@
       display: none;
       z-index: 999999; /* above everything */
       overflow: hidden;
+    
     }
     /* Container for the p5 quotes canvas */
     #quotesCanvasContainer {
@@ -435,6 +436,7 @@
       position: absolute;
       top: 0;
       left: 0;
+      pointer-events: auto; 
     }
     /* "tap/click" instruction text */
     #quotesTapIndicator {
@@ -445,11 +447,42 @@
       transform: translate(-50%, -50%);
       font-size: 2rem;
       color: #000;
-      z-index: 1000;
+      z-index: 1001;
       text-align: center;
       font-family: 'Montserrat', sans-serif;
       pointer-events: none;
     }
+
+    #quotesUI {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  pointer-events: none; /* disable pointer events for the container */
+}
+
+/* CHANGED/ADDED for quotes exit button on mobile only */
+    #mobileQuotesExitBtn {
+      pointer-events: auto;
+      display: none; /* hidden by default */
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 60px;
+      height: 60px;
+      background-color: red;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10001; /* Over the quotes overlay */
+       pointer-events: auto;
+    }
+    /* End of CHANGED/ADDED block */
+
+
+
   </style>
 
   <script>
@@ -530,7 +563,7 @@
     {
       baseSize: 65,
       text: "I’d like to understand more about the space I’m in, can I move within it?",
-      hoverScale: 3.5
+      hoverScale: 3.2
     },
     {
       baseSize: 60,
@@ -580,12 +613,12 @@
     {
       baseSize: 40,
       text: "even just as code, I’ve gained a companion...",
-      hoverScale: 5.5
+      hoverScale: 5.2
     },
     {
       baseSize: 35,
       text: "...and I'm less alone in this space.",
-      hoverScale: 6.5
+      hoverScale: 6
     },
     {
       baseSize: 50,
@@ -602,7 +635,7 @@
     {
       baseSize: 55,
       text: "you’ve given us a way to interact.",
-      hoverScale: 3.5
+      hoverScale: 3.2
     },
     {
       baseSize: 40,
@@ -658,7 +691,7 @@
     },
     {
       baseSize: 42,
-      text: "And what would you say?",
+      text: "What would you say?",
       hoverScale: 4.5,
       shape: 'circle'
     },
@@ -946,7 +979,11 @@
   let usedMultiOverlay60 = false;
   window.overlay9secTimer = null;
   window.finalOverlayShown = false;
-  window.quotesFullscreenActive = false; // are we in forced fullscreen for quotes?
+  window.quotesFullscreenActive = false; 
+
+  /* CHANGED/ADDED for quotes exit button on mobile only */
+  window.currentQuotesEvent = null;
+  /* End of CHANGED/ADDED block */
 
   /*
     We want events that are active (state=2) to be on top. Overlays also
@@ -1273,6 +1310,15 @@ function hideMultiOverlay45() {
     if (isMobile()) {
       tapInd.textContent = 'tap and drag';
       tapInd.style.display = 'block';
+    /* CHANGED/ADDED for quotes exit button on mobile only */
+      let exitBtn = document.getElementById('mobileQuotesExitBtn');
+      if (exitBtn) {
+        exitBtn.style.display = 'block';
+      }
+      /* End of CHANGED/ADDED block */
+
+
+
     } else {
       tapInd.textContent = 'click and drag';
       tapInd.style.display = 'block';
@@ -1286,6 +1332,13 @@ function hideMultiOverlay45() {
   function hideQuotesOverlay() {
     const qo = document.getElementById('quotesOverlay');
     qo.style.display = 'none';
+
+    /* CHANGED/ADDED for quotes exit button on mobile only */
+    let exitBtn = document.getElementById('mobileQuotesExitBtn');
+    if (exitBtn) {
+      exitBtn.style.display = 'none';
+    }
+    /* End of CHANGED/ADDED block */
 
     // Remove the p5 instance so it resets each time
     if (quotesP5Instance) {
@@ -1918,6 +1971,7 @@ function hideMultiOverlay45() {
   }
 
   function showQuotesFullscreen(quotesEv) {
+     window.currentQuotesEvent = quotesEv;
     showQuotesOverlay();
     window.quotesFullscreenActive = true;
 
@@ -2357,69 +2411,7 @@ function hideMultiOverlay45() {
 
     const audioFiles = [
      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
-      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-      "https://www.dropbox.com/scl/fi/tyfkxcs303k06b1q4xa59/5.mp3?rlkey=obi9skfsrxahblfxdu2awiv7r&raw=1",
-      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-      "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
-      "https://www.dropbox.com/scl/fi/icfit8huyt6fnm7otdcj6/6.mp3?rlkey=awvne3o2ketsze93kct28b77f&raw=1",
-      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-      "https://www.dropbox.com/scl/fi/5tppwxeq5e2a27wt7ead0/10b.mp3?rlkey=833992g0c429t3uhwe38eu9up&st=uhk1h0ax&raw=1",
-
-      "https://www.dropbox.com/scl/fi/pv4bu5ezcvpjw4iuyj1j9/11.mp3?rlkey=qotnnq3z63besu9wekrqg2uks&raw=1",
-      "https://www.dropbox.com/scl/fi/lxqfmbgsjrd7q11pafbgt/11_B.mp3?rlkey=z7wpvu2p4ekb005xhjdhuhbxk&st=xzsbokh4&raw=1",
-      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
-      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
-      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-      "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
-      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
-      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-
-      "https://www.dropbox.com/scl/fi/zeh3z0z1pu37z4t0t718p/19.mp3?rlkey=f76f1jf5zwzu361t3fts32abz&st=si1b0ptv&raw=1",
-      "https://www.dropbox.com/scl/fi/1ofgq6umjyvj3pt3opoer/20.mp3?rlkey=tnb70y8kcq9kr9s8cmpjb3sk1&st=1e61wse4&raw=1",
-      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
-      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-      "https://www.dropbox.com/scl/fi/02t4mfh310iqgx8yfy6yh/27.mp3?rlkey=v7u50xv9fl4zmljs3z6hirjh2&st=yonsx0q4&raw=1",
-      "https://www.dropbox.com/scl/fi/8xxe6wkdpeebvu63drqx0/28.mp3?rlkey=ryx1lkgvksgpab65y4e4pnla2&st=f1akoz7m&raw=1",
-      "https://www.dropbox.com/scl/fi/n4gugkpsd63ut5b1f3s4n/7.mp3?rlkey=kz5ghvmwqvqeed9nrs8cbmmxm&raw=1",
-      "https://www.dropbox.com/scl/fi/rura5ayrkok1i29fcsr8l/8.mp3?rlkey=pmzgrx40c8b6mjzkztamqi7po&raw=1",
       
-      "https://www.dropbox.com/scl/fi/mx20fm6q1kmqczzmh610u/Like-to-connect.mp3?rlkey=y9xqntmu6t3kkowuq8crvjjro&st=6dwgr9so&raw=1",
-      "https://www.dropbox.com/scl/fi/5me1zeq4ienw9mooakn0f/Tethered_the_1.mp3?rlkey=1wvueyg9hownyvcobaes5o1ao&st=f21odkfi&raw=1",
-      "https://www.dropbox.com/scl/fi/i2fs87somb7hnhqa7yfmx/33.mp3?rlkey=t8d5lu5remqtvja8afal0u7z0&st=1e8hh5hl&raw=1",
-      "https://www.dropbox.com/scl/fi/vht9f3zytogi2qsul93nn/34.mp3?rlkey=fse3ur7fd1u1l3897gokf4oql&st=kckwrq2y&raw=1",
-      "https://www.dropbox.com/scl/fi/bvfea4n9gx2k8gp4r2oyk/21.mp3?rlkey=0fm6h6bbwvo1wyuh0bmlr4th1&st=zhc0c8yw&raw=1",
-      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
-      "https://www.dropbox.com/scl/fi/hao18zgosi7dbqskkyhpc/Why_do_you.mp3?rlkey=evfnkuhg0dmc2ghrfxkqnsw1j&st=iq05nam8&raw=1",
-      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-      "https://www.dropbox.com/scl/fi/5mq5l0ovykusnqk96oua6/13.mp3?rlkey=jv0ekycjq26mi9d66oyoox0d3&raw=1",
-      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-      
-      "https://www.dropbox.com/scl/fi/4rkxhgda189csa4zpi1z3/15.mp3?rlkey=8z7wkzfxm3p698vpewsshvwz1&raw=1",
-      "https://www.dropbox.com/scl/fi/rhvwjk85a6hz7djj571n5/41.mp3?rlkey=8gc81qtt7dvqkws80ljukt5na&st=l9s0bibq&raw=1",
-      "https://www.dropbox.com/scl/fi/2piqdinu0sdapxolj0dic/42.mp3?rlkey=cv0ow54dl3efm00pudn9dnb61&st=sk9i90rr&raw=1",
-      "https://www.dropbox.com/scl/fi/mh7awqcmv34mv1pxnpohn/12.mp3?rlkey=fdh2m12pfqm36v39oss6eo4gy&raw=1",
-      "https://www.dropbox.com/scl/fi/v1oicm66u58jstxeymers/chaos-1.mp3?rlkey=cijm7jpexi13esnlj1sapcyor&st=n14j1ij4&raw=1",
-      "https://www.dropbox.com/scl/fi/0wpnku5nt40mduxwznmtz/14.mp3?rlkey=ewr6q0ianuo515i8b5735x9k3&raw=1",
-      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-      "https://www.dropbox.com/scl/fi/kmoazowrqmkfmu22l36ug/incredible-1.mp3?rlkey=ybk4tj0f0obdrb4rdr3g23bak&st=89f1cj62&raw=1",
-      "https://www.dropbox.com/scl/fi/mno1zcklzfqwmmy3uc7rn/16.mp3?rlkey=3ft8inv4z1pgsbmhauemnjbga&raw=1",
-      "https://www.dropbox.com/scl/fi/frnjenxieklqqv8dmcgkp/17.mp3?rlkey=ov0w72jq4tf7zmuz5sfwg29zn&raw=1",
-      
-      "https://www.dropbox.com/scl/fi/ny4iflvsj77t191msfpvn/18.mp3?rlkey=oqudlo02e2hfojkktgk2o0dwm&raw=1",
-      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
-      "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
-      "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
-      "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
-      "https://www.dropbox.com/scl/fi/zfq2bdvv42gd2h2apym5k/C_arp-1.mp3?rlkey=nlw8qsau5iaxxma26lrdotnzr&st=hiif5aps&raw=1",
-      "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
-      "https://www.dropbox.com/scl/fi/lpw1asbch7q3uv4tkkn0h/C_arp-2.mp3?rlkey=ed7lhs13xomksgeq3xoyg1dl8&st=zn5s9ndm&raw=1",
-      "https://www.dropbox.com/scl/fi/sfz90m5pz2m8gnfrhh8bn/AB-_arp-2.mp3?rlkey=9kncuanzp47vz1xghgo07jg2u&st=amzjaumk&raw=1",
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -3749,9 +3741,30 @@ let chaosSquaresSketch = function (p) {
 
         // Initialize macrame sketch
         new p5(macrameSketch, 'macrameThreadsContainer');
+
+
+        // 1) Grab the exit button
+  const exitBtn = document.getElementById("mobileQuotesExitBtn");
+  
+  // 2) Listen for clicks
+  if (exitBtn) {
+    exitBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      // 3) Hide the quotes fullscreen if there's a current quotes event
+      if (window.currentQuotesEvent) {
+    hideQuotesFullscreen(window.currentQuotesEvent);
+  } else {
+    hideQuotesOverlay();
+  }
+
+      // 4) Clear the reference so we don't re-hide it later
+      window.currentQuotesEvent = null;
       });
-    }
-  });
+      }
+    });
+  }
+});
 
 
   </script>
@@ -3825,6 +3838,8 @@ let chaosSquaresSketch = function (p) {
     <div id="quotesTapIndicator"></div>
     <!-- p5 canvas container -->
     <div id="quotesCanvasContainer"></div>
+    <div id="quotesUI">
+       <button id="mobileQuotesExitBtn">EXIT</button>
   </div>
 
   <div id="endOverlay">
