@@ -427,6 +427,7 @@
       display: none;
       z-index: 999999; /* above everything */
       overflow: hidden;
+      pointer-events: auto;
     
     }
     /* Container for the p5 quotes canvas */
@@ -474,9 +475,9 @@
       height: 60px;
       background-color: red;
       border: none;
-      border-radius: 4px;
+      border-radius: 0px;
       cursor: pointer;
-      z-index: 10001; /* Over the quotes overlay */
+      z-index: 9999999; /* Over the quotes overlay */
        pointer-events: auto;
     }
     /* End of CHANGED/ADDED block */
@@ -1330,13 +1331,13 @@ function hideMultiOverlay45() {
     }
   }
   function hideQuotesOverlay() {
-    const qo = document.getElementById('quotesOverlay');
-    qo.style.display = 'none';
+  const qo = document.getElementById('quotesOverlay');
+  qo.style.display = 'none';
 
     /* CHANGED/ADDED for quotes exit button on mobile only */
     let exitBtn = document.getElementById('mobileQuotesExitBtn');
-    if (exitBtn) {
-      exitBtn.style.display = 'none';
+  if (exitBtn) {
+    exitBtn.style.display = 'none';   // hide it again
     }
     /* End of CHANGED/ADDED block */
 
@@ -3838,8 +3839,9 @@ let chaosSquaresSketch = function (p) {
     <div id="quotesTapIndicator"></div>
     <!-- p5 canvas container -->
     <div id="quotesCanvasContainer"></div>
-    <div id="quotesUI">
-       <button id="mobileQuotesExitBtn">EXIT</button>
+  
+  <button id="mobileQuotesExitBtn">EXIT</button>
+  <div id="quotesUI">
   </div>
 
   <div id="endOverlay">
