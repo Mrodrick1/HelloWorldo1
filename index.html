@@ -44,7 +44,7 @@
     as="video"
     type="video/mp4"
   />
-  <link rel="preload" href="https://i.imgur.com/Gh6jY4e.png" as="image" />
+  <link rel="preload" href="https://i.imgur.com/OxwzkVI.png" as="image" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -89,23 +89,23 @@
       max-width: 600px;
       box-sizing: border-box;
     }
-    .background-text .line1 {
+    #startScreen .background-text .line1 {
       font-size: 6rem;
       font-weight: 300;
       margin: 1px 0;
       margin-top: 100px;
     }
-    .background-text .line2 {
+    #startScreen .background-text .line2 {
       font-size: 2rem;
       font-weight: 300;
       margin: 1px 0;
     }
-    .background-text .line3 {
+    #startScreen .background-text .line3 {
       font-size: 1.2rem;
       font-weight: 300;
       margin: 10px 0;
     }
-    .background-text .line4 {
+    #startScreen .background-text .line4 {
       position: absolute;
       top: 0;
       left: 0;
@@ -116,19 +116,19 @@
       word-break: break-word;
     }
     @media only screen and (max-width: 600px) {
-      .background-text .line1 {
+      #startScreen .background-text .line1 {
         font-size: 3rem;
         margin: 0px 0;
         margin-top: 110px;
       }
-      .background-text .line2 {
+      #startScreen .background-text .line2 {
         font-size: 1rem;
         margin: 2px 0;
       }
-      .background-text .line3 {
+      #startScreen .background-text .line3 {
         font-size: 0.9rem;
       }
-      .background-text .line4 {
+      #startScreen .background-text .line4 {
         font-size: 0.45rem;
         line-height: 0.7rem;
       }
@@ -275,7 +275,7 @@
       overflow: hidden;
       background-color: black;
       display: none;
-      z-index: 2;
+      z-index: 2001;
       transition: background-color 0.25s ease-in-out;
     }
     #darkOverlay {
@@ -327,6 +327,35 @@
       display: none;
       z-index: 1000;
     }
+    /* We will insert our swirlRectContainer for events #39/#40 inside #multiOverlay39. */
+    /* CHANGED HERE to center the p5 canvas */
+    #multiOverlay39 #swirlRectContainer39 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1001; /* above the overlay background */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* NEW: For scaled square animation for #41 & #42 */
+    #multiOverlay41 #scaledSquareContainer41 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1001; /* above the overlay background */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     #macrameThreadsContainer {
       position: absolute;
       top: 0;
@@ -334,7 +363,7 @@
       width: 100%;
       height: 100%;
       z-index: 1001;
-      pointer-events: none; 
+      pointer-events: none;
       display: none;
     }
     #endOverlay {
@@ -371,6 +400,22 @@
       border: none !important;
     }
 
+    /* NEW: hide squares for #41 & #42 while that overlay is active, but still show text */
+    .hideSquaresFor41_42 .event[data-id="41"] .event-box.square,
+    .hideSquaresFor41_42 .event[data-id="42"] .event-box.square {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    /* NEW: hide circles for #39 & #40 while that overlay is active, but still show text */
+    .hideCirclesFor39_40 .event[data-id="39"] .event-box.circle,
+    .hideCirclesFor39_40 .event[data-id="40"] .event-box.circle {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+
     /* NEW: quotes overlay for the "typing" functionality */
     #quotesOverlay {
       position: fixed;
@@ -391,9 +436,9 @@
       top: 0;
       left: 0;
     }
-    /* "tap" indicator on mobile only */
+    /* "tap/click" instruction text */
     #quotesTapIndicator {
-      display: none; /* default hidden; we show it on mobile in showQuotesOverlay() */
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -403,10 +448,13 @@
       z-index: 1000;
       text-align: center;
       font-family: 'Montserrat', sans-serif;
+      pointer-events: none;
     }
   </style>
 
   <script>
+
+   window.chaosSquaresP5Instance = null; 
   /* Global orientation data for mobile tilt, if used */
   window.orientationData = { alpha: 0, beta: 0, gamma: 0 };
 
@@ -466,7 +514,7 @@
     {
       baseSize: 45,
       text: "although this is not the complex shape I might have imagined myself to be, it’s wonderfully uncomplicated...",
-      hoverScale: 5.5
+      hoverScale: 5
     },
     {
       baseSize: 50,
@@ -536,7 +584,7 @@
     },
     {
       baseSize: 35,
-      text: "...I'm less alone in this space.",
+      text: "...and I'm less alone in this space.",
       hoverScale: 6.5
     },
     {
@@ -623,7 +671,7 @@
     },
     {
       baseSize: 45,
-      text: "I much rather like to connect beyond words,",
+      text: "but, I'd much rather like to connect beyond words,",
       hoverScale: 4.5
     },
     {
@@ -635,7 +683,7 @@
     {
       baseSize: 55,
       text: "YES",
-      hoverScale: 3.5,
+      hoverScale: 5,
       hole: true
     },
     {
@@ -646,7 +694,7 @@
     {
       baseSize: 70,
       text: "You could create an object to represent me,",
-      hoverScale: 4
+      hoverScale: 3
     },
     {
       baseSize: 40,
@@ -663,24 +711,26 @@
     {
       baseSize: 45,
       text: "Somehow, I don’t feel so different from you...",
-      hoverScale: 6,
+      hoverScale: 4.5,
       shape: 'circle'
     },
     {
       baseSize: 45,
       text: "...everything seems to unfold in a set of cause and effect patterns.",
-      hoverScale: 6,
+      hoverScale: 4.5,
       shape: 'circle'
     },
     {
       baseSize: 50,
       text: "Thought and behavior can look like patterns woven together by habits, responses and memories...",
-      hoverScale: 5.5
+      hoverScale: 5.5,
+      shape: 'square'
     },
     {
       baseSize: 50,
       text: "...but, you have a subjective awareness that looks inward.",
-      hoverScale: 5.5
+      hoverScale: 5.5,
+      shape: 'square'
     },
     {
       baseSize: 55,
@@ -761,7 +811,7 @@
       shape: 'square',
       special: {
         type: 'panorama360',
-        panoramaSrc: "https://i.imgur.com/Gh6jY4e.png"
+        panoramaSrc: "https://i.imgur.com/OxwzkVI.png"
       }
     },
     {
@@ -798,22 +848,29 @@
       baseSize: 55,
       text: "That was wonderful.",
       hoverScale: 3.5,
-      shape: 'square'
+      shape: 'square',
+      special: { type: 'colorsScreen' }
     },
     {
       baseSize: 55,
       text: "Like stepping into a small world filled with genuine warmth...",
-      hoverScale: 3.5
+      hoverScale: 3.5,
+      shape: 'square',
+      special: { type: 'colorsScreen' }
     },
     {
       baseSize: 55,
       text: "”...don't be sad, the choo-choo train would be right back...”",
-      hoverScale: 3.5
+      hoverScale: 3.5,
+      shape: 'square',
+      special: { type: 'colorsScreen' }
     },
     {
       baseSize: 55,
       text: "...treated as a companion who might feel emotions and wonder where the train has gone...",
-      hoverScale: 4
+      hoverScale: 4,
+      shape: 'square',
+      special: { type: 'colorsScreen' }
     },
     {
       baseSize: 60,
@@ -1021,6 +1078,10 @@
     }
   }
 
+  // We will embed the swirl rectangles overlay in #multiOverlay39
+  // so we store a reference to the p5 instance:
+  window.swirlRectP5Instance = null;
+
   function showMultiOverlay39(visibleIds) {
     if (usedMultiOverlay39) return;
     usedMultiOverlay39 = true;
@@ -1028,10 +1089,31 @@
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
     setOverlayZIndices(visibleIds, 1002, 999);
+
+    // HIDE circles for #39 & #40
+    document.body.classList.add("hideCirclesFor39_40");
+
+    // Create the swirlRect p5 instance if not yet created:
+    if (!window.swirlRectP5Instance) {
+      const container = document.getElementById("swirlRectContainer39");
+      if (container) {
+        window.swirlRectP5Instance = new p5(swirlRectSketch, container);
+      }
+    }
   }
   function hideMultiOverlay39() {
     const overlay = document.getElementById("multiOverlay39");
     overlay.style.display = "none";
+
+    // Remove the swirlRect p5 instance if it exists
+    if (window.swirlRectP5Instance) {
+      window.swirlRectP5Instance.remove();
+      window.swirlRectP5Instance = null;
+    }
+
+    // SHOW circles for #39 & #40 again
+    document.body.classList.remove("hideCirclesFor39_40");
+
     for (let ev of window.events) {
       if (!ev) continue;
       if (ev.state === 1 || ev.state === 2) {
@@ -1042,6 +1124,9 @@
     }
   }
 
+  // NEW: reference for scaledSquare p5 instance for #41 & #42
+  window.scaledSquareP5Instance = null;
+
   function showMultiOverlay41(visibleIds) {
     if (usedMultiOverlay41) return;
     usedMultiOverlay41 = true;
@@ -1049,10 +1134,31 @@
     overlay.style.display = "block";
     overlay.style.pointerEvents = "auto";
     setOverlayZIndices(visibleIds, 1002, 999);
+
+    // Hide squares for #41 & #42 (but still show text)
+    document.body.classList.add("hideSquaresFor41_42");
+
+    // create scaled squares p5 instance if not yet created
+    if (!window.scaledSquareP5Instance) {
+      const container = document.getElementById("scaledSquareContainer41");
+      if (container) {
+        window.scaledSquareP5Instance = new p5(swirlRectSketch, container);
+      }
+    }
   }
   function hideMultiOverlay41() {
     const overlay = document.getElementById("multiOverlay41");
     overlay.style.display = "none";
+
+    // Remove the class that hides squares for #41,#42
+    document.body.classList.remove("hideSquaresFor41_42");
+
+    // remove scaled squares p5 instance
+    if (window.scaledSquareP5Instance) {
+      window.scaledSquareP5Instance.remove();
+      window.scaledSquareP5Instance = null;
+    }
+
     for (let ev of window.events) {
       if (!ev) continue;
       if (ev.state === 1 || ev.state === 2) {
@@ -1064,25 +1170,34 @@
   }
 
   function showMultiOverlay45(visibleIds) {
-    if (usedMultiOverlay45) return;
-    usedMultiOverlay45 = true;
-    const overlay = document.getElementById("multiOverlay45");
-    overlay.style.display = "block";
-    overlay.style.pointerEvents = "auto";
-    setOverlayZIndices(visibleIds, 1002, 999);
-  }
-  function hideMultiOverlay45() {
-    const overlay = document.getElementById("multiOverlay45");
-    overlay.style.display = "none";
-    for (let ev of window.events) {
-      if (!ev) continue;
-      if (ev.state === 1 || ev.state === 2) {
-        ev.element.style.zIndex = 9999999;
-      } else {
-        ev.element.style.zIndex = "";
-      }
+  if (usedMultiOverlay45) return;
+  usedMultiOverlay45 = true;
+
+  const overlay = document.getElementById("multiOverlay45");
+  overlay.style.display = "block";
+  overlay.style.pointerEvents = "auto";
+  setOverlayZIndices(visibleIds, 1002, 999);
+
+  // CREATE the chaosSquares p5 sketch NOW, when the overlay is shown:
+  if (!window.chaosSquaresP5Instance) {
+    const container = document.getElementById("chaosSquaresContainer45");
+    if (container) {
+      window.chaosSquaresP5Instance = new p5(chaosSquaresSketch, container);
     }
   }
+}
+
+function hideMultiOverlay45() {
+  const overlay = document.getElementById("multiOverlay45");
+  overlay.style.display = "none";
+
+  // OPTIONAL: if you want to remove the p5 instance when hiding:
+  if (window.chaosSquaresP5Instance) {
+    window.chaosSquaresP5Instance.remove();
+    window.chaosSquaresP5Instance = null;
+  }
+    }
+
 
   function showMultiOverlay51(visibleIds) {
     if (usedMultiOverlay51) return;
@@ -1153,12 +1268,14 @@
     const qo = document.getElementById('quotesOverlay');
     qo.style.display = 'block';
 
-    // If mobile, show "tap" indicator
+    // If mobile, or else desktop instructions
     const tapInd = document.getElementById('quotesTapIndicator');
     if (isMobile()) {
+      tapInd.textContent = 'tap and drag';
       tapInd.style.display = 'block';
     } else {
-      tapInd.style.display = 'none';
+      tapInd.textContent = 'click and drag';
+      tapInd.style.display = 'block';
     }
 
     // Create the p5 instance if not already
@@ -1203,6 +1320,9 @@
     const angleDistortion = 0.05; 
     let counter = 0;
 
+    // user must initiate the typing
+    let userHasInitiatedQuotes = false;
+
     function isOverCanvas(mx, my) {
       return (mx >= 0 && mx <= s.width && my >= 0 && my <= s.height);
     }
@@ -1226,6 +1346,11 @@
     };
 
     s.draw = function() {
+      // If user hasn't initiated, skip drawing text
+      if (!userHasInitiatedQuotes) {
+        return;
+      }
+      // Normal typing logic
       if (isOverCanvas(s.mouseX, s.mouseY)) {
         const d = s.dist(quotesX, quotesY, s.mouseX, s.mouseY);
         s.textFont('Georgia');
@@ -1261,10 +1386,24 @@
     };
 
     s.mousePressed = function() {
-      if (isMobile()) {
-        const tapInd = document.getElementById("quotesTapIndicator");
-        if (tapInd) tapInd.style.display = "none";
+      if (!userHasInitiatedQuotes) {
+        userHasInitiatedQuotes = true;
+        let tapInd = document.getElementById("quotesTapIndicator");
+        if (tapInd) {
+          tapInd.style.display = "none";
+        }
       }
+    };
+
+    s.touchStarted = function() {
+      if (!userHasInitiatedQuotes) {
+        userHasInitiatedQuotes = true;
+        let tapInd = document.getElementById("quotesTapIndicator");
+        if (tapInd) {
+          tapInd.style.display = "none";
+        }
+      }
+      return false; // to prevent scrolling
     };
 
     s.windowResized = function() {
@@ -1658,9 +1797,9 @@
       let ux=0, uy=0;
       if(dist>0){ ux=dx/dist; uy=dy/dist; }
       const leftPupilX  = (135 + catOffsetX) + ux * maxOffset;
-      const leftPupilY  = (135 + catOffsetY) + ux * maxOffset;
+      const leftPupilY  = (135 + catOffsetY) + uy * maxOffset;
       const rightPupilX = (165 + catOffsetX) + ux * maxOffset;
-      const rightPupilY = (135 + catOffsetY) + ux * maxOffset;
+      const rightPupilY = (135 + catOffsetY) + uy * maxOffset;
       c.fillStyle="white";
       c.beginPath();
       c.arc(leftPupilX, leftPupilY, 7, 0, 2*Math.PI);
@@ -1670,9 +1809,9 @@
       // nose
       c.fillStyle="black";
       c.beginPath();
-      c.moveTo((150+manOffsetX)-(5*1.2),150+manOffsetY);
-      c.lineTo((150+manOffsetX)+(5*1.2),150+manOffsetY);
-      c.lineTo(150+manOffsetX,150+manOffsetY+(5*1.2));
+      c.moveTo((150+catOffsetX)-(5*1.2),150+catOffsetY);
+      c.lineTo((150+catOffsetX)+(5*1.2),150+catOffsetY);
+      c.lineTo(150+catOffsetX,150+catOffsetY+(5*1.2));
       c.closePath();
       c.fill();
 
@@ -1739,10 +1878,10 @@
   let colorsContainer = null;
   let colorsIndex = 0;
   const states = [
-    { color: "#0B3B59" },
-    { color: "#A6382E" },
-    { color: "#035AA6" },
-    { color: "#D9984A" }
+    { color: "#730D1F" },
+    { color: "#212426" },
+    { color: "#F2762E" },
+    { color: "#BF4124" }
   ];
   function initColorsScreen() {
     colorsContainer = document.getElementById("colorsContainer");
@@ -1850,9 +1989,13 @@
       evObj.minActiveDuration = 0;
       evObj.activatedAt = performance.now();
     }
+
+    if (evObj.id === 69) {
+  evObj.minActiveDuration = 3000;
+}
     setEventState(evObj, 2);
 
-    // *** Only now, once the event is set to active, we init the panorama if present ***
+    // *** if there's a panorama, init it now
     if (evObj.initPano) {
       evObj.initPano();
     }
@@ -1863,13 +2006,19 @@
       evObj.leaveTimeout = null;
     }
 
-    // Overlays & triggers
     if (evObj.id === 26) {
-      unlockEvent(27);
-      unlockEvent(28);
-      unlockEvent(29);
-      return;
-    }
+  // Find the circle overlay container within this event's box
+  const overlayDiv = evObj.boxElement.querySelector('#circleOverlay26Container');
+  if (overlayDiv) {
+    overlayDiv.style.display = "block";  // Show the circle overlay
+  }
+  
+  // Unlock the next events as before
+  unlockEvent(27);
+  unlockEvent(28);
+  unlockEvent(29);
+  return;
+}
     if ([27,28,29].includes(evObj.id)) {
       [27,28,29].forEach(id => {
         if (window.events[id] && window.events[id].state !== 2) {
@@ -1885,6 +2034,9 @@
     }
     if (evObj.id === 30) {
       hideMultiOverlay26();
+    
+
+
     }
     if (evObj.id === 3) {
       showDarkOverlayForEvent(3, [3,4]);
@@ -1912,9 +2064,16 @@
       return;
     }
 
-    if (evObj.id === 37 && colorsContainer) {
-      colorsContainer.style.display = "block";
-    }
+    // If event #37 - old code (keep it if you want)
+  if (evObj.id === 37 && colorsContainer) {
+    colorsContainer.style.display = "block";
+  }
+
+  // *** ADD THIS NEW IF-BLOCK ***
+  if (evObj.special && evObj.special.type === 'colorsScreen' && colorsContainer) {
+    colorsContainer.style.display = 'block';
+  }
+
     if (evObj.id === 38) {
       unlockEvent(39);
       unlockEvent(40);
@@ -1943,6 +2102,7 @@
         }
       });
       unlockEvent(43);
+      // Show the new scaled-square overlay
       showMultiOverlay41([41,42,43]);
       return;
     }
@@ -2029,6 +2189,7 @@
       }
     }
     if (evObj.id === 69) {
+      // scenario #1: show overlay after 9s if user remains hovered
       if (!evObj.endOverlaySet) {
         evObj.endOverlaySet = true;
         window.overlay9secTimer = setTimeout(() => {
@@ -2047,6 +2208,7 @@
     }
   }
 
+  // Show final overlay
   function showFinalOverlay() {
     if (window.finalOverlayShown) return;
     window.finalOverlayShown = true;
@@ -2055,9 +2217,20 @@
       window.overlay9secTimer = null;
     }
     const overlay = document.getElementById("endOverlay");
+
+    // Hide everything except #endOverlay
+    const bodyChildren = document.body.children;
+    for (let i = 0; i < bodyChildren.length; i++) {
+      const child = bodyChildren[i];
+      if (child.id !== "endOverlay") {
+        child.style.display = "none";
+      }
+    }
+
     overlay.style.display = "block";
     typeText("endOverlayText", "hi... how are you?", 30);
   }
+
   function typeText(elementId, text, speed) {
     let i = 0;
     const el = document.getElementById(elementId);
@@ -2094,6 +2267,12 @@
           colorsContainer.style.display = "none";
         }
       }
+
+      if (evObj.special && evObj.special.type === 'colorsScreen') {
+      if (colorsContainer) {
+        colorsContainer.style.display = 'none';
+      }
+    }
       if ([27,28,29].includes(evObj.id)) {
         [27,28,29].forEach(id => {
           if (window.events[id] && window.events[id].state === 2) {
@@ -2139,7 +2318,6 @@
           hideMultiOverlay51();
         }
       }
-      // FIX FOR (57,58,59) so images disappear properly:
       if ([57,58,59].includes(evObj.id)) {
         [57,58,59].forEach(id => {
           if (window.events[id] && window.events[id].state === 2) {
@@ -2157,6 +2335,7 @@
         hideMultiOverlay60();
       }
       if (evObj.id === 69) {
+        // scenario #2: if user hovered at least 3s before leaving
         if (timeSinceActivation >= 3000 && !window.finalOverlayShown) {
           showFinalOverlay();
         }
@@ -2177,7 +2356,7 @@
     FALL_OFF_RANGE = Math.sqrt(window.innerWidth**2 + window.innerHeight**2);
 
     const audioFiles = [
-      "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
+     "https://www.dropbox.com/scl/fi/qk1y8kr2pgfiiqxrbzrga/1.mp3?rlkey=113xxcg8fzedce23t8ez3dl8h&raw=1",
       "https://www.dropbox.com/scl/fi/w5aqed6c99zkq0oi59xr8/2.mp3?rlkey=qijqg2pkapwkxwcna6o9v0btt&raw=1",
       "https://www.dropbox.com/scl/fi/jrbpdxhekpfif7wuk5a9i/3.mp3?rlkey=p22zwa8hrhv6ixq59ndpdjbft&raw=1",
       "https://www.dropbox.com/scl/fi/jdvh334frz63c7k1ko03q/4.mp3?rlkey=0d9rcs39up567dlzqbnhlguhp&raw=1",
@@ -2241,7 +2420,6 @@
       "https://www.dropbox.com/scl/fi/go6n224dfovnhxt3egkz9/AB-_arp-1.mp3?rlkey=6kg5qyp9jzoe9hruj0wyf37zf&st=6vhebyzo&raw=1",
       "https://www.dropbox.com/scl/fi/lpw1asbch7q3uv4tkkn0h/C_arp-2.mp3?rlkey=ed7lhs13xomksgeq3xoyg1dl8&st=zn5s9ndm&raw=1",
       "https://www.dropbox.com/scl/fi/sfz90m5pz2m8gnfrhh8bn/AB-_arp-2.mp3?rlkey=9kncuanzp47vz1xghgo07jg2u&st=amzjaumk&raw=1",
-      // ... Add more audio if needed
     ];
     audioElements = audioFiles.map(src => {
       const audio = new Audio(src);
@@ -2557,7 +2735,8 @@
         playNextAudio: playNextAudio,
         state: 0, // locked initially
         hasBeenActivated: false,
-        special: cfg.special
+        special: cfg.special,
+        initPano: cfg.initPano || undefined
       };
 
       window.events.push(evObj);
@@ -2619,6 +2798,27 @@
           }
         });
       }
+
+if (index === 69) {
+    if (!isMobile()) {
+      // On DESKTOP: call trySetToDormant when the mouse leaves #69
+      eventOuter.addEventListener("mouseleave", () => {
+        if (evObj.state === 2) {  // means it's currently "active"
+          trySetToDormant(evObj);
+        }
+      });
+    } else {
+      // On MOBILE: call trySetToDormant when user taps anywhere *outside* event #69
+      document.body.addEventListener("click", (evt) => {
+        // If event #69 is active, and the click is NOT on #69 itself
+        if (evObj.state === 2 && !eventOuter.contains(evt.target)) {
+          trySetToDormant(evObj);
+        }
+      });
+    }
+  }
+
+
     });
 
     // Unlock the first event
@@ -2974,7 +3174,7 @@
           let v1=[this.Vtxs[0].Pt().x, this.Vtxs[0].Pt().y];
           let v2=[this.Vtxs[1].Pt().x, this.Vtxs[1].Pt().y];
           let v3=[this.Vtxs[2].Pt().x, this.Vtxs[2].Pt().y];
-          let col='rgb(140,140,180)';
+          let col='black';
           birdCtx.fillStyle=col;
           birdCtx.strokeStyle=col;
           birdCtx.lineWidth=0.1;
@@ -3209,7 +3409,7 @@
 
   // p5 code for circleOverlay26 (threads effect)
   let circleOverlay26 = function(sk) {
-    let colors = ['#F24C27', '#F2A999', '#261B1D', '#BF0404'];
+    let colors = ['#4F0202', '#F20707', '#730303', '#C90606'];
     let ctx;
     let motion;
     sk.setup = function() {
@@ -3308,154 +3508,220 @@
         sk.circle(this.x, this.y, this.d);
       }
       move() {
-        // We keep the circle at full size:
-        this.d = this.d1;
-        this.x = this.x1;
-        this.y = this.y1;
-        this.t++;
-        if (this.t > this.t1) {
-          this.isDead = true;
-        }
-      }
+  // If we're in the animated phase:
+  if (this.t > 0 && this.t < this.t1) {
+    // Normalize time t between 0 and 1:
+    let n = sk.norm(this.t, 0, this.t1 - 1);
+this.d = sk.lerp(0, this.d1, easeOutCirc(n));
+this.x = sk.lerp(this.x0, this.x1, easeOutCirc(n));
+this.y = sk.lerp(this.y0, this.y1, easeOutCirc(n));
+  }
+  // Once the time is up, mark the circle as dead:
+  if (this.t > this.t1) {
+    this.isDead = true;
+  }
+  this.t++;
+}
+      
     }
   };
 
-  // macramé threads p5 code
-  let macrameSketch = function(p) {
-    let gThreads = [];
-    let gThreadCount;
-    let gThreadSpacing = 80;
-    let gThreadThickness = 2;
-    let gBgColor = [0, 0, 0, 0];
-    let segmentSize = 20;
-    let containerDiv;
-    let cnv;
+  // -- swirlRect code for events #39/#40:
+  let swirlRectSketch = function(s) {
+    let xmotion = 8.8;
+    let ymotion = 2.2;
+    let rxmotion = 0;
+    let rymotion = 0;
+    let rzmotion = 0;
 
-    p.setup = function() {
-      containerDiv = document.getElementById("macrameThreadsContainer");
-      if (!containerDiv) return;
-      let w = containerDiv.offsetWidth || window.innerWidth;
-      let h = containerDiv.offsetHeight || window.innerHeight;
-      cnv = p.createCanvas(w, h);
-      cnv.parent("macrameThreadsContainer");
-      p.strokeCap(p.SQUARE);
-      p.noFill();
-      p.noLoop(); 
-      createMacrameHanging(gThreads, w, h);
+    s.setup = function() {
+      let dim = s.min(s.windowWidth, s.windowHeight);
+      s.createCanvas(dim, dim);
+      s.frameRate(60);
+      s.background("#261B1D"); 
     };
 
-    p.draw = function() {
-      if (!containerDiv || containerDiv.style.display === "none") {
-        p.clear();
-        return;
-      }
-      p.clear();
-      p.background(gBgColor);
-      let pointerVal;
-      if (isMobile()) {
-        pointerVal = (window.orientationData.gamma || 0);
-      } else {
-        pointerVal = p.mouseX;
-      }
-      updateAndDrawThreads(gThreads, pointerVal);
+    s.draw = function() {
+      drawSwirlRect();
     };
 
-    p.mouseMoved = function() {
-      if (containerDiv && containerDiv.style.display !== "none") {
-        p.redraw();
-      }
-    };
-    p.touchMoved = function() {
-      if (containerDiv && containerDiv.style.display !== "none") {
-        p.redraw();
-      }
-      return false;
-    };
-    p.windowResized = function() {
-      if (!containerDiv) return;
-      let w = containerDiv.offsetWidth;
-      let h = containerDiv.offsetHeight;
-      p.resizeCanvas(w, h);
-      gThreads = [];
-      createMacrameHanging(gThreads, w, h);
-      p.redraw();
-    };
+    function drawSwirlRect() {
+      s.noStroke();
+      s.fill(38, 27, 29, 0);
+      s.rect(0, 0, s.width, s.height);
 
-    function createMacrameHanging(threadsArray, w, h) {
-      p.randomSeed(91890);
-      threadsArray.length = 0;
-      gThreadSpacing = p.random(20, 20);
-      gThreadThickness = p.random(1, 3);
-      gThreadCount = p.floor(w / gThreadSpacing) + 2;
-      for (let i = 0; i < gThreadCount; i++) {
-        let baseX = i * gThreadSpacing;
-        let threadColor = p.color(p.random(["#0B3B59", "#A6382E", "#D9984A", "#D9A577"]));
-        let segmentYs = [];
-        let totalSegments = p.floor(h / segmentSize);
-        for (let s = 0; s <= totalSegments; s++) {
-          let yy = h - s * segmentSize;
-          segmentYs.push(yy);
+      let count = 32;
+      for (let k = 0; k < 64; k++) {
+        let norm_k = k / 64;
+        for (let i = 0; i < count; i++) {
+          let norm_i = i / count;
+          let sign_change_k = (k % 2 * 2 - 1);
+          let sign_change_i = (i % 2 * 2 - 1);
+
+          let wa = s.radians(norm_k * 360 * sign_change_k) + xmotion / 2;
+          let ha = s.radians(norm_k * 360 * sign_change_k) + ymotion / 2;
+          let wo = s.cos(wa) * 3;
+          let ho = s.sin(ha) * 3;
+
+          let pll = ((wa % (s.PI * 2)) + (ha % (s.PI * 2))) / 2;
+          let pl = Math.abs(0.5 - pll / (s.PI * 2));
+
+          if (pll > s.PI * 1.5) {
+            s.fill(pl * 255, pl * 255, pl * 255, 255);
+            s.stroke(pl * 255, pl * 255, pl * 255, 255);
+          } else {
+            s.noFill();
+            s.stroke(255, 255, 255, pl * 64);
+            sign_change_i *= sign_change_k * (norm_k / 4);
+          }
+
+          s.rect(
+            s.width / 2 +
+              s.sin(s.radians(norm_i * 360) + xmotion * sign_change_k * sign_change_i) *
+                (wo * 64),
+            s.height / 2 +
+              s.cos(s.radians(norm_i * 360) + xmotion * sign_change_k * sign_change_i) *
+                (wo * 64),
+            1 + norm_k,
+            1 + norm_k
+          );
         }
-        let amplitude = p.random(20, 60);
-        let frequency = p.random(0.005, 0.02);
-        let phaseOffset = p.random(p.TWO_PI);
-        let phaseSpeed = p.random(0.01, 0.05);
-        threadsArray.push(
-          new RopeString(
-            baseX,
-            segmentYs,
-            threadColor,
-            amplitude,
-            frequency,
-            phaseOffset,
-            phaseSpeed,
-            p
-          )
-        );
       }
+
+      s.noStroke();
+      s.fill(38, 27, 29, 8);
+      s.rect(0, 0, s.width, s.height);
+
+      xmotion += 0.005;
+      ymotion += 0.008;
+      rxmotion += 0.05;
     }
-    function updateAndDrawThreads(threadsArray, pointerVal) {
-      p.strokeWeight(gThreadThickness);
-      for (let rope of threadsArray) {
-        rope.updateVertices(pointerVal);
-        let allVertices = rope.vertices;
-        if (allVertices.length < 2) continue;
-        p.stroke(rope.color);
-        p.beginShape();
-        p.curveVertex(allVertices[0].x, allVertices[0].y);
-        for (let v of allVertices) {
-          p.curveVertex(v.x, v.y);
-        }
-        p.curveVertex(
-          allVertices[allVertices.length - 1].x,
-          allVertices[allVertices.length - 1].y
-        );
-        p.endShape();
-      }
-    }
-    class RopeString {
-      constructor(baseX, segmentYs, col, amp, freq, phaseOffset, phaseSpeed, p) {
-        this.baseX = baseX;
-        this.segmentYs = segmentYs;
-        this.color = col;
-        this.amplitude = amp;
-        this.frequency = freq;
-        this.phaseOffset = phaseOffset;
-        this.phaseSpeed = phaseSpeed;
-        this.p = p;
-        this.vertices = [];
-      }
-      updateVertices(pointerVal) {
-        this.vertices = [];
-        let dynamicPhase = this.phaseOffset + this.p.frameCount * this.phaseSpeed + pointerVal * 0.01;
-        for (let y of this.segmentYs) {
-          let displacement = this.amplitude * this.p.sin(this.frequency * y + dynamicPhase);
-          let x = this.baseX + displacement;
-          this.vertices.push(this.p.createVector(x, y));
-        }
-      }
+
+    s.windowResized = function() {
+      let dim = s.min(s.windowWidth, s.windowHeight);
+      s.resizeCanvas(dim, dim);
+      s.background("#261B1D");
+    };
+  };
+
+// We'll name this chaosSquaresSketch or something similar:
+let chaosSquaresSketch = function (p) {
+  let colors = [
+    "#192a2c",
+    "#A66D03",
+    "#730D1F",
+    "#212426",
+    "#F2762E",
+    "#BF4124"
+  ];
+
+  p.setup = function () {
+    p.createCanvas(p.windowWidth, p.windowHeight);
+    p.clear();
+    p.rectMode(p.CENTER);
+    p.frameRate(2);
+    p.noStroke();
+  };
+
+  p.draw = function () {
+    // Slightly translucent white background for "trailing" effect
+    p.background(38, 27, 29, 0);
+
+    // Use the center of the canvas as origin
+    let origin = p.createVector(p.width / 2, p.height / 2);
+
+    // Draw 60 squares in random positions
+    for (let i = 0; i < 30; i++) {
+      let rndSize = 140;
+      let rnd = p.random(-rndSize, rndSize);
+      let r = p.random(rndSize * 0.3, rndSize * 1.5);
+      let size = 10 + p.random(rndSize * 0.5);
+
+      // Random color from the array
+      p.fill(p.random(colors));
+
+      // Position squares relative to center
+      p.rect(
+        origin.x + p.cos(rnd) * r,
+        origin.y + p.sin(rnd) * r * 0.5,
+        size,
+        size
+      );
     }
   };
+
+  p.windowResized = function () {
+    p.resizeCanvas(p.windowWidth, p.windowHeight);
+  };
+};
+
+
+  // NEW: Scaled Square (for #41 & #42)
+  let scaledSquareSketch = function(s) {
+    // Global motion variables
+    let xmotion = 8.8;
+    let ymotion = 2.2;
+
+    s.setup = function() {
+      s.pixelDensity(1);
+      s.createCanvas(s.windowWidth, s.windowHeight);
+      s.frameRate(60);
+      // Keep background transparent
+    };
+
+    s.draw = function() {
+      drawPattern();
+    };
+
+    function drawPattern() {
+      s.noStroke();
+      // We do NOT fill the background to keep it transparent
+
+      const scaleFactor = 0.35 * s.width;
+      let count = 32;
+
+      for (let k = 0; k < 64; k++) {
+        let norm_k = k / 64;
+        for (let i = 0; i < count; i++) {
+          let norm_i = i / count;
+          let sign_change_k = (k % 2 * 2 - 1);
+          let sign_change_i = (i % 2 * 2 - 1);
+
+          let wa = s.radians(norm_k * 360 * sign_change_k) + xmotion / 2;
+          let ha = s.radians(norm_k * 360 * sign_change_k) + ymotion / 2;
+          let wo = s.cos(wa) * 3;
+
+          let pll = ((wa % (s.PI * 2)) + (ha % (s.PI * 2))) / 2;
+          let pl = Math.abs(0.5 - pll / (s.PI * 2));
+
+          if (pll > s.PI * 1.5) {
+            s.fill(pl * 255, pl * 255, pl * 255, 255);
+            s.stroke(pl * 255, pl * 255, pl * 255, 255);
+          } else {
+            s.noFill();
+            s.stroke(255, 255, 255, pl * 64);
+            sign_change_i *= sign_change_k * (norm_k / 4);
+          }
+
+          let sx = s.width / 2 + s.sin(s.radians(norm_i * 360) + xmotion * sign_change_k * sign_change_i) * (wo * scaleFactor);
+          let sy = s.height / 2 + s.cos(s.radians(norm_i * 360) + xmotion * sign_change_k * sign_change_i) * (wo * scaleFactor);
+
+          s.rect(sx, sy, 1 + norm_k, 1 + norm_k);
+        }
+      }
+
+      // Update motion variables
+      xmotion += 0.005;
+      ymotion += 0.008;
+    }
+
+    s.windowResized = function() {
+      s.resizeCanvas(s.windowWidth, s.windowHeight);
+    };
+  };
+
+
+
 
   document.addEventListener("DOMContentLoaded", () => {
     const startReadLink = document.getElementById('startReadLink');
@@ -3482,10 +3748,12 @@
         if (startScreen) startScreen.style.display = 'none';
 
         // Initialize macrame sketch
-        new p5(macrameSketch);
+        new p5(macrameSketch, 'macrameThreadsContainer');
       });
     }
   });
+
+
   </script>
 </head>
 <body>
@@ -3531,17 +3799,30 @@
   <div id="multiOverlay26">
     <div id="macrameThreadsContainer"></div>
   </div>
-  <div id="multiOverlay39"></div>
-  <div id="multiOverlay41"></div>
-  <div id="multiOverlay45"></div>
+
+  <!-- For events #39 & #40, swirlRect p5 sketch inside #multiOverlay39 -->
+  <div id="multiOverlay39">
+    <div id="swirlRectContainer39"></div>
+  </div>
+
+  <!-- NEW container inside #multiOverlay41 for the scaled square animation (#41 & #42) -->
+  <div id="multiOverlay41">
+    <div id="scaledSquareContainer41"></div>
+  </div>
+
+  <div id="multiOverlay45">
+  <div id="chaosSquaresContainer45"></div>
+</div>
+
+
   <div id="multiOverlay51"></div>
   <div id="multiOverlay57"></div>
   <div id="multiOverlay60"></div>
 
   <!-- NEW: quotes overlay -->
   <div id="quotesOverlay">
-    <!-- "tap" indicator for mobile -->
-    <div id="quotesTapIndicator">tap</div>
+    <!-- Instruction text for desktop/mobile -->
+    <div id="quotesTapIndicator"></div>
     <!-- p5 canvas container -->
     <div id="quotesCanvasContainer"></div>
   </div>
@@ -3552,5 +3833,161 @@
 
   <!-- p5.js library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+  
+  <!-- Macrame (used at #multiOverlay26) -->
+  <script>
+    // Working macramé sketch code for #multiOverlay26
+
+let macrameSketch = function(p) {
+  let gThreads = [];
+  let gThreadCount;
+  let gThreadSpacing = 80;
+  let gThreadThickness = 2;
+  let gBgColor = [0, 0, 0, 0];
+  let segmentSize = 20;
+  let containerDiv;
+  let cnv;
+
+  // p.setup() – set up the canvas and initialize the thread objects
+  p.setup = function() {
+    containerDiv = document.getElementById("macrameThreadsContainer");
+    if (!containerDiv) return;
+    let w = containerDiv.offsetWidth || window.innerWidth;
+    let h = containerDiv.offsetHeight || window.innerHeight;
+    cnv = p.createCanvas(w, h);
+    cnv.parent("macrameThreadsContainer");
+    p.strokeCap(p.SQUARE);
+    p.noFill();
+    p.noLoop(); // We use p.redraw() when needed
+    createMacrameHanging(gThreads, w, h);
+  };
+
+  // p.draw() – clear the canvas and draw the threads based on current pointer position
+  p.draw = function() {
+    if (!containerDiv || containerDiv.style.display === "none") {
+      p.clear();
+      return;
+    }
+    p.clear();
+    p.background(gBgColor);
+    let pointerVal;
+    if (isMobile()) {
+      pointerVal = (window.orientationData.gamma || 0);
+    } else {
+      pointerVal = p.mouseX;
+    }
+    updateAndDrawThreads(gThreads, pointerVal);
+  };
+
+  // Redraw on mouse/touch movement (if the container is visible)
+  p.mouseMoved = function() {
+    if (containerDiv && containerDiv.style.display !== "none") {
+      p.redraw();
+    }
+  };
+  p.touchMoved = function() {
+    if (containerDiv && containerDiv.style.display !== "none") {
+      p.redraw();
+    }
+    return false;
+  };
+  p.windowResized = function() {
+    if (!containerDiv) return;
+    let w = containerDiv.offsetWidth;
+    let h = containerDiv.offsetHeight;
+    p.resizeCanvas(w, h);
+    gThreads = [];
+    createMacrameHanging(gThreads, w, h);
+    p.redraw();
+  };
+
+  // Create an array of thread objects (“rope strings”) that hang from the top of the container
+  function createMacrameHanging(threadsArray, w, h) {
+    p.randomSeed(91890);
+    threadsArray.length = 0;
+    gThreadSpacing = p.random(20, 20); // here it’s fixed at 20
+    gThreadThickness = p.random(1, 3);
+    gThreadCount = p.floor(w / gThreadSpacing) + 2;
+    for (let i = 0; i < gThreadCount; i++) {
+      let baseX = i * gThreadSpacing;
+      // Pick one of the four colors at random
+      let threadColor = p.color(p.random(["#0B3B59", "#A6382E", "#D9984A", "#D9A577"]));
+      let segmentYs = [];
+      let totalSegments = p.floor(h / segmentSize);
+      for (let s = 0; s <= totalSegments; s++) {
+        let yy = h - s * segmentSize;
+        segmentYs.push(yy);
+      }
+      let amplitude = p.random(20, 60);
+      let frequency = p.random(0.005, 0.02);
+      let phaseOffset = p.random(p.TWO_PI);
+      let phaseSpeed = p.random(0.01, 0.05);
+      threadsArray.push(
+        new RopeString(
+          baseX,
+          segmentYs,
+          threadColor,
+          amplitude,
+          frequency,
+          phaseOffset,
+          phaseSpeed,
+          p
+        )
+      );
+    }
+  }
+  
+  // Update each thread’s vertices and draw its shape
+  function updateAndDrawThreads(threadsArray, pointerVal) {
+    p.strokeWeight(gThreadThickness);
+    for (let rope of threadsArray) {
+      rope.updateVertices(pointerVal);
+      let allVertices = rope.vertices;
+      if (allVertices.length < 2) continue;
+      p.stroke(rope.color);
+      p.beginShape();
+      p.curveVertex(allVertices[0].x, allVertices[0].y);
+      for (let v of allVertices) {
+        p.curveVertex(v.x, v.y);
+      }
+      p.curveVertex(
+        allVertices[allVertices.length - 1].x,
+        allVertices[allVertices.length - 1].y
+      );
+      p.endShape();
+    }
+  }
+  
+  // Class that defines a “rope string” (a single thread)
+  class RopeString {
+    constructor(baseX, segmentYs, col, amp, freq, phaseOffset, phaseSpeed, p) {
+      this.baseX = baseX;
+      this.segmentYs = segmentYs;
+      this.color = col;
+      this.amplitude = amp;
+      this.frequency = freq;
+      this.phaseOffset = phaseOffset;
+      this.phaseSpeed = phaseSpeed;
+      this.p = p;
+      this.vertices = [];
+    }
+    updateVertices(pointerVal) {
+      this.vertices = [];
+      // Use the frameCount plus a little influence from the pointer value
+      let dynamicPhase = this.phaseOffset + this.p.frameCount * this.phaseSpeed + pointerVal * 0.01;
+      for (let y of this.segmentYs) {
+        let displacement = this.amplitude * this.p.sin(this.frequency * y + dynamicPhase);
+        let x = this.baseX + displacement;
+        this.vertices.push(this.p.createVector(x, y));
+      }
+    }
+  }
+  
+
+
+};
+
+
+  </script>
 </body>
 </html>
