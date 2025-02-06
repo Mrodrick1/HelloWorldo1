@@ -178,7 +178,7 @@
   top: 0;
   left: 0;
   font-size: 0.2rem;  /* half of 0.4rem */
-  font-weight: 100;
+  font-weight: 200;
   margin: 1px 0;
   line-height: 0.7rem;
   word-break: break-word;
@@ -469,6 +469,7 @@
   left: 20%;  
   text-align: center;
   color: #fff;
+  pointer-events: auto;
 }
 
     /*
@@ -3815,6 +3816,20 @@ let chaosSquaresSketch = function (p) {
         requestDeviceOrientationPermission();
         startReadLink.style.visibility = 'hidden';
         startReadLink.style.pointerEvents = 'none';
+
+const readingTimeEl = document.getElementById('readingTimeText');
+  if (readingTimeEl) {
+    readingTimeEl.style.visibility = 'hidden';
+  }
+const line4El = document.querySelector('.line4');
+  if (line4El) {
+    line4El.style.visibility = 'hidden';
+  }
+const convModelEl = document.getElementById('conversationModelText');
+  if (convModelEl) {
+    convModelEl.style.visibility = 'hidden';
+  }
+
         init();
 
         // Reveal all .event elements with a fade-in
@@ -3857,12 +3872,15 @@ let chaosSquaresSketch = function (p) {
       </div>
 
       <div class="line1">Hello, World.</div>
-      <div class="line2">A story told through code,</div>
+      <div class="line2">a story told through code,</div>
+      <div id="conversationModelText" class="line3">
+        from a conversation with OpenAI - o1 model, <br> 
+        written and coded by o1 and Miguel Rodrick.<br>
+        </div>
       <div class="line3">
-        from conversations with OpenAI - o1 model, <br> 
-        written and coded by ChatGPT o1 and Miguel Rodrick.<br>
-        <div class="readLink" id="startReadLink">read</div>
-      </div>
+  <span id="readingTimeText">Estimated reading time: 3:30 min.</span>
+  <div class="readLink" id="startReadLink">read</div>
+</div>
     </div>
   </div>
 
@@ -3914,9 +3932,10 @@ let chaosSquaresSketch = function (p) {
   <div id="endOverlay">
     <div id="endOverlayText"></div>
 <div id="endOverlayFootnote" class="line5">
-   
-  </div>
-
+  <a href="https://miguelrodrick.com" target="_blank" style="color: #fff; text-decoration: none;">
+    miguelrodrick.com
+  </a>
+</div>
   </div>
 
   <!-- p5.js library -->
@@ -4079,3 +4098,6 @@ let macrameSketch = function(p) {
   </script>
 </body>
 </html>
+
+//Some sketches used in this code are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License (CC BY-NC-SA 3.0): “Patterns 3” by Julien Verneuil and “Grailhover” by Rich Powers. Some sketches used in this code are licensed under the MIT License: “Birds of a Feather” by Tiffany Rayside and “Hole” by Hakim El Hattab.
+Color and size modifications have been made to fit the code.
