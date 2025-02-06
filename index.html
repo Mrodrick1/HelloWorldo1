@@ -173,6 +173,16 @@
       line-height: 0.7rem;
       word-break: break-word;
     }
+    #startScreen .background-text .line5 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.2rem;  /* half of 0.4rem */
+  font-weight: 100;
+  margin: 1px 0;
+  line-height: 0.7rem;
+  word-break: break-word;
+}
     @media only screen and (max-width: 600px) {
       #startScreen .background-text .line1 {
         font-size: 3rem;
@@ -190,6 +200,10 @@
         font-size: 0.45rem;
         line-height: 0.7rem;
       }
+      #startScreen .background-text .line5 {
+    font-size: 0.225rem; /* half of 0.45rem */
+    line-height: 0.7rem;
+  }
     }
     .readLink {
       font-size: 1.2rem;
@@ -447,6 +461,15 @@
       max-width: 80vw;
       pointer-events: none;
     }
+
+    #endOverlayFootnote {
+  position: absolute;
+  bottom: 20px;
+  width: 60%;
+  left: 20%;  
+  text-align: center;
+  color: #fff;
+}
 
     /*
       Hide squares (background) while the #multiOverlay26 is active,
@@ -3837,7 +3860,8 @@ let chaosSquaresSketch = function (p) {
       <div class="line2">A story told through code,</div>
       <div class="line3">
         from conversations with Open AI - o1 model, <br> 
-        written and coded by ChatGPT o1 and Miguel Rodrick.
+        written and coded by ChatGPT o1 and Miguel Rodrick.<br>
+        Estimated reading time: 3:30 min
         <div class="readLink" id="startReadLink">read</div>
       </div>
     </div>
@@ -3890,6 +3914,11 @@ let chaosSquaresSketch = function (p) {
 
   <div id="endOverlay">
     <div id="endOverlayText"></div>
+<div id="endOverlayFootnote" class="line5">
+    Some sketches used in this code are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License (CC BY-NC-SA 3.0): “Patterns 3” by Julien Verneuil and “Grailhover” by Rich Powers. Some sketches used in this code are licensed under the MIT License: “Birds of a Feather” by Tiffany Rayside and “Hole” by Hakim El Hattab.
+Color and size modifications have been made to fit the code.
+  </div>
+
   </div>
 
   <!-- p5.js library -->
