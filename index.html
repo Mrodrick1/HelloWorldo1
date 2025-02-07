@@ -1643,10 +1643,15 @@ function hideMultiOverlay45() {
     // apply style updates
     for (let ev of window.events) {
       if (!ev) continue;
-      ev.element.style.left = ev.x + "px";
-      ev.element.style.top  = ev.y + "px";
-      ev.element.style.width  = ev.currentSize + "px";
-      ev.element.style.height = ev.currentSize + "px";
+const snappedX = Math.round(ev.x);
+    const snappedY = Math.round(ev.y);
+
+
+      ev.element.style.left = snappedX + "px";
+    ev.element.style.top  = snappedY + "px";
+      const snappedW = Math.round(ev.currentSize);
+    ev.element.style.width  = snappedW + "px";
+    ev.element.style.height = snappedW + "px";
 
       let color = getEventColor(ev.state);
       // Hide the quotesTyping base square if it's active:
@@ -2075,7 +2080,7 @@ function hideMultiOverlay45() {
     }
 
     if (evObj.id === 69) {
-  evObj.minActiveDuration = 2000;
+  evObj.minActiveDuration = 1200;
 }
     setEventState(evObj, 2);
 
